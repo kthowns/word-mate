@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>단어장 내부</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        
+        header {
+            display: flex;
+            flex-direction: column; /* 열 방향으로 배치 */
+            align-items: flex-start; /* 왼쪽 정렬 */
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        .vocab-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .add-button {
+            margin-left: 10px;
+            padding: 5px 10px;
+            float: right;
+        }
+
+        main {
+            margin-top: 20px;
+        }
+
+        .voca-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .voca-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .voca-item button {
+            display: none; /* 기본적으로 버튼 숨김 */
+            margin-left: 10px;
+        }
+
+        .voca-item:hover button {
+            display: inline-block; /* 마우스 오버 시 버튼 표시 */
+        }
+
+        .checkbox {
+            margin-right: 10px;
+        }
+
+        /* 모달 스타일 */
+        .modal {
+            display: none; /* 기본적으로 숨김 */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; 
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+        }
+
+        .meaning-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .meaning-item select,
+        .meaning-item input {
+            margin-right: 10px;
+        }
+
+        .add-meaning {
+            margin-top: 10px;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>단어장 이름</h1>
+        <section class="vocab-buttons">
+            <button onclick="location.href='flashcard.html'">플래시 카드</button>
+            <button onclick="location.href='OXquiz.html'">O/X</button>
+            <button onclick="location.href='fillin.html'">빈칸 채우기</button>
+            <button class="add-button" onclick="openAddModal()">+</button> 
+        </section>
+        
+    </header>
+    <main>
+        <section class="voca-list" id="voca-list">
+            <!-- 단어 리스트 섹션 -->
+        </section>
+    </main>
+
+    <!-- 단어 추가 모달 -->
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAddModal()">&times;</span>
+            <h2>단어 추가</h2>
+            <div id="meanings-container">
+                <input style="margin-bottom: 5px;" type="text" id="word-input" placeholder="단어 입력" required>
+                <div class="meaning-item">
+                    <input type="text" placeholder="뜻 입력" required>
+                    <select>
+                        <option value="">품사 선택</option>
+                        <option value="명사">명사</option>
+                        <option value="형용사">형용사</option>
+                        <option value="동사">동사</option>
+                        <option value="부사">부사</option>
+                    </select>
+                </div>
+            </div>
+            <button class="add-meaning" onclick="addMeaning()">+</button>
+            <button class="add-button" onclick="submitWord()">제출</button>
+        </div>
+    </div>
+
+    <script>
+        function toggleButtons(item) {
+            const buttons = item.querySelectorAll('button');
+            buttons.forEach(button => {
+                button.style.display = button.style.display === 'inline-block' ? 'none' : 'inline-block';
+            });
+        }
+
+        function editVocabulary(button) {
+            alert("구현 예정");
+        }
+
+        function deleteVocabulary(button) {
+            const item = button.closest('.voca-item');
+            item.remove();
+        }
+
+        function openAddModal() {
+            document.getElementById("addModal").style.display = "block";
+        }
+
+        function closeAddModal() {
+            document.getElementById("addModal").style.display = "none";
+        }
+
+        function addMeaning() {
+            const container = document.getElementById('meanings-container');
+            const newMeaning = document.createElement('div');
+            newMeaning.classList.add('meaning-item');
+            newMeaning.innerHTML = `
+                <input type="text" placeholder="뜻 입력" required>
+                <select>
+                    <option value="">품사 선택</option>
+                    <option value="명사">명사</option>
+                    <option value="형용사">형용사</option>
+                    <option value="동사">동사</option>
+                    <option value="부사">부사</option>
+                </select>
+            `;
+            container.appendChild(newMeaning);
+        }
+
+        function submitWord() {
+            const wordInput = document.getElementById('word-input').value;
+            const meanings = Array.from(document.querySelectorAll('.meaning-item')).map(item => {
+                return {
+                    meaning: item.querySelector('input[type="text"]').value,
+                    partOfSpeech: item.querySelector('select').value
+                };
+            });
+
+            if (wordInput && meanings.every(m => m.meaning && m.partOfSpeech)) {
+                const vocaList = document.getElementById('voca-list');
+                const newVocaItem = document.createElement('div');
+                newVocaItem.classList.add('voca-item');
+
+                const meaningsText = meanings.map(m => `${m.meaning} (${m.partOfSpeech})`).join(', ');
+                newVocaItem.innerHTML = `
+                    <div>
+                        <span class="checkbox">
+                            <input type="checkbox" class="learning-checkbox">
+                        </span>
+                        <strong>${wordInput}</strong> - ${meaningsText}
+                    </div>
+                    <div>
+                        <button onclick="editVocabulary(this)">수정</button>
+                        <button onclick="deleteVocabulary(this)">삭제</button>
+                    </div>
+                `;
+                
+                vocaList.appendChild(newVocaItem);
+                closeAddModal();
+                document.getElementById('word-input').value = '';
+                document.querySelectorAll('.meaning-item input[type="text"]').forEach(input => input.value = '');
+                document.querySelectorAll('.meaning-item select').forEach(select => select.selectedIndex = 0);
+            } else {
+                alert("모든 필드를 입력해주세요.");
+            }
+        }
+    </script>
+</body>
+</html>
