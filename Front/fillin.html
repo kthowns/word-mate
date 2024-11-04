@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>빈칸 채우기</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0; 
+            background-color: #f8f9fa;
+            display: flex;
+            flex-direction: column; 
+            height: 100vh; 
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #ddd;
+            padding: 10px;
+            height: 10%;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
+            justify-content: center; 
+        }
+
+        .question-section {
+            background-color: white;
+            border: 1px solid #ccc;
+            width: 50%; 
+            padding: 20px; 
+            border-radius: 8px; 
+            text-align: center;
+            margin-bottom: 20px; 
+        }
+
+        .input-section {
+            width: 60%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        input {
+            width: 60%;
+            height: 30px;
+            margin-right: 10px;
+        }
+
+        #result {
+            margin: 20px 0;
+            display: none; 
+        }
+
+        footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 2px solid #ddd;
+            padding: 10px 20px;
+        }
+
+        footer button, footer select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <p id="wrong-count">틀린 문제 수: 0</p>
+        <p id="progress">진행률: 0/0</p>
+        <p id="question-count">맞힌 문제 수: 0</p>
+    </header>
+    
+    <main>
+        <section class="question-section">
+            <p id="word">문제: <span id="fill-in-the-blank">___</span></p>
+        </section>
+        <section class="input-section">
+            <input type="text" id="user-input" placeholder="답 입력" />
+            <button id="submit-button" onclick="checkAnswer()">제출</button>
+        </section>
+        <p id="result">정답 여부: </p> <!-- 정답 여부 표시칸, 기본적으로 숨김 -->
+    </main>
+    
+    <footer>
+        <button id="previous-button">이전</button>
+        <select id="vocab-list" onchange="addVocab()">
+            <option value="">단어장에 추가</option>
+            <!--예시-->
+            <option value="단어장1">단어장1</option>
+            <option value="단어장2">단어장2</option>
+            <option value="단어장3">단어장3</option>
+        </select>
+        <button id="next-button">다음</button>
+    </footer>
+
+    <script>
+        let totalQuestions = 0; // 총 문제 수
+        let currentQuestion = 0; // 현재 문제
+        let wrongCount = 0; // 틀린 문제 수
+        let corCount = 0;
+
+        function updateHeader() {
+            document.getElementById('question-count').textContent = `맞힌 문제 수: ${corCount}`;
+            document.getElementById('progress').textContent = `진행률: ${currentQuestion}/${totalQuestions}`;
+            document.getElementById('wrong-count').textContent = `틀린 문제 수: ${wrongCount}`;
+        }
+
+        function checkAnswer() {
+            const userInput = document.getElementById('user-input').value;
+            const result = document.getElementById('result');
+            result.style.display = 'block'; // 정답 여부 표시 칸을 보이게 함
+
+            if (userInput === correctAnswer) {
+                result.textContent = "정답입니다!";
+                corCount++;
+            } else {
+                result.textContent = "틀렸습니다.";
+                wrongCount++;
+            }
+
+            updateHeader();
+        }
+
+        function addVocab() {
+            const vocabList = document.getElementById('vocab-list');
+            const selectedVocab = vocabList.value;
+            if (selectedVocab) {
+                // 선택한 단어장에 단어 추가 로직
+                vocabList.value = ""; // 선택 초기화
+            }
+        }
+
+        // 초기화 호출
+        updateHeader();
+    </script>
+</body>
+</html>

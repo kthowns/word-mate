@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>메인화면</title>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-left">
+                <h1>페이지 제목</h1>
+                <div class="buttons">
+                    <button class="add-button" onclick="openAddModal()" style="margin: 5px; float: left;">+</button>
+                    <button class="UIset" onclick="openUImodal()" style="margin: 5px; float: right;">UI설정</button>
+                </div>
+            </div>
+            <div class="learning-rate">
+                <p>학습률 통계 섹션</p>
+                <!-- 통계 정보를 표시할 공간 -->
+            </div>
+        </header>
+
+        <main>
+            <section class="vocab-list" id="vocab-list">
+                <!-- 새 단어장이 추가되면 여기에 표시 -->
+            </section>
+        </main>
+
+        <!-- 단어장 추가 모달 -->
+        <div class="modal" id="vocab-add-modal">
+            <h3>단어장 추가</h3>
+            <label for="title">제목:</label>
+            <input type="text" id="title" name="title" placeholder="제목 입력" required>
+            <label for="description">설명:</label>
+            <textarea id="description" name="description" placeholder="설명 입력" required></textarea>
+            <button class="submit-button" onclick="submitVocabulary()">제출</button>
+            <button class="close-button" onclick="closeModal()">X</button>
+        </div>
+
+        <!-- 단어장 수정 모달 -->
+        <div class="modal" id="vocab-edit-modal" style="display:none;">
+            <h3>단어장 수정</h3>
+            <label for="edit-title">제목:</label>
+            <input type="text" id="edit-title" name="edit-title" placeholder="제목 입력" required>
+            <label for="edit-description">설명:</label>
+            <textarea id="edit-description" name="edit-description" placeholder="설명 입력" required></textarea>
+            <button class="submit-button" onclick="updateVocabulary()">수정하기</button>
+            <button class="close-button" onclick="closeEditModal()">X</button>
+        </div>
+
+        <!-- UI 설정 모달 -->
+        <div class="modal" id="UI-modal" style="display:none;">
+            <h3>UI 설정</h3>
+            <button class="close-button" onclick="closeUImodal()">X</button>
+            <button class="submit-button" onclick="closeUImodal()">완료</button>
+            <!-- UI 설정 요소를 추가할 공간 -->
+        </div>
+    </div>
+</body>
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    .container {
+        width: 90%;
+        margin: auto;
+        padding: 20px;
+    }
+
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 10px;
+    }
+
+    .header-left {
+        width: 50%;
+    }
+
+    h1 {
+        width: 50%;
+        margin: 0;
+        padding: 0;
+    }
+
+    .buttons {
+        margin-top: 10px;
+    }
+
+    .learning-rate {
+        width: 50%;
+        padding: 10px;
+        border-left: 1px solid #ddd;
+    }
+
+    main {
+        margin-top: 20px;
+    }
+
+    .vocab-list {
+        margin-top: 20px;
+    }
+
+    .vocab-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid #ddd;
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+
+    .vocab-buttons button {
+        margin-right: 5px;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 20px;
+        border: 1px solid #ddd;
+        background-color: #fff;
+        width: 300px;
+    }
+
+    .modal h3 {
+        margin-bottom: 15px;
+    }
+
+    .modal label {
+        display: block;
+        margin-top: 10px;
+    }
+
+    .modal input,
+    .modal textarea {
+        width: 100%;
+        padding: 5px;
+        margin-top: 5px;
+        margin-bottom: 10px;
+    }
+
+    .submit-button {
+        display: inline-block;
+        padding: 5px 10px;
+        cursor: pointer;
+    }
+
+    .close-button {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: none;
+        border: none;
+        font-size: 16px;
+        cursor: pointer;
+    }
+</style>
+
+<script>
+    let editingItem = null;
+
+    function openAddModal() {
+        document.getElementById('vocab-add-modal').style.display = 'block';
+    }
+
+    function openEditModal(vocabItem) {
+        const title = vocabItem.querySelector('h2').textContent;
+        const description = vocabItem.querySelector('.description').textContent;
+
+        document.getElementById('edit-title').value = title;
+        document.getElementById('edit-description').value = description;
+        editingItem = vocabItem;  // 현재 수정 중인 항목 저장
+        document.getElementById('vocab-edit-modal').style.display = 'block';
+    }
+
+    function openUImodal() {
+        document.getElementById('UI-modal').style.display = 'block';
+    }
+
+    function closeModal() {
+        document.getElementById('vocab-add-modal').style.display = 'none';
+    }
+
+    function closeEditModal() {
+        document.getElementById('vocab-edit-modal').style.display = 'none';
+    }
+
+    function closeUImodal() {
+        document.getElementById('UI-modal').style.display = 'none';
+    }
+
+    function submitVocabulary() {
+        const title = document.getElementById('title').value;
+        const description = document.getElementById('description').value;
+
+        if (title) {
+            addVocabularyItem(title, description);
+            closeModal();
+            document.getElementById('title').value = '';
+            document.getElementById('description').value = '';
+        } else {
+            alert("제목을 입력해 주세요.");
+        }
+    }
+
+    function addVocabularyItem(title, description) {
+        const vocabList = document.getElementById('vocab-list');
+
+        const vocabItem = document.createElement('div');
+        vocabItem.classList.add('vocab-item');
+
+        //단어장 내부 단어 수 받아와서 제목 옆에 표시해야
+        vocabItem.innerHTML = `
+            <div>
+                <h2>${title} (0 단어)</h2> 
+                <p class="description">${description}</p>
+                <div class="vocab-buttons">
+                    <button onclick="location.href='flashcard.html'">플래시 카드</button>
+                    <button onclick="location.href='OXquiz.html'">O/X</button>
+                    <button onclick="location.href='fillin.html'">빈칸 채우기</button>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button onclick="openEditModal(this.parentElement.parentElement)">수정</button>
+                <button onclick="deleteVocabulary(this.parentElement.parentElement)">삭제</button>
+            </div>
+        `;
+
+        vocabItem.onclick = function(event) {
+            if (!event.target.closest('.vocab-buttons button') && !event.target.closest('.action-buttons button')) {
+                window.location.href = 'vocabulary.html';
+            }
+        };
+
+        vocabList.appendChild(vocabItem);
+    }
+
+    function updateVocabulary() {
+        const updatedTitle = document.getElementById('edit-title').value;
+        const updatedDescription = document.getElementById('edit-description').value;
+
+        if (editingItem) {
+            editingItem.querySelector('h2').textContent = updatedTitle;
+            editingItem.querySelector('.description').textContent = updatedDescription;
+            closeEditModal();
+        }
+    }
+
+    function deleteVocabulary(vocabItem) {
+        vocabItem.remove();  
+    }
+</script>
+</html>
