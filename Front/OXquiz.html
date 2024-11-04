@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OX 퀴즈</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            height: 100vh; 
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #ddd;
+            padding: 10px; 
+            height: 10%;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 75%;
+        }
+
+        .question-section {
+            background-color: rgb(255, 255, 255);
+            border: 1px solid #ccc;
+            width: 60%; 
+            margin-bottom: 20px;
+            text-align: center;
+            padding: 20px;
+            border-radius: 8px; 
+        }
+
+        #result {
+            margin: 20px 0; 
+            display: none; 
+        }
+
+        .answer-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .answer-buttons button {
+            border-radius: 50px;
+            width: 100px; 
+            height: 100px;
+            margin-right: 100px;
+            margin-left: 100px;
+        }
+
+        footer {
+            display: flex;
+            justify-content: space-around; 
+            align-items: center; 
+            border-top: 2px solid #ddd; 
+            height: 15%; 
+        }
+
+        footer button, footer select {
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <p id="wrong-count">틀린 문제 수: 0</p>
+        <p id="progress">진행률: 0/0</p>
+        <p id="question-count">맞힌 문제 수: 0</p>
+    </header>
+    
+    <main>
+        <section class="question-section">
+            <p id="word">단어: </p>
+            <p id="meaning">뜻: </p>
+            <p id="result">정답 여부: </p>
+        </section>
+        <section class="answer-buttons">
+            <button class="button" id="button-O" onclick="checkAnswer(true)">O</button>
+            <button class="button" id="button-X" onclick="checkAnswer(false)">X</button>
+        </section>
+    </main>
+    
+    <footer>
+        <button id="previous-button">이전</button>
+        <select id="vocab-list" onchange="addVocab()">
+            <option value="">단어장에 추가</option>
+            <option value="단어장1">단어장1</option>
+            <option value="단어장2">단어장2</option>
+            <option value="단어장3">단어장3</option>
+        </select>
+        <button id="next-button">다음</button>
+    </footer>
+
+    <script>
+        let totalQuestions = 0;
+        let currentQuestion = 0;
+        let wrongCount = 0; 
+        let corCount = 0;
+
+        function updateHeader() {
+            document.getElementById('question-count').textContent = `맞힌 문제 수: ${corCount}`;
+            document.getElementById('progress').textContent = `진행률: ${currentQuestion}/${totalQuestions}`;
+            document.getElementById('wrong-count').textContent = `틀린 문제 수: ${wrongCount}`;
+        }
+
+        function checkAnswer(isCorrect) {
+            const result = document.getElementById('result');
+            result.textContent = `정답 여부: `;
+            result.style.display = 'block';
+
+            if (!isCorrect) {
+                wrongCount++;
+            } else {
+                corCount++;
+            }
+            updateHeader();
+        }
+
+        function addVocab() {
+            const vocabList = document.getElementById('vocab-list');
+            const selectedVocab = vocabList.value;
+            if (selectedVocab) {
+                vocabList.value = ""; 
+            }
+        }
+
+        updateHeader();
+    </script>
+</body>
+</html>
