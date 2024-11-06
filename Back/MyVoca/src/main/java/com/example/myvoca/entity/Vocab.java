@@ -3,6 +3,7 @@ package com.example.myvoca.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -28,5 +29,6 @@ public class Vocab {
     @Column(name="word_count")
     private Integer wordCount;
     @Column(name="created_at")
+    @CreationTimestamp
     private Timestamp createdAt;
 }

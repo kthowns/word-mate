@@ -1,13 +1,11 @@
 package com.example.myvoca.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 
@@ -19,9 +17,11 @@ import java.sql.Timestamp;
 @Table(name = "word")
 public class Word {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer wordId;
     @Column(name = "expression")
     private String expression;
     @Column(name = "created_at")
+    @CreationTimestamp
     private Timestamp createdAt;
 }

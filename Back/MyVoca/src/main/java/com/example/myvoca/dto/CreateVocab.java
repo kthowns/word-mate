@@ -10,6 +10,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
+
 public class CreateVocab {
     @Data
     @AllArgsConstructor
@@ -33,7 +35,7 @@ public class CreateVocab {
         private Integer vocabId;
         private String title;
         private String description;
-        private Integer wordCount;
+        private Timestamp createdAt;
         public static CreateVocab.Response fromEntity(Vocab vocab){
             String desc = vocab.getDescription();
             if(desc.length() > 10)
@@ -42,7 +44,7 @@ public class CreateVocab {
                     .vocabId(vocab.getVocabId())
                     .title(vocab.getTitle())
                     .description(desc)
-                    .wordCount(0)
+                    .createdAt(vocab.getCreatedAt())
                     .build();
         }
     }

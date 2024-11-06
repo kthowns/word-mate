@@ -12,8 +12,8 @@ import java.util.List;
 public interface VocabWordRepository
     extends JpaRepository<VocabWord, VocabWordId> {
 
-    List<VocabWord> findByVocab_vocabId(Integer vocabId);
-    @Query("SELECT w FROM Word w WHERE w.id IN (" +
-            "SELECT vw.word.id FROM VocabWord vw WHERE vw.vocab.id = :vocabId)")
-    List<Word> findWordByVocabId(@Param("vocabId") Integer vocabId);
+    @Query("SELECT vw from VocabWord vw where vw.word.wordId = :wordId")
+    List<VocabWord> findByWordId(@Param("wordId") Integer wordId);
+    @Query("SELECT COUNT(vw) from VocabWord vw where vw.vocab.vocabId = :vocabId")
+    Integer getCountByVocabId(@Param("vocabId") Integer vocabId);
 }

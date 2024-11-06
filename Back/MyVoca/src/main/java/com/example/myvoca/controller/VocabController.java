@@ -23,10 +23,17 @@ public class VocabController{
 
     @GetMapping("/api/vocabs/all")
     public List<VocabDto> getVocabByUserId(
-            @Valid @RequestParam Integer userId
+            @Valid @RequestParam Integer user_id
     ){
-        return vocabService.getVocabByUserId(userId);
-    };
+        return vocabService.getVocabByUserId(user_id);
+    }
+
+    @GetMapping("/api/vocabs/detail")
+    public VocabDto getVocabByVocabId(
+            @Valid @RequestParam Integer vocab_id
+    ){
+        return vocabService.getVocabDtoById(vocab_id);
+    }
 
     @PostMapping("/api/vocabs")
     public CreateVocab.Response createVocab(

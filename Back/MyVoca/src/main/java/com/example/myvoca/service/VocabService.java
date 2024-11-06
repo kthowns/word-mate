@@ -27,18 +27,12 @@ import java.util.stream.Collectors;
 @Service
 public class VocabService {
     private final VocabRepository vocabRepository;
-    private final VocabWordRepository vocabWordRepository;
     private final UserRepository userRepository;
 
     public List<VocabDto> getVocabByUserId(Integer userId) {
-        return vocabRepository.findByUser_userId(getUserById(userId).getUserId())
+        return vocabRepository.findByUserId(getUserById(userId).getUserId())
                 .stream().map(VocabDto::fromEntity)
                 .collect(Collectors.toList());
-    }
-
-    public List<Word> getWordsByVocabId(Integer vocabId) {
-        Vocab vocab = getVocabById(vocabId);
-        return vocabWordRepository.findWordByVocabId(vocab.getVocabId());
     }
 
     @Transactional
@@ -47,22 +41,15 @@ public class VocabService {
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .user(getUserById(request.getUserId()))
+                .wordCount(0)
                 .build();
-        vocabRepository.save(vocab);
+        vocab = vocabRepository.save(vocab);
 
         return CreateVocab.Response.fromEntity(vocab);
     }
 
-    public User getUserById(Integer userId) {
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(NoSuchElementException::new);
-        return user;
-    }
-
-    public Vocab getVocabById(Integer vocabId){
-        Vocab vocab = vocabRepository.findById(vocabId)
-                .orElseThrow(NoSuchElementException::new);
-        return vocab;
+    public VocabDto getVocabDtoById(Integer vocabId){
+        return VocabDto.fromEntity(getVocabById(vocabId));
     }
 
     @Transactional
@@ -79,5 +66,17 @@ public class VocabService {
         Vocab vocab = getVocabById(vocabId);
         vocabRepository.delete(vocab);
         return VocabDto.fromEntity(vocab);
+    }
+
+    private Vocab getVocabById(Integer vocabId){
+        Vocab vocab = vocabRepository.findById(vocabId)
+                .orElseThrow(NoSuchElementException::new);
+        return vocab;
+    }
+
+    private User getUserById(Integer userId) {
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(NoSuchElementException::new);
+        return user;
     }
 }
