@@ -9,7 +9,6 @@ import java.util.List;
 
 public interface WordRepository
     extends JpaRepository<Word, Integer> {
-    @Query("SELECT w FROM Word w WHERE w.wordId IN (" +
-            "SELECT vw.word.wordId FROM VocabWord vw WHERE vw.vocab.vocabId = :vocabId)")
-    List<Word> findWordByVocabId(@Param("vocabId") Integer vocabId);
+    @Query("SELECT w FROM Word w where w.vocab.vocabId = :vocabId")
+    List<Word> findWordsByVocabId(@Param("vocabId") Integer vocabId);
 }

@@ -31,25 +31,26 @@ public class WordController{
         return wordService.getWordDtoById(word_id);
     }
 
-    @PostMapping("/api/words")
+    @PostMapping("/api/words/{vocab_id}")
     public CreateWord.Response createWord(
+            @Valid @PathVariable Integer vocab_id,
             @Valid @RequestBody CreateWord.Request request
     ){
-        return wordService.createWord(request);
+        return wordService.createWord(vocab_id, request);
     }
 
-    @PatchMapping("/api/words/{wordId}")
+    @PatchMapping("/api/words/{word_id}")
     public WordDto editWord(
-            @Valid @PathVariable Integer wordId,
+            @Valid @PathVariable Integer word_id,
             @Valid @RequestBody EditWord.Request request
     ){
-        return wordService.editWord(wordId, request);
+        return wordService.editWord(word_id, request);
     }
 
-    @DeleteMapping("/api/words/{wordId}")
+    @DeleteMapping("/api/words/{word_id}")
     public WordDto deleteWord(
-            @Valid @PathVariable Integer wordId
+            @Valid @PathVariable Integer word_id
     ){
-        return wordService.deleteWord(wordId);
+        return wordService.deleteWord(word_id);
     }
 }
