@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>플래시카드</title>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        header {
+            height: 10%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-bottom: 2px solid #ddd;
+            background-color: #ffffff;
+        }
+
+        main {
+            height: 75%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .flashcard {
+            width: 500px;
+            height: 300px;
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            text-align: center;
+            position: relative; /* 자식 요소를 절대 위치로 설정하기 위해 */
+        }
+
+        footer {
+            height: 15%;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 2px solid #ddd;
+            background-color: #ffffff;
+        }
+
+        footer button, footer select {
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        #audio-button {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            border-radius: 50%;
+            padding: 5px 10px;
+        }
+
+        .meaning {
+            display: none; /* 뜻과 품사를 기본적으로 숨김 */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <p id="progress">진행률: 0/0</p>
+    </header>
+    
+    <main>
+        <div class="flashcard" id="flashcard" onclick="toggleFlashcard()">
+            <div class="word">
+                <p id="word">단어: apple</p>
+                <button id="audio-button" onclick="playAudio(event)">듣기</button>
+            </div>
+            <div class="meaning">
+                <p id="meaning">뜻: 사과</p>
+                <p id="part-of-speech">품사: 명사</p>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <button id="previous-button">이전</button>
+        <select id="vocab-list" onchange="addVocab()">
+            <option value="">단어장에 추가</option>
+            <!--예시-->
+            <option value="단어장1">단어장1</option>
+            <option value="단어장2">단어장2</option>
+            <option value="단어장3">단어장3</option>
+        </select>
+        <button id="next-button">다음</button>
+    </footer>
+
+    <script>
+        let currentQuestion = 0; // 현재 질문
+        let totalQuestions = 0; // 총 질문 수
+        let isMeaningVisible = false; // 뜻이 보이는지 여부
+
+        function updateHeader() {
+            document.getElementById('progress').textContent = `진행률: ${currentQuestion}/${totalQuestions}`;
+        }
+
+        function toggleFlashcard() {
+            const flashcard = document.getElementById('flashcard');
+            const wordDiv = flashcard.querySelector('.word');
+            const meaningDiv = flashcard.querySelector('.meaning');
+
+            if (isMeaningVisible) {
+                wordDiv.style.display = 'flex';
+                meaningDiv.style.display = 'none';
+                isMeaningVisible = false; 
+            } else {
+                wordDiv.style.display = 'none';
+                meaningDiv.style.display = 'block';
+                isMeaningVisible = true;
+            }
+        }
+
+        function playAudio(event) {
+            event.stopPropagation(); // 클릭 이벤트 전파 방지
+            // 음성을 재생하는 코드 추가
+        }
+
+        function addVocab() {
+            const vocabList = document.getElementById('vocab-list');
+            const selectedVocab = vocabList.value;
+            if (selectedVocab) {
+                // 선택한 단어장에 단어 추가 로직
+                vocabList.value = "";
+            }
+        }
+
+        updateHeader();
+    </script>
+</body>
+</html>

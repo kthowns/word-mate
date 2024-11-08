@@ -21,6 +21,7 @@ public class WordController{
     public List<WordDto> getWordByVocabId(
             @Valid @RequestParam Integer vocab_id
     ){
+        log.info("HTTP GET /api/words/all?vocab_id="+vocab_id);
         return wordService.getWordByVocabId(vocab_id);
     }
 
@@ -28,28 +29,33 @@ public class WordController{
     public WordDto getWordByWordId(
             @Valid @RequestParam Integer word_id
     ){
+        log.info("HTTP GET /api/words/detail?word_id="+word_id);
         return wordService.getWordDtoById(word_id);
     }
 
-    @PostMapping("/api/words")
+    @PostMapping("/api/words/{vocab_id}")
     public CreateWord.Response createWord(
+            @Valid @PathVariable Integer vocab_id,
             @Valid @RequestBody CreateWord.Request request
     ){
-        return wordService.createWord(request);
+        log.info("HTTP POST /api/words/"+vocab_id);
+        return wordService.createWord(vocab_id, request);
     }
 
-    @PatchMapping("/api/words/{wordId}")
+    @PatchMapping("/api/words/{word_id}")
     public WordDto editWord(
-            @Valid @PathVariable Integer wordId,
+            @Valid @PathVariable Integer word_id,
             @Valid @RequestBody EditWord.Request request
     ){
-        return wordService.editWord(wordId, request);
+        log.info("HTTP PATCH /api/words/"+word_id);
+        return wordService.editWord(word_id, request);
     }
 
-    @DeleteMapping("/api/words/{wordId}")
+    @DeleteMapping("/api/words/{word_id}")
     public WordDto deleteWord(
-            @Valid @PathVariable Integer wordId
+            @Valid @PathVariable Integer word_id
     ){
-        return wordService.deleteWord(wordId);
+        log.info("HTTP DELETE /api/words/"+word_id);
+        return wordService.deleteWord(word_id);
     }
 }
