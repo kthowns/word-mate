@@ -69,7 +69,7 @@ public class VocabService {
     }
 
     private User getUserById(Integer userId) {
-        User user = userRepository.findByUserId(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(NoSuchElementException::new);
         return user;
     }

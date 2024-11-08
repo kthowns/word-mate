@@ -21,6 +21,7 @@ public class VocabController{
     public List<VocabDto> getVocabByUserId(
             @Valid @RequestParam Integer user_id
     ){
+        log.info("HTTP GET /api/vocabs/all?user_id="+user_id);
         return vocabService.getVocabByUserId(user_id);
     }
 
@@ -28,6 +29,7 @@ public class VocabController{
     public VocabDto getVocabByVocabId(
             @Valid @RequestParam Integer vocab_id
     ){
+        log.info("HTTP GET /api/vocabs/detail?vocab_id="+vocab_id);
         return vocabService.getVocabDtoById(vocab_id);
     }
 
@@ -36,21 +38,24 @@ public class VocabController{
             @Valid @PathVariable Integer user_id,
             @Valid @RequestBody CreateVocab.Request request
     ){
+        log.info("HTTP POST /api/vocabs/"+user_id);
         return vocabService.createVocab(user_id, request);
     }
 
-    @PatchMapping("/api/vocabs/{vocabId}")
+    @PatchMapping("/api/vocabs/{vocab_id}")
     public VocabDto editVocab(
-            @Valid @PathVariable Integer vocabId,
+            @Valid @PathVariable Integer vocab_id,
             @Valid @RequestBody EditVocab.Request request
     ){
-        return vocabService.editVocab(vocabId, request);
+        log.info("HTTP PATCH /api/vocabs/"+vocab_id);
+        return vocabService.editVocab(vocab_id, request);
     }
 
-    @DeleteMapping("/api/vocabs/{vocabId}")
+    @DeleteMapping("/api/vocabs/{vocab_id}")
     public VocabDto deleteVocab(
-            @Valid @PathVariable Integer vocabId
+            @Valid @PathVariable Integer vocab_id
     ){
-        return vocabService.deleteVocab(vocabId);
+        log.info("HTTP DELETE /api/vocabs/"+vocab_id);
+        return vocabService.deleteVocab(vocab_id);
     }
 }

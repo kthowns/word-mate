@@ -21,6 +21,7 @@ public class WordController{
     public List<WordDto> getWordByVocabId(
             @Valid @RequestParam Integer vocab_id
     ){
+        log.info("HTTP GET /api/words/all?vocab_id="+vocab_id);
         return wordService.getWordByVocabId(vocab_id);
     }
 
@@ -28,6 +29,7 @@ public class WordController{
     public WordDto getWordByWordId(
             @Valid @RequestParam Integer word_id
     ){
+        log.info("HTTP GET /api/words/detail?word_id="+word_id);
         return wordService.getWordDtoById(word_id);
     }
 
@@ -36,6 +38,7 @@ public class WordController{
             @Valid @PathVariable Integer vocab_id,
             @Valid @RequestBody CreateWord.Request request
     ){
+        log.info("HTTP POST /api/words/"+vocab_id);
         return wordService.createWord(vocab_id, request);
     }
 
@@ -44,6 +47,7 @@ public class WordController{
             @Valid @PathVariable Integer word_id,
             @Valid @RequestBody EditWord.Request request
     ){
+        log.info("HTTP PATCH /api/words/"+word_id);
         return wordService.editWord(word_id, request);
     }
 
@@ -51,6 +55,7 @@ public class WordController{
     public WordDto deleteWord(
             @Valid @PathVariable Integer word_id
     ){
+        log.info("HTTP DELETE /api/words/"+word_id);
         return wordService.deleteWord(word_id);
     }
 }
