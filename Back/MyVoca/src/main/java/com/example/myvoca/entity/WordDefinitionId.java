@@ -8,6 +8,6 @@ import java.io.Serializable;
 @Embeddable
 @Data
 public class WordDefinitionId implements Serializable {
-    private Integer word_id;
-    private Integer definition_id;
+    private Integer wordId;
+    private Integer definitionId;
 }

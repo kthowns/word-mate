@@ -11,18 +11,22 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "word_definition")
-public class WordDefinition {
-    @EmbeddedId
-    private WordDefinitionId wordDefinitionId;
+@Table(name = "word_stats")
+public class WordStats {
+    @Id
+    private Integer wordId;
 
-    @ManyToOne
     @MapsId("wordId")
+    @OneToOne
     @JoinColumn(name = "word_id")
     private Word word;
 
-    @ManyToOne
-    @MapsId("definitionId")
-    @JoinColumn(name = "definition_id")
-    private Definition definition;
+    @Column(name = "correct_count")
+    private Integer correctCount;
+
+    @Column(name = "incorrect_count")
+    private Integer incorrectCount;
+
+    @Column(name = "isLearned")
+    private Integer isLearned;
 }

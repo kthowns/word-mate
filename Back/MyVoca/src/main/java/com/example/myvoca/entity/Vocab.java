@@ -1,11 +1,12 @@
 package com.example.myvoca.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.sql.Time;
 import java.sql.Timestamp;
 
 @Data
@@ -13,7 +14,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "vocab")
+@Table(name = "vocabs")
 public class Vocab {
     @Id
     @Column(name = "vocab_id")

@@ -1,9 +1,6 @@
 package com.example.myvoca.dto;
 
-import com.example.myvoca.entity.Vocab;
 import com.example.myvoca.entity.Word;
-import jakarta.annotation.Nonnull;
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -20,8 +17,6 @@ public class CreateWord {
     @Builder
     public static class Request{
         @NotNull
-        private Integer vocabId;
-        @NotNull
         @Size(max=32)
         private String expression;
     }
@@ -32,11 +27,13 @@ public class CreateWord {
     @Builder
     public static class Response{
         private Integer wordId;
+        private Integer vocabId;
         private String expression;
         private Timestamp createdAt;
         public static CreateWord.Response fromEntity(Word word){
             return Response.builder()
                     .wordId(word.getWordId())
+                    .vocabId(word.getVocab().getVocabId())
                     .expression(word.getExpression())
                     .createdAt(word.getCreatedAt())
                     .build();
