@@ -2,7 +2,6 @@ package com.example.myvoca.controller;
 
 import com.example.myvoca.dto.CreateDefinition;
 import com.example.myvoca.dto.DefinitionDto;
-import com.example.myvoca.entity.Definition;
 import com.example.myvoca.service.DefinitionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,10 +13,11 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @Slf4j
+@RequestMapping("/api")
 public class DefinitionController {
     private final DefinitionService definitionService;
 
-    @GetMapping("/api/defs/{word_id}")
+    @GetMapping("/defs/{word_id}")
     public List<DefinitionDto> getDefinitions(
             @Valid @PathVariable Integer word_id
     ){
@@ -25,7 +25,7 @@ public class DefinitionController {
         return definitionService.getDefinitions(word_id);
     }
 
-    @PostMapping("/api/defs/{word_id}")
+    @PostMapping("/defs/{word_id}")
     public DefinitionDto createDefinition(
             @Valid @PathVariable Integer word_id,
             @Valid @RequestBody CreateDefinition.Request request
