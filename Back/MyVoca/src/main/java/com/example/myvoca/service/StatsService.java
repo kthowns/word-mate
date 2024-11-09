@@ -5,6 +5,7 @@ import com.example.myvoca.dto.WordStatsDto;
 import com.example.myvoca.entity.Vocab;
 import com.example.myvoca.entity.Word;
 import com.example.myvoca.entity.WordStats;
+import com.example.myvoca.exception.VocabException;
 import com.example.myvoca.repository.StatsRepository;
 import com.example.myvoca.repository.VocabRepository;
 import com.example.myvoca.repository.WordRepository;
@@ -15,6 +16,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+
+import static com.example.myvoca.exception.VocabErrorCode.NO_STATS;
+import static com.example.myvoca.exception.VocabErrorCode.NO_VOCAB;
 
 @RequiredArgsConstructor
 @Service
@@ -42,27 +46,20 @@ public class StatsService {
     }
 
     public WordStatsDto getWordStatsByWordId(Integer wordId) {
-        return WordStatsDto.fromEntity(findWordStatsById(wordId));
+        return WordStatsDto.fromEntity(getWordStatsById(wordId));
     }
 
     public double getDifficulty(Integer wordId){
-        WordStats wordStats = findWordStatsById(wordId);
+        WordStats wordStats = getWordStatsById(wordId);
         return calcDifficulty(wordStats.getCorrectCount(), wordStats.getIncorrectCount());
     }
 
-    public WordStats findWordStatsById(Integer wordId){
-        return statsRepository.findById(wordId)
-                .orElseThrow(NoSuchElementException::new);
-    }
-
     public Double getLearningRate(Integer vocabId) {
-        Vocab vocab = vocabRepository.findById(vocabId)
-                .orElseThrow(NoSuchElementException::new);
+        Vocab vocab = getVocabById(vocabId);
         List<Word> wordList = wordRepository.findWordsByVocabId(vocabId);
         Double cntLearnedWord = 0.0;
         for (Word word : wordList) {
-            WordStats wordStats = statsRepository.findById(word.getWordId())
-                    .orElseThrow(NoSuchElementException::new);
+            WordStats wordStats = getWordStatsById(word.getWordId());
             if (wordStats.getIsLearned() == 1)
                 cntLearnedWord++;
         }
@@ -86,5 +83,15 @@ public class StatsService {
         return statsRepository.findWordStatesByVocabId(vocabId)
                 .stream().map(WordStatsDto::fromEntity)
                 .collect(Collectors.toList());
+    }
+
+    private WordStats getWordStatsById(Integer wordId){
+        return statsRepository.findById(wordId)
+                .orElseThrow(() -> new VocabException(NO_STATS));
+    }
+
+    private Vocab getVocabById(Integer vocabId){
+        return vocabRepository.findById(vocabId)
+                .orElseThrow(() -> new VocabException(NO_VOCAB));
     }
 }
