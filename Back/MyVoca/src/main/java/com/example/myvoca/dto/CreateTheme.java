@@ -20,6 +20,7 @@ public class CreateTheme {
     @Builder
     public static class Request{
         @NotNull
+        @Size(max=32)
         private String font;
         @NotNull
         private Integer fontSize;
