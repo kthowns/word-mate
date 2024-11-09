@@ -14,11 +14,14 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "word")
+@Table(name = "words")
 public class Word {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer wordId;
+    @ManyToOne
+    @JoinColumn(name = "vocab_id")
+    private Vocab vocab;
     @Column(name = "expression")
     private String expression;
     @Column(name = "created_at")

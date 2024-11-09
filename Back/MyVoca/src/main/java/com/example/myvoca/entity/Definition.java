@@ -17,6 +17,9 @@ public class Definition {
     @Id
     @Column(name="definition_id")
     private Integer definitionId;
+    @ManyToOne
+    @JoinColumn(name="word_id")
+    private Word word;
     @Column(name="definition")
     private String definition;
     @Column(name="type")

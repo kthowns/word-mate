@@ -1,8 +1,6 @@
 package com.example.myvoca.dto;
 
 import com.example.myvoca.entity.Vocab;
-import jakarta.annotation.Nonnull;
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -18,8 +16,6 @@ public class CreateVocab {
     @NoArgsConstructor
     @Builder
     public static class Request{
-        @NotNull
-        private Integer userId;
         @NotNull
         @Size(max=16)
         private String title;

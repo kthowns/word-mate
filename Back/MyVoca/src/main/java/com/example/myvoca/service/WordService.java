@@ -1,12 +1,13 @@
 package com.example.myvoca.service;
 
-import com.example.myvoca.dto.*;
+import com.example.myvoca.dto.CreateWord;
+import com.example.myvoca.dto.EditWord;
+import com.example.myvoca.dto.UpdateStats;
+import com.example.myvoca.dto.WordDto;
 import com.example.myvoca.entity.Vocab;
-import com.example.myvoca.entity.VocabWord;
-import com.example.myvoca.entity.VocabWordId;
 import com.example.myvoca.entity.Word;
+import com.example.myvoca.exception.VocabException;
 import com.example.myvoca.repository.VocabRepository;
-import com.example.myvoca.repository.VocabWordRepository;
 import com.example.myvoca.repository.WordRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -17,37 +18,35 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+import static com.example.myvoca.exception.VocabErrorCode.NO_VOCAB;
+import static com.example.myvoca.exception.VocabErrorCode.NO_WORD;
+
 @RequiredArgsConstructor
 @Slf4j
 @Service
 public class WordService {
     private final VocabRepository vocabRepository;
     private final WordRepository wordRepository;
-    private final VocabWordRepository vocabWordRepository;
+    private final StatsService statsService;
 
     public List<WordDto> getWordByVocabId(Integer vocabId) {
-        return wordRepository.findWordByVocabId(getVocabById(vocabId).getVocabId())
+        return wordRepository.findWordsByVocabId(getVocabById(vocabId).getVocabId())
                 .stream().map(WordDto::fromEntity)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public CreateWord.Response createWord(CreateWord.Request request) {
+    public CreateWord.Response createWord(Integer vocabId, CreateWord.Request request) {
+        Vocab vocab = getVocabById(vocabId);
         Word word = Word.builder()
+                .vocab(vocab)
                 .expression(request.getExpression())
                 .build();
         word = wordRepository.save(word);
 
-        Vocab vocab = getVocabById(request.getVocabId());
-        VocabWord vocabWord = new VocabWord();
-        vocabWord.setVocabWordId(
-                new VocabWordId(word.getWordId(), vocab.getVocabId())
-        );
-        vocabWord.setWord(word);
-        vocabWord.setVocab(vocab);
-        vocabWordRepository.save(vocabWord);
+        vocab.setWordCount(vocabRepository.countWords(vocab.getVocabId()));
 
-        vocab.setWordCount(getWordByVocabId(vocab.getVocabId()).size());
+        statsService.updateStats(word.getWordId(), new UpdateStats.Response());
 
         return CreateWord.Response.fromEntity(word);
     }
@@ -67,28 +66,22 @@ public class WordService {
     @Transactional
     public WordDto deleteWord(Integer wordId) {
         Word word = getWordById(wordId);
-        log.info(word.toString());
-        List<VocabWord> vocabWords = vocabWordRepository.findByWordId(wordId);
-        log.info("Before delete");
+        Vocab vocab = getVocabById(word.getVocab().getVocabId());
         wordRepository.delete(word);
-        log.info("After delete");
-        vocabWords.forEach((vocabWord)->{
-            Vocab vocab = vocabWord.getVocab();
-            vocab.setWordCount(vocabWordRepository.getCountByVocabId(vocab.getVocabId()));
-        });
 
+        vocab.setWordCount(vocabRepository.countWords(vocab.getVocabId()));
         return WordDto.fromEntity(word);
     }
 
     private Vocab getVocabById(Integer vocabId) {
         Vocab vocab = vocabRepository.findById(vocabId)
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(() -> new VocabException(NO_VOCAB));
         return vocab;
     }
 
     private Word getWordById(Integer wordId) {
         Word word = wordRepository.findById(wordId)
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(() -> new VocabException(NO_WORD));
         return word;
     }
 }
