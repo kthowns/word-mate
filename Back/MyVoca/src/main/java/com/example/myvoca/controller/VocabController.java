@@ -14,10 +14,11 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
+@RequestMapping("/api")
 public class VocabController{
     private final VocabService vocabService;
 
-    @GetMapping("/api/vocabs/all")
+    @GetMapping("/vocabs/all")
     public List<VocabDto> getVocabByUserId(
             @Valid @RequestParam Integer user_id
     ){
@@ -25,7 +26,7 @@ public class VocabController{
         return vocabService.getVocabByUserId(user_id);
     }
 
-    @GetMapping("/api/vocabs/detail")
+    @GetMapping("/vocabs/detail")
     public VocabDto getVocabByVocabId(
             @Valid @RequestParam Integer vocab_id
     ){
@@ -33,7 +34,7 @@ public class VocabController{
         return vocabService.getVocabDtoById(vocab_id);
     }
 
-    @PostMapping("/api/vocabs/{user_id}")
+    @PostMapping("/vocabs/{user_id}")
     public CreateVocab.Response createVocab(
             @Valid @PathVariable Integer user_id,
             @Valid @RequestBody CreateVocab.Request request
@@ -42,7 +43,7 @@ public class VocabController{
         return vocabService.createVocab(user_id, request);
     }
 
-    @PatchMapping("/api/vocabs/{vocab_id}")
+    @PatchMapping("/vocabs/{vocab_id}")
     public VocabDto editVocab(
             @Valid @PathVariable Integer vocab_id,
             @Valid @RequestBody EditVocab.Request request
@@ -51,7 +52,7 @@ public class VocabController{
         return vocabService.editVocab(vocab_id, request);
     }
 
-    @DeleteMapping("/api/vocabs/{vocab_id}")
+    @DeleteMapping("/vocabs/{vocab_id}")
     public VocabDto deleteVocab(
             @Valid @PathVariable Integer vocab_id
     ){
