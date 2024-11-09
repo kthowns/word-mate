@@ -5,6 +5,7 @@ import com.example.myvoca.dto.EditVocab;
 import com.example.myvoca.dto.VocabDto;
 import com.example.myvoca.entity.User;
 import com.example.myvoca.entity.Vocab;
+import com.example.myvoca.exception.VocabException;
 import com.example.myvoca.repository.UserRepository;
 import com.example.myvoca.repository.VocabRepository;
 import jakarta.transaction.Transactional;
@@ -13,8 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+
+import static com.example.myvoca.exception.VocabErrorCode.NO_USER;
+import static com.example.myvoca.exception.VocabErrorCode.NO_VOCAB;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -64,13 +67,13 @@ public class VocabService {
 
     public Vocab getVocabById(Integer vocabId){
         Vocab vocab = vocabRepository.findById(vocabId)
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(() -> new VocabException(NO_VOCAB));
         return vocab;
     }
 
     private User getUserById(Integer userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(() -> new VocabException(NO_USER));
         return user;
     }
 }

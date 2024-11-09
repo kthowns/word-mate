@@ -1,20 +1,23 @@
 package com.example.myvoca.service;
 
-import com.example.myvoca.dto.*;
+import com.example.myvoca.dto.CreateTheme;
+import com.example.myvoca.dto.EditTheme;
+import com.example.myvoca.dto.ThemeDto;
 import com.example.myvoca.entity.Theme;
 import com.example.myvoca.entity.User;
-import com.example.myvoca.entity.Vocab;
+import com.example.myvoca.exception.VocabException;
 import com.example.myvoca.repository.ThemeRepository;
 import com.example.myvoca.repository.UserRepository;
-import com.example.myvoca.repository.VocabRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+
+import static com.example.myvoca.exception.VocabErrorCode.NO_THEME;
+import static com.example.myvoca.exception.VocabErrorCode.NO_USER;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -65,11 +68,11 @@ public class ThemeService {
 
     private User getUserById(Integer userId){
         return userRepository.findById(userId)
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(() -> new VocabException(NO_USER));
     }
 
     private Theme getThemeById(Integer themeId){
         return themeRepository.findById(themeId)
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(() -> new VocabException(NO_THEME));
     }
 }
