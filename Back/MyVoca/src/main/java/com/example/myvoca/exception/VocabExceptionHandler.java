@@ -23,7 +23,7 @@ public class VocabExceptionHandler {
                 e.getVocabErrorCode(), request.getRequestURI(), e.getErrorMessage());
         return VocabErrorResponse.builder()
                 .errorMessage(e.getErrorMessage())
-                .status(e.getCode())
+                .statusCode(e.getStatusCode())
                 .vocabErrorCode(e.getVocabErrorCode())
                 .build();
     }
@@ -37,7 +37,7 @@ public class VocabExceptionHandler {
                 e, request.getRequestURI());
         return VocabErrorResponse.builder()
                 .errorMessage(VocabErrorCode.BAD_REQUEST.getErrorMessage())
-                .status(400)
+                .statusCode(400)
                 .vocabErrorCode(VocabErrorCode.BAD_REQUEST)
                 .build();
     }
@@ -50,7 +50,7 @@ public class VocabExceptionHandler {
                 e, request.getRequestURI());
         return VocabErrorResponse.builder()
                 .vocabErrorCode(INTERNAL_SERVER_ERROR)
-                .status(500)
+                .statusCode(500)
                 .errorMessage(INTERNAL_SERVER_ERROR.getErrorMessage())
                 .build();
     }
