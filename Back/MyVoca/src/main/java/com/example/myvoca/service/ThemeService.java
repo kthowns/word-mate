@@ -27,7 +27,7 @@ public class ThemeService {
     private final UserRepository userRepository;
 
     public List<ThemeDto> getThemeByUserId(Integer userId) {
-        return themeRepository.findByUserId(userId)
+        return themeRepository.findByUser(getUserById(userId))
                 .stream().map(ThemeDto::fromEntity)
                 .collect(Collectors.toList());
     }

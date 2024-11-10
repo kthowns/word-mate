@@ -14,10 +14,11 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
+@RequestMapping("/api")
 public class WordController{
     private final WordService wordService;
 
-    @GetMapping("/api/words/all")
+    @GetMapping("/words/all")
     public List<WordDto> getWordByVocabId(
             @Valid @RequestParam Integer vocab_id
     ){
@@ -25,7 +26,7 @@ public class WordController{
         return wordService.getWordByVocabId(vocab_id);
     }
 
-    @GetMapping("/api/words/detail")
+    @GetMapping("/words/detail")
     public WordDto getWordByWordId(
             @Valid @RequestParam Integer word_id
     ){
@@ -33,7 +34,7 @@ public class WordController{
         return wordService.getWordDtoById(word_id);
     }
 
-    @PostMapping("/api/words/{vocab_id}")
+    @PostMapping("/words/{vocab_id}")
     public CreateWord.Response createWord(
             @Valid @PathVariable Integer vocab_id,
             @Valid @RequestBody CreateWord.Request request
@@ -42,7 +43,7 @@ public class WordController{
         return wordService.createWord(vocab_id, request);
     }
 
-    @PatchMapping("/api/words/{word_id}")
+    @PatchMapping("/words/{word_id}")
     public WordDto editWord(
             @Valid @PathVariable Integer word_id,
             @Valid @RequestBody EditWord.Request request
@@ -51,7 +52,7 @@ public class WordController{
         return wordService.editWord(word_id, request);
     }
 
-    @DeleteMapping("/api/words/{word_id}")
+    @DeleteMapping("/words/{word_id}")
     public WordDto deleteWord(
             @Valid @PathVariable Integer word_id
     ){

@@ -6,14 +6,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import static com.example.myvoca.exception.VocabErrorCode.INTERNAL_SERVER_ERROR;
 
 @Slf4j
-@RestControllerAdvice
+@RestControllerAdvice(annotations = {RestController.class})
 public class VocabExceptionHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(VocabException.class)
@@ -24,12 +23,13 @@ public class VocabExceptionHandler {
                 e.getVocabErrorCode(), request.getRequestURI(), e.getErrorMessage());
         return VocabErrorResponse.builder()
                 .errorMessage(e.getErrorMessage())
+                .statusCode(e.getStatusCode())
                 .vocabErrorCode(e.getVocabErrorCode())
                 .build();
     }
 
-    @ExceptionHandler(value = {HttpRequestMethodNotSupportedException.class,
-            BadRequestException.class})
+    @ExceptionHandler({HttpRequestMethodNotSupportedException.class,
+            BadRequestException.class, NoResourceFoundException.class})
     public VocabErrorResponse handleBadRequestException(
             Exception e, HttpServletRequest request
     ) {
@@ -37,6 +37,7 @@ public class VocabExceptionHandler {
                 e, request.getRequestURI());
         return VocabErrorResponse.builder()
                 .errorMessage(VocabErrorCode.BAD_REQUEST.getErrorMessage())
+                .statusCode(400)
                 .vocabErrorCode(VocabErrorCode.BAD_REQUEST)
                 .build();
     }
@@ -49,6 +50,7 @@ public class VocabExceptionHandler {
                 e, request.getRequestURI());
         return VocabErrorResponse.builder()
                 .vocabErrorCode(INTERNAL_SERVER_ERROR)
+                .statusCode(500)
                 .errorMessage(INTERNAL_SERVER_ERROR.getErrorMessage())
                 .build();
     }
