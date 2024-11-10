@@ -12,5 +12,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class VocabErrorResponse {
     private VocabErrorCode vocabErrorCode;
+    private Integer status;
     private String errorMessage;
 }
