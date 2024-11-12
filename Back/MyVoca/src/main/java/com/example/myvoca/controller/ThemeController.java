@@ -1,8 +1,9 @@
 package com.example.myvoca.controller;
 
-import com.example.myvoca.dto.*;
+import com.example.myvoca.dto.CreateTheme;
+import com.example.myvoca.dto.EditTheme;
+import com.example.myvoca.dto.ThemeDto;
 import com.example.myvoca.service.ThemeService;
-import com.example.myvoca.service.VocabService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

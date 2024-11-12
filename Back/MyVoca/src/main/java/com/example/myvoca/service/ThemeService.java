@@ -5,7 +5,7 @@ import com.example.myvoca.dto.EditTheme;
 import com.example.myvoca.dto.ThemeDto;
 import com.example.myvoca.entity.Theme;
 import com.example.myvoca.entity.User;
-import com.example.myvoca.exception.VocabException;
+import com.example.myvoca.exception.ApiException;
 import com.example.myvoca.repository.ThemeRepository;
 import com.example.myvoca.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -16,8 +16,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.example.myvoca.exception.VocabErrorCode.NO_THEME;
-import static com.example.myvoca.exception.VocabErrorCode.NO_USER;
+import static com.example.myvoca.code.ApiResponseCode.NO_THEME;
+import static com.example.myvoca.code.ApiResponseCode.NO_USER;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -68,11 +68,11 @@ public class ThemeService {
 
     private User getUserById(Integer userId){
         return userRepository.findById(userId)
-                .orElseThrow(() -> new VocabException(NO_USER));
+                .orElseThrow(() -> new ApiException(NO_USER));
     }
 
     private Theme getThemeById(Integer themeId){
         return themeRepository.findById(themeId)
-                .orElseThrow(() -> new VocabException(NO_THEME));
+                .orElseThrow(() -> new ApiException(NO_THEME));
     }
 }

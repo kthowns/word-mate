@@ -4,7 +4,7 @@ import com.example.myvoca.dto.CreateDefinition;
 import com.example.myvoca.dto.DefinitionDto;
 import com.example.myvoca.entity.Definition;
 import com.example.myvoca.entity.Word;
-import com.example.myvoca.exception.VocabException;
+import com.example.myvoca.exception.ApiException;
 import com.example.myvoca.repository.DefinitionRepository;
 import com.example.myvoca.repository.WordRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.example.myvoca.exception.VocabErrorCode.NO_WORD;
+import static com.example.myvoca.code.ApiResponseCode.NO_WORD;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +42,6 @@ public class DefinitionService {
 
     private Word getWordById(Integer wordId) {
         return wordRepository.findById(wordId)
-                .orElseThrow(() -> new VocabException(NO_WORD));
+                .orElseThrow(() -> new ApiException(NO_WORD));
     }
 }

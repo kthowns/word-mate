@@ -6,7 +6,7 @@ import com.example.myvoca.dto.UpdateStats;
 import com.example.myvoca.dto.WordDto;
 import com.example.myvoca.entity.Vocab;
 import com.example.myvoca.entity.Word;
-import com.example.myvoca.exception.VocabException;
+import com.example.myvoca.exception.ApiException;
 import com.example.myvoca.repository.VocabRepository;
 import com.example.myvoca.repository.WordRepository;
 import jakarta.transaction.Transactional;
@@ -15,11 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-import static com.example.myvoca.exception.VocabErrorCode.NO_VOCAB;
-import static com.example.myvoca.exception.VocabErrorCode.NO_WORD;
+import static com.example.myvoca.code.ApiResponseCode.NO_VOCAB;
+import static com.example.myvoca.code.ApiResponseCode.NO_WORD;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -74,14 +73,12 @@ public class WordService {
     }
 
     private Vocab getVocabById(Integer vocabId) {
-        Vocab vocab = vocabRepository.findById(vocabId)
-                .orElseThrow(() -> new VocabException(NO_VOCAB));
-        return vocab;
+        return vocabRepository.findById(vocabId)
+                .orElseThrow(() -> new ApiException(NO_VOCAB));
     }
 
     private Word getWordById(Integer wordId) {
-        Word word = wordRepository.findById(wordId)
-                .orElseThrow(() -> new VocabException(NO_WORD));
-        return word;
+        return wordRepository.findById(wordId)
+                .orElseThrow(() -> new ApiException(NO_WORD));
     }
 }
