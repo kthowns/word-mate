@@ -1,8 +1,9 @@
 package com.example.myvoca.controller;
 
-import com.example.myvoca.dto.*;
+import com.example.myvoca.dto.CreateTheme;
+import com.example.myvoca.dto.EditTheme;
+import com.example.myvoca.dto.ThemeDto;
 import com.example.myvoca.service.ThemeService;
-import com.example.myvoca.service.VocabService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,10 +14,11 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
+@RequestMapping("/api")
 public class ThemeController {
     private final ThemeService themeService;
 
-    @GetMapping("/api/themes/all")
+    @GetMapping("/themes/all")
     public List<ThemeDto> getThemeByUserId(
             @Valid @RequestParam Integer user_id
     ){
@@ -24,7 +26,7 @@ public class ThemeController {
         return themeService.getThemeByUserId(user_id);
     }
 
-    @GetMapping("/api/themes/detail")
+    @GetMapping("/themes/detail")
     public ThemeDto getThemeByThemeId(
             @Valid @RequestParam Integer theme_id
     ){
@@ -32,7 +34,7 @@ public class ThemeController {
         return themeService.getThemeDtoById(theme_id);
     }
 
-    @PostMapping("/api/themes/{user_id}")
+    @PostMapping("/themes/{user_id}")
     public CreateTheme.Response createTheme(
             @Valid @PathVariable Integer user_id,
             @Valid @RequestBody CreateTheme.Request request
@@ -41,7 +43,7 @@ public class ThemeController {
         return themeService.createTheme(user_id, request);
     }
 
-    @PatchMapping("/api/themes/{theme_id}")
+    @PatchMapping("/themes/{theme_id}")
     public ThemeDto editTheme(
             @Valid @PathVariable Integer theme_id,
             @Valid @RequestBody EditTheme.Request request
@@ -50,7 +52,7 @@ public class ThemeController {
         return themeService.editTheme(theme_id, request);
     }
 
-    @DeleteMapping("/api/themes/{theme_id}")
+    @DeleteMapping("/themes/{theme_id}")
     public ThemeDto deleteTheme(
             @Valid @PathVariable Integer theme_id
     ){

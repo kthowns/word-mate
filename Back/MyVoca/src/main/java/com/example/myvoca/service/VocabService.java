@@ -5,7 +5,7 @@ import com.example.myvoca.dto.EditVocab;
 import com.example.myvoca.dto.VocabDto;
 import com.example.myvoca.entity.User;
 import com.example.myvoca.entity.Vocab;
-import com.example.myvoca.exception.VocabException;
+import com.example.myvoca.exception.ApiException;
 import com.example.myvoca.repository.UserRepository;
 import com.example.myvoca.repository.VocabRepository;
 import jakarta.transaction.Transactional;
@@ -16,8 +16,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.example.myvoca.exception.VocabErrorCode.NO_USER;
-import static com.example.myvoca.exception.VocabErrorCode.NO_VOCAB;
+import static com.example.myvoca.code.ApiResponseCode.NO_USER;
+import static com.example.myvoca.code.ApiResponseCode.NO_VOCAB;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -66,14 +66,12 @@ public class VocabService {
     }
 
     public Vocab getVocabById(Integer vocabId){
-        Vocab vocab = vocabRepository.findById(vocabId)
-                .orElseThrow(() -> new VocabException(NO_VOCAB));
-        return vocab;
+        return vocabRepository.findById(vocabId)
+                .orElseThrow(() -> new ApiException(NO_VOCAB));
     }
 
     private User getUserById(Integer userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new VocabException(NO_USER));
-        return user;
+       return userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(NO_USER));
     }
 }

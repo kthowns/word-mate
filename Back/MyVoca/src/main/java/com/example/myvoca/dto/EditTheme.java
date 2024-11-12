@@ -1,8 +1,6 @@
 package com.example.myvoca.dto;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,11 +13,11 @@ public class EditTheme {
     @NoArgsConstructor
     @Builder
     public static class Request{
-        @NotNull
+        @NotBlank
         private String font;
-        @NotNull
+        @NotBlank
         private Integer fontSize;
-        @NotNull
+        @NotBlank
         @Size(min=7, max=7)
         private String color;
     }
