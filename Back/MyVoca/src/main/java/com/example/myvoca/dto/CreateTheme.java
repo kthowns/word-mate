@@ -1,17 +1,12 @@
 package com.example.myvoca.dto;
 
 import com.example.myvoca.entity.Theme;
-import com.example.myvoca.entity.Vocab;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.sql.Timestamp;
 
 public class CreateTheme {
     @Data
@@ -19,12 +14,12 @@ public class CreateTheme {
     @NoArgsConstructor
     @Builder
     public static class Request{
-        @NotNull
+        @NotBlank
         @Size(max=32)
         private String font;
-        @NotNull
+        @NotBlank
         private Integer fontSize;
-        @NotNull
+        @NotBlank
         @Size(min=7,max=7)
         private String color;
     }

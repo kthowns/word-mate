@@ -1,16 +1,13 @@
 package com.example.myvoca.dto;
 
 import com.example.myvoca.entity.Definition;
-import com.example.myvoca.entity.Word;
 import com.example.myvoca.type.POS;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.sql.Timestamp;
 
 public class CreateDefinition {
     @Data
@@ -18,10 +15,10 @@ public class CreateDefinition {
     @NoArgsConstructor
     @Builder
     public static class Request{
-        @NotNull
+        @NotBlank
         @Size(max=64)
         private String definition;
-        @NotNull
+        @NotBlank
         private POS type;
     }
 

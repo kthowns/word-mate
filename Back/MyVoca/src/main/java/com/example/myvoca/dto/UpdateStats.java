@@ -3,6 +3,7 @@ package com.example.myvoca.dto;
 import com.example.myvoca.entity.WordStats;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,10 +15,13 @@ public class UpdateStats {
     @NoArgsConstructor
     @Builder
     public static class Request{
+        @NotBlank
         @Min(0)
         private Integer correctCount;
+        @NotBlank
         @Min(0)
         private Integer incorrectCount;
+        @NotBlank
         @Min(0)
         @Max(1)
         private Integer isLearned;
