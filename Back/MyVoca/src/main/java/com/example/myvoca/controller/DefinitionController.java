@@ -1,14 +1,15 @@
 package com.example.myvoca.controller;
 
+import com.example.myvoca.dto.ApiResponse;
 import com.example.myvoca.dto.CreateDefinition;
-import com.example.myvoca.dto.DefinitionDto;
 import com.example.myvoca.service.DefinitionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import static com.example.myvoca.code.ApiResponseCode.OK;
 
 @RequiredArgsConstructor
 @RestController
@@ -18,19 +19,20 @@ public class DefinitionController {
     private final DefinitionService definitionService;
 
     @GetMapping("/defs/{word_id}")
-    public List<DefinitionDto> getDefinitions(
+    public ResponseEntity<?> getDefinitions(
             @Valid @PathVariable Integer word_id
-    ){
-        log.info("HTTP GET /api/def/"+word_id);
-        return definitionService.getDefinitions(word_id);
+    ) {
+        log.info("HTTP GET /api/def/" + word_id);
+
+        return ApiResponse.toResponseEntity(OK, definitionService.getDefinitions(word_id));
     }
 
     @PostMapping("/defs/{word_id}")
-    public DefinitionDto createDefinition(
+    public ResponseEntity<?> createDefinition(
             @Valid @PathVariable Integer word_id,
             @Valid @RequestBody CreateDefinition.Request request
-    ){
-        log.info("HTTP PATCH /api/def/"+word_id);
-        return definitionService.createDefinition(word_id, request);
+    ) {
+        log.info("HTTP PATCH /api/def/" + word_id);
+        return ApiResponse.toResponseEntity(OK, definitionService.createDefinition(word_id, request));
     }
 }

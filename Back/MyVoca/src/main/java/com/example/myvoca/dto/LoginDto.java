@@ -1,17 +1,12 @@
 package com.example.myvoca.dto;
 
-import com.example.myvoca.code.AuthResponseCode;
 import com.example.myvoca.entity.User;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.http.HttpStatusCode;
-
-import static com.example.myvoca.code.AuthResponseCode.LOGIN_OK;
 
 public class LoginDto {
     @Data

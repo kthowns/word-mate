@@ -5,7 +5,7 @@ import com.example.myvoca.dto.WordStatsDto;
 import com.example.myvoca.entity.Vocab;
 import com.example.myvoca.entity.Word;
 import com.example.myvoca.entity.WordStats;
-import com.example.myvoca.exception.VocabException;
+import com.example.myvoca.exception.ApiException;
 import com.example.myvoca.repository.StatsRepository;
 import com.example.myvoca.repository.VocabRepository;
 import com.example.myvoca.repository.WordRepository;
@@ -14,11 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-import static com.example.myvoca.exception.VocabErrorCode.NO_STATS;
-import static com.example.myvoca.exception.VocabErrorCode.NO_VOCAB;
+import static com.example.myvoca.code.ApiResponseCode.NO_STATS;
+import static com.example.myvoca.code.ApiResponseCode.NO_VOCAB;
 
 @RequiredArgsConstructor
 @Service
@@ -87,11 +86,11 @@ public class StatsService {
 
     private WordStats getWordStatsById(Integer wordId){
         return statsRepository.findById(wordId)
-                .orElseThrow(() -> new VocabException(NO_STATS));
+                .orElseThrow(() -> new ApiException(NO_STATS));
     }
 
     private Vocab getVocabById(Integer vocabId){
         return vocabRepository.findById(vocabId)
-                .orElseThrow(() -> new VocabException(NO_VOCAB));
+                .orElseThrow(() -> new ApiException(NO_VOCAB));
     }
 }
