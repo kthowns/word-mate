@@ -3,6 +3,7 @@ package com.example.myvoca.dto;
 import com.example.myvoca.entity.Definition;
 import com.example.myvoca.type.POS;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +19,7 @@ public class CreateDefinition {
         @NotBlank
         @Size(max=64)
         private String definition;
-        @NotBlank
+        @NotNull //Enumerated Variable 의 경우 NotBlank 안됨, Not Null!
         private POS type;
     }
 

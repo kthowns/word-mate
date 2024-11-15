@@ -18,11 +18,11 @@ import static com.example.myvoca.code.ApiResponseCode.OK;
 public class DefinitionController {
     private final DefinitionService definitionService;
 
-    @GetMapping("/defs/{word_id}")
+    @GetMapping("/defs/all")
     public ResponseEntity<?> getDefinitions(
-            @Valid @PathVariable Integer word_id
+            @Valid @RequestParam Integer word_id
     ) {
-        log.info("HTTP GET /api/def/" + word_id);
+        log.info("HTTP GET /api/all/def/" + word_id);
 
         return ApiResponse.toResponseEntity(OK, definitionService.getDefinitions(word_id));
     }
@@ -32,7 +32,16 @@ public class DefinitionController {
             @Valid @PathVariable Integer word_id,
             @Valid @RequestBody CreateDefinition.Request request
     ) {
-        log.info("HTTP PATCH /api/def/" + word_id);
+        log.info("HTTP POST /api/def/" + word_id);
         return ApiResponse.toResponseEntity(OK, definitionService.createDefinition(word_id, request));
+    }
+
+    @PatchMapping("/defs/{def_id}")
+    public ResponseEntity<?> editDefinition(
+            @Valid @PathVariable Integer def_id,
+            @Valid @RequestBody CreateDefinition.Request request
+    ) {
+        log.info("HTTP POST /api/def/" + def_id);
+        return ApiResponse.toResponseEntity(OK, definitionService.editDefinition(def_id, request));
     }
 }
