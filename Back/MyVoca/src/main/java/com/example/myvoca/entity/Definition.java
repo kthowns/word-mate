@@ -2,10 +2,7 @@ package com.example.myvoca.entity;
 
 import com.example.myvoca.type.POS;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @AllArgsConstructor
@@ -13,8 +10,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity
 @Table(name="definition")
+@EqualsAndHashCode
 public class Definition {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="definition_id")
     private Integer definitionId;
     @ManyToOne

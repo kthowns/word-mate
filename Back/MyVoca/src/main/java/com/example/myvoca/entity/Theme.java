@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "theme")
 public class Theme {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "theme_id")
     private Integer themeId;
     @ManyToOne
