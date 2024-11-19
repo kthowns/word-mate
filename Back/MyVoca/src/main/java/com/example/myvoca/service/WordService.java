@@ -17,8 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.example.myvoca.code.ApiResponseCode.NO_VOCAB;
-import static com.example.myvoca.code.ApiResponseCode.NO_WORD;
+import static com.example.myvoca.code.ApiResponseCode.*;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -37,6 +36,7 @@ public class WordService {
     @Transactional
     public CreateWord.Response createWord(Integer vocabId, CreateWord.Request request) {
         Vocab vocab = getVocabById(vocabId);
+        validateWordDuplicate(request.getExpression(), vocab);
         Word word = Word.builder()
                 .vocab(vocab)
                 .expression(request.getExpression())
@@ -80,5 +80,10 @@ public class WordService {
     private Word getWordById(Integer wordId) {
         return wordRepository.findById(wordId)
                 .orElseThrow(() -> new ApiException(NO_WORD));
+    }
+
+    private void validateWordDuplicate(String expression, Vocab vocab){
+        wordRepository.findByExpressionAndVocab(expression, vocab)
+                .ifPresent((e) -> { throw new ApiException(DUPLICATED_WORD); });
     }
 }
