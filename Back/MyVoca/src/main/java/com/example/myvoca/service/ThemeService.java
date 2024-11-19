@@ -1,7 +1,6 @@
 package com.example.myvoca.service;
 
 import com.example.myvoca.dto.CreateTheme;
-import com.example.myvoca.dto.EditTheme;
 import com.example.myvoca.dto.ThemeDto;
 import com.example.myvoca.entity.Theme;
 import com.example.myvoca.entity.User;
@@ -49,7 +48,7 @@ public class ThemeService {
     }
 
     @Transactional
-    public ThemeDto editTheme(Integer themeId, EditTheme.Request request) {
+    public ThemeDto editTheme(Integer themeId, CreateTheme.Request request) {
         Theme theme = getThemeById(themeId);
         theme.setFont(request.getFont());
         theme.setFontSize(request.getFontSize());

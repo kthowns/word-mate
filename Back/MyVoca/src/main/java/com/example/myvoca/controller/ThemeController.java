@@ -1,7 +1,6 @@
 package com.example.myvoca.controller;
 
 import com.example.myvoca.dto.CreateTheme;
-import com.example.myvoca.dto.EditTheme;
 import com.example.myvoca.dto.ThemeDto;
 import com.example.myvoca.service.ThemeService;
 import jakarta.validation.Valid;
@@ -46,7 +45,7 @@ public class ThemeController {
     @PatchMapping("/themes/{theme_id}")
     public ThemeDto editTheme(
             @Valid @PathVariable Integer theme_id,
-            @Valid @RequestBody EditTheme.Request request
+            @Valid @RequestBody CreateTheme.Request request
     ){
         log.info("HTTP PATCH /api/themes/"+theme_id);
         return themeService.editTheme(theme_id, request);
