@@ -13,8 +13,7 @@ import java.util.Optional;
 @Repository
 public interface VocabRepository
     extends JpaRepository<Vocab, Integer> {
-    @Query("SELECT v FROM Vocab v where v.user.userId = :userId")
-    List<Vocab> findByUserId(@Param("userId") Integer userId);
+    List<Vocab> findByUser(User user);
 
     @Query("select count(w) from Word w where w.vocab.vocabId = :vocabId")
     Integer countWords(@Param("vocabId") Integer vocabId);
