@@ -11,8 +11,7 @@ import java.util.Optional;
 
 public interface WordRepository
     extends JpaRepository<Word, Integer> {
-    @Query("SELECT w FROM Word w where w.vocab.vocabId = :vocabId")
-    List<Word> findWordsByVocabId(@Param("vocabId") Integer vocabId);
+    List<Word> findByVocab(Vocab vocab);
 
     Optional<Word> findByExpressionAndVocab(String expression, Vocab vocabById);
 }
