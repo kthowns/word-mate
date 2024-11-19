@@ -1,7 +1,6 @@
 package com.example.myvoca.service;
 
 import com.example.myvoca.dto.CreateWord;
-import com.example.myvoca.dto.EditWord;
 import com.example.myvoca.dto.UpdateStats;
 import com.example.myvoca.dto.WordDto;
 import com.example.myvoca.entity.Vocab;
@@ -27,8 +26,8 @@ public class WordService {
     private final WordRepository wordRepository;
     private final StatsService statsService;
 
-    public List<WordDto> getWordByVocabId(Integer vocabId) {
-        return wordRepository.findWordsByVocabId(getVocabById(vocabId).getVocabId())
+    public List<WordDto> getWords(Integer vocabId) {
+        return wordRepository.findByVocab(getVocabById(vocabId))
                 .stream().map(WordDto::fromEntity)
                 .collect(Collectors.toList());
     }
@@ -45,7 +44,7 @@ public class WordService {
 
         vocab.setWordCount(vocabRepository.countWords(vocab.getVocabId()));
 
-        statsService.updateStats(word.getWordId(), new UpdateStats.Response());
+        statsService.updateStats(word.getWordId(), new UpdateStats.Request());
 
         return CreateWord.Response.fromEntity(word);
     }
@@ -55,7 +54,7 @@ public class WordService {
     }
 
     @Transactional
-    public WordDto editWord(Integer wordId, EditWord.Request request) {
+    public WordDto editWord(Integer wordId, CreateWord.Request request) {
         Word word = getWordById(wordId);
         word.setExpression(request.getExpression());
 
