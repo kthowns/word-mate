@@ -9,6 +9,7 @@ import com.example.myvoca.exception.ApiException;
 import com.example.myvoca.repository.StatsRepository;
 import com.example.myvoca.repository.VocabRepository;
 import com.example.myvoca.repository.WordRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,8 @@ public class StatsService {
     private final VocabRepository vocabRepository;
     private final WordRepository wordRepository;
 
-    public UpdateStats.Response updateStats(Integer wordId, UpdateStats.Response request) {
+    @Transactional
+    public UpdateStats.Response updateStats(Integer wordId, UpdateStats.Request request) {
         if (request.getIsLearned() == null)
             request.setIsLearned(0);
         if (request.getCorrectCount() == null)
@@ -55,7 +57,7 @@ public class StatsService {
 
     public Double getLearningRate(Integer vocabId) {
         Vocab vocab = getVocabById(vocabId);
-        List<Word> wordList = wordRepository.findWordsByVocabId(vocabId);
+        List<Word> wordList = wordRepository.findByVocab(getVocabById(vocabId));
         Double cntLearnedWord = 0.0;
         for (Word word : wordList) {
             WordStats wordStats = getWordStatsById(word.getWordId());
@@ -64,18 +66,6 @@ public class StatsService {
         }
         log.info("Learned Word : "+cntLearnedWord+" / wordCount : " +vocab.getWordCount());
         return cntLearnedWord/vocab.getWordCount();
-    }
-
-    private Double calcDifficulty(Integer correct, Integer incorrect){
-        /*
-            난이도 함수 : -0.04correct + 0.05incorrect + 0.5
-        */
-        double diff = (-0.04 * correct) + (0.05 * incorrect) + 0.5;
-        if(diff > 1)
-            diff = 1;
-        else if(diff < 0)
-            diff = 0;
-        return diff;
     }
 
     public List<WordStatsDto> getWordStatsByVocabId(Integer vocabId) {
@@ -92,5 +82,17 @@ public class StatsService {
     private Vocab getVocabById(Integer vocabId){
         return vocabRepository.findById(vocabId)
                 .orElseThrow(() -> new ApiException(NO_VOCAB));
+    }
+
+    private Double calcDifficulty(Integer correct, Integer incorrect){
+        /*
+            난이도 함수 : -0.04correct + 0.05incorrect + 0.5
+        */
+        double diff = (-0.04 * correct) + (0.05 * incorrect) + 0.5;
+        if(diff > 1)
+            diff = 1;
+        else if(diff < 0)
+            diff = 0;
+        return diff;
     }
 }

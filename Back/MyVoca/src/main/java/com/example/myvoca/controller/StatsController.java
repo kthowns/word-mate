@@ -57,7 +57,7 @@ public class StatsController {
     @PutMapping("/stats/{word_id}")
     public ResponseEntity<?> updateStats(
             @Valid @PathVariable Integer word_id,
-            @Valid @RequestBody UpdateStats.Response request
+            @Valid @RequestBody UpdateStats.Request request
     ) {
         log.info("HTTP PUT /api/stats/" + word_id);
         return ApiResponse.toResponseEntity(OK,
