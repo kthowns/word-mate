@@ -24,16 +24,16 @@ public class StatsController {
     ) {
         log.info("HTTP GET /api/stats/all?vocab_id=" + vocab_id);
         return ApiResponse.toResponseEntity(OK,
-                statsService.getWordStatsByVocabId(vocab_id));
+                statsService.getStatsByVocabId(vocab_id));
     }
 
     @GetMapping("/stats/detail")
-    public ResponseEntity<?> getWordStatsByWordId(
+    public ResponseEntity<?> getStatsDetail(
             @Valid @RequestParam Integer word_id
     ) {
         log.info("HTTP GET /api/stats/detail?word_id=" + word_id);
         return ApiResponse.toResponseEntity(OK,
-                statsService.getWordStatsByWordId(word_id));
+                statsService.getStatsDetail(word_id));
     }
 
     @GetMapping("/stats/lr")
@@ -54,7 +54,7 @@ public class StatsController {
                 statsService.getDifficulty(word_id));
     }
 
-    @PutMapping("/stats/{word_id}")
+    @PatchMapping("/stats/{word_id}")
     public ResponseEntity<?> updateStats(
             @Valid @PathVariable Integer word_id,
             @Valid @RequestBody UpdateStats.Request request
