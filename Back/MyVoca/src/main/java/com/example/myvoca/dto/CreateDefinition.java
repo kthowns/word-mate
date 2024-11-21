@@ -37,7 +37,7 @@ public class CreateDefinition {
                     .definitionId(definition.getDefinitionId())
                     .wordId(definition.getWord().getWordId())
                     .definition(definition.getDefinition())
-                    .type(definition.getType().getDescription())
+                    .type(definition.getType().getType())
                     .build();
         }
     }

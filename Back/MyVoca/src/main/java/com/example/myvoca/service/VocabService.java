@@ -1,7 +1,6 @@
 package com.example.myvoca.service;
 
 import com.example.myvoca.dto.CreateVocab;
-import com.example.myvoca.dto.EditVocab;
 import com.example.myvoca.dto.VocabDto;
 import com.example.myvoca.entity.User;
 import com.example.myvoca.entity.Vocab;
@@ -16,8 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.example.myvoca.code.ApiResponseCode.NO_USER;
-import static com.example.myvoca.code.ApiResponseCode.NO_VOCAB;
+import static com.example.myvoca.code.ApiResponseCode.*;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -26,14 +24,15 @@ public class VocabService {
     private final VocabRepository vocabRepository;
     private final UserRepository userRepository;
 
-    public List<VocabDto> getVocabByUserId(Integer userId) {
-        return vocabRepository.findByUserId(getUserById(userId).getUserId())
+    public List<VocabDto> getVocabs(Integer userId) {
+        return vocabRepository.findByUser(getUserById(userId))
                 .stream().map(VocabDto::fromEntity)
                 .collect(Collectors.toList());
     }
 
     @Transactional
     public CreateVocab.Response createVocab(Integer userId, CreateVocab.Request request) {
+        validateVocabDuplicate(request.getTitle(), userId);
         Vocab vocab = Vocab.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
@@ -50,7 +49,7 @@ public class VocabService {
     }
 
     @Transactional
-    public VocabDto editVocab(Integer vocabId, EditVocab.Request request) {
+    public VocabDto editVocab(Integer vocabId, CreateVocab.Request request) {
         Vocab vocab = getVocabById(vocabId);
         vocab.setTitle(request.getTitle());
         vocab.setDescription(request.getDescription());
@@ -65,7 +64,7 @@ public class VocabService {
         return VocabDto.fromEntity(vocab);
     }
 
-    public Vocab getVocabById(Integer vocabId){
+    private Vocab getVocabById(Integer vocabId){
         return vocabRepository.findById(vocabId)
                 .orElseThrow(() -> new ApiException(NO_VOCAB));
     }
@@ -73,5 +72,10 @@ public class VocabService {
     private User getUserById(Integer userId) {
        return userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(NO_USER));
+    }
+
+    private void validateVocabDuplicate(String title, Integer userId){
+        vocabRepository.findByTitleAndUser(title, getUserById(userId))
+                .ifPresent((e) -> { throw new ApiException(DUPLICATED_TITLE); });
     }
 }

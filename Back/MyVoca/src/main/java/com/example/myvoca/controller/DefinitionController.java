@@ -41,7 +41,15 @@ public class DefinitionController {
             @Valid @PathVariable Integer def_id,
             @Valid @RequestBody CreateDefinition.Request request
     ) {
-        log.info("HTTP POST /api/def/" + def_id);
+        log.info("HTTP PATCH /api/def/" + def_id);
         return ApiResponse.toResponseEntity(OK, definitionService.editDefinition(def_id, request));
+    }
+
+    @DeleteMapping("/defs/{def_id}")
+    public ResponseEntity<?> deleteDefinition(
+            @Valid @PathVariable Integer def_id
+    ){
+        log.info("HTTP DELETE /api/def/" + def_id);
+        return ApiResponse.toResponseEntity(OK, definitionService.deleteDefinition(def_id));
     }
 }
