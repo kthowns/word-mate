@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.example.myvoca.code.ApiResponseCode.DUPLICATED_DEFINITION;
 import static com.example.myvoca.code.ApiResponseCode.NO_WORD;
 
 @Service
@@ -33,6 +34,7 @@ public class DefinitionService {
 
     @Transactional
     public DefinitionDto createDefinition(Integer wordId, CreateDefinition.Request request) {
+        validateDefinitionDuplicate(request.getDefinition(), wordId);
         Definition definition = Definition.builder()
                 .word(getWordById(wordId))
                 .definition(request.getDefinition())
@@ -52,6 +54,14 @@ public class DefinitionService {
         return DefinitionDto.fromEntity(definition);
     }
 
+    @Transactional
+    public DefinitionDto deleteDefinition(Integer defId) {
+        Definition definition = getDefinitionById(defId);
+        definitionRepository.delete(definition);
+
+        return DefinitionDto.fromEntity(definition);
+    }
+
     private Definition getDefinitionById(Integer defId){
         return definitionRepository.findById(defId)
                 .orElseThrow(() -> new ApiException(ApiResponseCode.NO_DEFINITION));
@@ -60,5 +70,10 @@ public class DefinitionService {
     private Word getWordById(Integer wordId) {
         return wordRepository.findById(wordId)
                 .orElseThrow(() -> new ApiException(NO_WORD));
+    }
+
+    private void validateDefinitionDuplicate(String definition, Integer wordId){
+        definitionRepository.findByDefinitionAndWord(definition, getWordById(wordId))
+                .ifPresent((e) -> { throw new ApiException(DUPLICATED_DEFINITION); });
     }
 }

@@ -1,7 +1,6 @@
 package com.example.myvoca.dto;
 
 import com.example.myvoca.entity.Definition;
-import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,7 +19,7 @@ public class DefinitionDto {
         return DefinitionDto.builder()
                 .definition(definition.getDefinition())
                 .wordId(definition.getWord().getWordId())
-                .type(definition.getType().getDescription())
+                .type(definition.getType().getType())
                 .definitionId(definition.getDefinitionId())
                 .build();
     }

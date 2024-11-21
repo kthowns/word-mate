@@ -11,12 +11,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "word_stats")
-public class WordStats {
+@Table(name = "stats")
+public class Stats {
     @Id
     private Integer wordId;
 
-    @MapsId("wordId")
+    @MapsId
     @OneToOne
     @JoinColumn(name = "word_id")
     private Word word;
@@ -27,6 +27,6 @@ public class WordStats {
     @Column(name = "incorrect_count")
     private Integer incorrectCount;
 
-    @Column(name = "isLearned")
+    @Column(name = "is_learned")
     private Integer isLearned;
 }

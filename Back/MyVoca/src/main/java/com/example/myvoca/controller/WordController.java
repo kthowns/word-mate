@@ -3,7 +3,6 @@ package com.example.myvoca.controller;
 import com.example.myvoca.code.ApiResponseCode;
 import com.example.myvoca.dto.ApiResponse;
 import com.example.myvoca.dto.CreateWord;
-import com.example.myvoca.dto.EditWord;
 import com.example.myvoca.service.WordService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +23,7 @@ public class WordController{
     ){
         log.info("HTTP GET /api/words/all?vocab_id="+vocab_id);
         return ApiResponse.toResponseEntity(ApiResponseCode.OK,
-                wordService.getWordByVocabId(vocab_id));
+                wordService.getWords(vocab_id));
     }
 
     @GetMapping("/words/detail")
@@ -49,7 +48,7 @@ public class WordController{
     @PatchMapping("/words/{word_id}")
     public ResponseEntity<?> editWord(
             @Valid @PathVariable Integer word_id,
-            @Valid @RequestBody EditWord.Request request
+            @Valid @RequestBody CreateWord.Request request
     ){
         log.info("HTTP PATCH /api/words/"+word_id);
         return ApiResponse.toResponseEntity(ApiResponseCode.OK,
