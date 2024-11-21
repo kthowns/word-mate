@@ -2,7 +2,6 @@ package com.example.myvoca.service;
 
 import com.example.myvoca.dto.LoginDto;
 import com.example.myvoca.entity.User;
-import com.example.myvoca.exception.ApiException;
 import com.example.myvoca.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

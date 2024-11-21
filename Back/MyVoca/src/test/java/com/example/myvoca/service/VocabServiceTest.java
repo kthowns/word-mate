@@ -35,7 +35,7 @@ class VocabServiceTest {
     private UserRepository userRepository;
 
     @InjectMocks
-    private VocabService VocabService;
+    private VocabService vocabService;
 
     private final User defaultUser = User.builder()
             .userId(1)
@@ -61,8 +61,9 @@ class VocabServiceTest {
                 .willReturn(Collections.singletonList(defaultVocab));
         //when
         List<VocabDto> vocabs =
-                VocabService.getVocabs(1);
+                vocabService.getVocabs(1);
         //then
+        assertEquals(vocabs.get(0).getVocabId(), defaultVocab.getVocabId());
         assertEquals(vocabs.get(0).getTitle(), defaultVocab.getTitle());
         assertEquals(vocabs.get(0).getDescription(), defaultVocab.getDescription());
     }
@@ -78,7 +79,7 @@ class VocabServiceTest {
         ArgumentCaptor<Vocab> captor =
                 ArgumentCaptor.forClass(Vocab.class);
         //when
-        VocabService.createVocab(
+        vocabService.createVocab(
                 1, toRequest(defaultVocab)
         );
         //then
@@ -101,7 +102,7 @@ class VocabServiceTest {
                 .willReturn(Optional.of(defaultUser));
         //when
         Throwable e = assertThrows(Exception.class, () -> {
-            VocabService.createVocab(1, request);
+            vocabService.createVocab(1, request);
         });
         //then
         assertEquals(e.getMessage(), DUPLICATED_TITLE.getMessage());
@@ -115,7 +116,7 @@ class VocabServiceTest {
                 .willReturn(Optional.empty());
         //when
         Throwable e = assertThrows(Exception.class, ()->{
-            VocabService.createVocab(
+            vocabService.createVocab(
                     1, toRequest(defaultVocab)
             );
         });
@@ -133,7 +134,7 @@ class VocabServiceTest {
         request.setTitle("ZZZ");
         //when
         Throwable e = assertThrows(Exception.class, ()->{
-            VocabService.editVocab(1, request);
+            vocabService.editVocab(1, request);
         });
         //then
         assertEquals(e.getMessage(), NO_VOCAB.getMessage());
@@ -146,8 +147,9 @@ class VocabServiceTest {
         given(vocabRepository.findById(1))
                 .willReturn(Optional.of(defaultVocab));
         //when
-        VocabDto deletedVocab = VocabService.deleteVocab(1);
+        VocabDto deletedVocab = vocabService.deleteVocab(1);
         //then
+        assertEquals(deletedVocab.getVocabId(), defaultVocab.getVocabId());
         assertEquals(deletedVocab.getTitle(), defaultVocab.getTitle());
         assertEquals(deletedVocab.getDescription(), defaultVocab.getDescription());
     }
