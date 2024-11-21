@@ -44,7 +44,12 @@ public class WordService {
 
         vocab.setWordCount(vocabRepository.countWords(vocab.getVocabId()));
 
-        statsService.updateStats(word.getWordId(), new UpdateStats.Request());
+        UpdateStats.Request statsRequest = UpdateStats.Request.builder()
+                .isLearned(0)
+                .incorrectCount(0)
+                .correctCount(0)
+                .build();
+        statsService.updateStats(word.getWordId(), statsRequest);
 
         return CreateWord.Response.fromEntity(word);
     }

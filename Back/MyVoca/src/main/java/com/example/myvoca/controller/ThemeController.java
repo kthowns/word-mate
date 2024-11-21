@@ -22,7 +22,7 @@ public class ThemeController {
             @Valid @RequestParam Integer user_id
     ){
         log.info("HTTP GET /api/themes/all?user_id="+user_id);
-        return themeService.getThemeByUserId(user_id);
+        return themeService.getThemes(user_id);
     }
 
     @GetMapping("/themes/detail")
