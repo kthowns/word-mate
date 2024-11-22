@@ -48,7 +48,7 @@ class VocabServiceTest {
             .user(defaultUser)
             .wordCount(0)
             .title("TIT")
-            .description("DES")
+            .description("this is description over 15 letters")
             .build();
 
     @DisplayName("[Service] 단어장 가져오기 성공")
@@ -79,20 +79,22 @@ class VocabServiceTest {
         ArgumentCaptor<Vocab> captor =
                 ArgumentCaptor.forClass(Vocab.class);
         //when
-        vocabService.createVocab(
+        CreateVocab.Response responseVocab = vocabService.createVocab(
                 1, toRequest(defaultVocab)
         );
         //then
         verify(vocabRepository, times(1))
                 .save(captor.capture());
         Vocab savedVocab = captor.getValue();
-        assertEquals(savedVocab.getTitle(), defaultVocab.getTitle());
-        assertEquals(savedVocab.getDescription(), defaultVocab.getDescription());
+        assertEquals(defaultVocab.getTitle(), savedVocab.getTitle());
+        assertEquals(defaultVocab.getDescription(), savedVocab.getDescription());
+        assertEquals(defaultVocab.getDescription().substring(0, 15) + "...",
+                responseVocab.getDescription());
     }
 
     @DisplayName("[Service] 단어장 추가 시 중복 체크")
     @Test
-    void createVocabTest_duplicate(){
+    void createVocabTest_duplicate() {
         //given
         CreateVocab.Request request = toRequest(defaultVocab);
         given(vocabRepository.findByTitleAndUser(anyString()
@@ -107,7 +109,7 @@ class VocabServiceTest {
         //then
         assertEquals(e.getMessage(), DUPLICATED_TITLE.getMessage());
     }
-            
+
     @DisplayName("[Service] 단어장 생성 NO_USER")
     @Test
     void createVocabTest_no_user() {
@@ -115,13 +117,29 @@ class VocabServiceTest {
         given(userRepository.findById(1))
                 .willReturn(Optional.empty());
         //when
-        Throwable e = assertThrows(Exception.class, ()->{
+        Throwable e = assertThrows(Exception.class, () -> {
             vocabService.createVocab(
                     1, toRequest(defaultVocab)
             );
         });
         //then
         assertEquals(e.getMessage(), NO_USER.getMessage());
+    }
+
+    @DisplayName("[Service] 단어장 수정 성공")
+    @Test
+    void editVocabTest_success() {
+        //given
+        given(vocabRepository.findById(1))
+                .willReturn(Optional.of(defaultVocab));
+        CreateVocab.Request request = toRequest(defaultVocab);
+        request.setTitle("ZZZ");
+        //when
+        CreateVocab.Response response = vocabService.editVocab(1, request);
+        //then
+        assertEquals(request.getTitle(), response.getTitle());
+        assertEquals(request.getDescription().substring(0, 15) + "...",
+                response.getDescription());
     }
 
     @DisplayName("[Service] 단어장 수정 NO_VOCAB")
@@ -133,13 +151,13 @@ class VocabServiceTest {
         CreateVocab.Request request = toRequest(defaultVocab);
         request.setTitle("ZZZ");
         //when
-        Throwable e = assertThrows(Exception.class, ()->{
+        Throwable e = assertThrows(Exception.class, () -> {
             vocabService.editVocab(1, request);
         });
         //then
         assertEquals(e.getMessage(), NO_VOCAB.getMessage());
     }
-    
+
     @DisplayName("[Service] 단어장 삭제 성공")
     @Test
     void deleteVocabTest_success() {

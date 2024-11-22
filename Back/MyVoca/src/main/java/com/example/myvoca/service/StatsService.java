@@ -75,7 +75,7 @@ public class StatsService {
         return statsRepository.getLearningRateByVocab(getVocabById(vocabId));
     }
 
-    public List<StatsDto> getStatsByVocabId(Integer vocabId) {
+    public List<StatsDto> getStats(Integer vocabId) {
         return statsRepository.findByVocab(getVocabById(vocabId))
                 .stream().map(StatsDto::fromEntity)
                 .collect(Collectors.toList());

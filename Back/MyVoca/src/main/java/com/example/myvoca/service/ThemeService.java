@@ -31,7 +31,7 @@ public class ThemeService {
                 .collect(Collectors.toList());
     }
 
-    public ThemeDto getThemeDtoById(Integer themeId) {
+    public ThemeDto getThemeDetail(Integer themeId) {
         return ThemeDto.fromEntity(getThemeById(themeId));
     }
 
@@ -48,13 +48,13 @@ public class ThemeService {
     }
 
     @Transactional
-    public ThemeDto editTheme(Integer themeId, CreateTheme.Request request) {
+    public CreateTheme.Response editTheme(Integer themeId, CreateTheme.Request request) {
         Theme theme = getThemeById(themeId);
         theme.setFont(request.getFont());
         theme.setFontSize(request.getFontSize());
         theme.setColor(request.getColor());
 
-        return ThemeDto.fromEntity(theme);
+        return CreateTheme.Response.fromEntity(theme);
     }
 
     @Transactional
