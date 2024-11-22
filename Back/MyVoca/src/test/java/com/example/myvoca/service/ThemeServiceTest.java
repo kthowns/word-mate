@@ -2,7 +2,6 @@ package com.example.myvoca.service;
 
 import com.example.myvoca.dto.CreateTheme;
 import com.example.myvoca.dto.ThemeDto;
-import com.example.myvoca.dto.ThemeDto;
 import com.example.myvoca.entity.Theme;
 import com.example.myvoca.entity.User;
 import com.example.myvoca.repository.ThemeRepository;
@@ -19,11 +18,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static com.example.myvoca.code.ApiResponseCode.*;
+import static com.example.myvoca.code.ApiResponseCode.NO_THEME;
+import static com.example.myvoca.code.ApiResponseCode.NO_USER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;

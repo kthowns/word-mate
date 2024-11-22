@@ -44,17 +44,17 @@ public class VocabService {
         return CreateVocab.Response.fromEntity(vocab);
     }
 
-    public VocabDto getVocabDtoById(Integer vocabId){
+    public VocabDto getVocabDetail(Integer vocabId){
         return VocabDto.fromEntity(getVocabById(vocabId));
     }
 
     @Transactional
-    public VocabDto editVocab(Integer vocabId, CreateVocab.Request request) {
+    public CreateVocab.Response editVocab(Integer vocabId, CreateVocab.Request request) {
         Vocab vocab = getVocabById(vocabId);
         vocab.setTitle(request.getTitle());
         vocab.setDescription(request.getDescription());
 
-        return VocabDto.fromEntity(vocab);
+        return CreateVocab.Response.fromEntity(vocab);
     }
 
     @Transactional

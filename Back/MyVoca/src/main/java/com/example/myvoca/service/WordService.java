@@ -54,16 +54,16 @@ public class WordService {
         return CreateWord.Response.fromEntity(word);
     }
 
-    public WordDto getWordDtoById(Integer wordId) {
+    public WordDto getWordDetail(Integer wordId) {
         return WordDto.fromEntity(getWordById(wordId));
     }
 
     @Transactional
-    public WordDto editWord(Integer wordId, CreateWord.Request request) {
+    public CreateWord.Response editWord(Integer wordId, CreateWord.Request request) {
         Word word = getWordById(wordId);
         word.setExpression(request.getExpression());
 
-        return WordDto.fromEntity(word);
+        return CreateWord.Response.fromEntity(word);
     }
 
     @Transactional

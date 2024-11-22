@@ -30,11 +30,13 @@ public class CreateTheme {
     @NoArgsConstructor
     @Builder
     public static class Response{
+        private Integer themeId;
         private String font;
         private Integer fontSize;
         private String color;
         public static CreateTheme.Response fromEntity(Theme theme){
             return Response.builder()
+                    .themeId(theme.getThemeId())
                     .color(theme.getColor())
                     .font(theme.getFont())
                     .fontSize(theme.getFontSize())

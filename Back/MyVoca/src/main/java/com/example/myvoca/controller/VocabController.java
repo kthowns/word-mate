@@ -18,7 +18,7 @@ public class VocabController{
     private final VocabService vocabService;
 
     @GetMapping("/vocabs/all")
-    public ResponseEntity<?> getVocabByUserId(
+    public ResponseEntity<?> getVocabs(
             @Valid @RequestParam Integer user_id
     ){
         log.info("HTTP GET /api/vocabs/all?user_id="+user_id);
@@ -27,12 +27,12 @@ public class VocabController{
     }
 
     @GetMapping("/vocabs/detail")
-    public ResponseEntity<?> getVocabByVocabId(
+    public ResponseEntity<?> getVocabDetail(
             @Valid @RequestParam Integer vocab_id
     ){
         log.info("HTTP GET /api/vocabs/detail?vocab_id="+vocab_id);
         return ApiResponse.toResponseEntity(ApiResponseCode.OK,
-                vocabService.getVocabDtoById(vocab_id));
+                vocabService.getVocabDetail(vocab_id));
     }
 
     @PostMapping("/vocabs/{user_id}")

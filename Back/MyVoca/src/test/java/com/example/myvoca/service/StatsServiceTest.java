@@ -12,6 +12,7 @@ import com.example.myvoca.repository.WordRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -25,6 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class StatsServiceTest {
@@ -73,28 +76,53 @@ class StatsServiceTest {
                 .willReturn(Optional.of(defaultWord));
         given(statsRepository.save(any(Stats.class)))
                 .willReturn(defaultStats);
+        ArgumentCaptor<Stats> captor =
+                ArgumentCaptor.forClass(Stats.class);
         UpdateStats.Request request = toRequest(defaultStats);
         request.setIncorrectCount(null);
         request.setCorrectCount(null);
         request.setIsLearned(null);
         //when
-        UpdateStats.Response response = statsService.updateStats(1, request);
+        statsService.updateStats(1, request);
         //then
-        assertEquals(defaultStats.getCorrectCount(), response.getCorrectCount());
-        assertEquals(defaultStats.getIncorrectCount(), response.getIncorrectCount());
-        assertEquals(defaultStats.getIsLearned(), response.getIsLearned());
-        assertEquals(defaultStats.getWord().getWordId(), response.getWordId());
+        verify(statsRepository, times(1))
+                .save(captor.capture());
+        Stats savedStats = captor.getValue();
+        assertEquals(0, savedStats.getCorrectCount());
+        assertEquals(0, savedStats.getIncorrectCount());
+        assertEquals(0, savedStats.getIsLearned());
     }
 
     @DisplayName("[Service] 통계 업데이트 성공")
     @Test
-    void updateStatsTest_update() {
+    void updateStatsTest_success() {
         //given
         given(wordRepository.findById(1))
                 .willReturn(Optional.of(defaultWord));
         given(statsRepository.save(any(Stats.class)))
                 .willReturn(defaultStats);
         UpdateStats.Request request = toRequest(defaultStats);
+        //when
+        UpdateStats.Response response = statsService.updateStats(1, request);
+        //then
+        assertEquals(response.getCorrectCount(), defaultStats.getCorrectCount());
+        assertEquals(response.getIncorrectCount(), defaultStats.getIncorrectCount());
+        assertEquals(response.getIsLearned(), defaultStats.getIsLearned());
+        assertEquals(response.getWordId(), defaultStats.getWord().getWordId());
+    }
+
+    @DisplayName("[Service] 통계 업데이트 단일 변수")
+    @Test
+    void updateStatsTest_success_single() {
+        UpdateStats.Request request = toRequest(defaultStats);
+        request.setIncorrectCount(null);
+        request.setIsLearned(null);
+
+        //given
+        given(wordRepository.findById(1))
+                .willReturn(Optional.of(defaultWord));
+        given(statsRepository.save(any(Stats.class)))
+                .willReturn(defaultStats);
         //when
         UpdateStats.Response response = statsService.updateStats(1, request);
         //then
@@ -111,11 +139,9 @@ class StatsServiceTest {
         given(wordRepository.findById(1))
                 .willReturn(Optional.empty());
         //when
-        Throwable e = assertThrows(Exception.class, () -> {
-            statsService.updateStats(
-                    1, toRequest(defaultStats)
-            );
-        });
+        Throwable e = assertThrows(Exception.class, () ->
+                statsService.updateStats(1, toRequest(defaultStats))
+        );
         //then
         assertEquals(e.getMessage(), NO_WORD.getMessage());
     }
@@ -128,9 +154,9 @@ class StatsServiceTest {
                 .willReturn(Optional.empty());
         UpdateStats.Request request = toRequest(defaultStats);
         //when
-        Throwable e = assertThrows(Exception.class, () -> {
-            statsService.updateStats(1, request);
-        });
+        Throwable e = assertThrows(Exception.class, () ->
+                statsService.updateStats(1, request)
+        );
         //then
         assertEquals(e.getMessage(), NO_WORD.getMessage());
     }
@@ -161,14 +187,14 @@ class StatsServiceTest {
 
     @DisplayName("[Service] 단어장의 모든 통계 가져오기 성공")
     @Test
-    void getStatsByVocabIdTest_success(){
+    void getStatsTest_success(){
         //given
         given(vocabRepository.findById(1))
                 .willReturn(Optional.of(defaultVocab));
         given(statsRepository.findByVocab(any(Vocab.class)))
                 .willReturn(Collections.singletonList(defaultStats));
         //when
-        List<StatsDto> statsList = statsService.getStatsByVocabId(1);
+        List<StatsDto> statsList = statsService.getStats(1);
         //then
         assertEquals(defaultStats.getWord().getWordId(), statsList.get(0).getWordId());
         assertEquals(defaultStats.getIsLearned(), statsList.get(0).getIsLearned());
