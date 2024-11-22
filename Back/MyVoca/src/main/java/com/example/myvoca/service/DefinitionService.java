@@ -33,7 +33,7 @@ public class DefinitionService {
     }
 
     @Transactional
-    public DefinitionDto createDefinition(Integer wordId, CreateDefinition.Request request) {
+    public CreateDefinition.Response createDefinition(Integer wordId, CreateDefinition.Request request) {
         validateDefinitionDuplicate(request.getDefinition(), wordId);
         Definition definition = Definition.builder()
                 .word(getWordById(wordId))
@@ -42,16 +42,16 @@ public class DefinitionService {
                 .build();
         definition = definitionRepository.save(definition);
 
-        return DefinitionDto.fromEntity(definition);
+        return CreateDefinition.Response.fromEntity(definition);
     }
 
     @Transactional
-    public DefinitionDto editDefinition(Integer defId, CreateDefinition.Request request) {
+    public CreateDefinition.Response editDefinition(Integer defId, CreateDefinition.Request request) {
         Definition definition = getDefinitionById(defId);
         definition.setDefinition(request.getDefinition());
         definition.setType(request.getType());
 
-        return DefinitionDto.fromEntity(definition);
+        return CreateDefinition.Response.fromEntity(definition);
     }
 
     @Transactional

@@ -19,12 +19,12 @@ public class StatsController {
     private final StatsService statsService;
 
     @GetMapping("/stats/all")
-    public ResponseEntity<?> getWordStatsByVocabId(
+    public ResponseEntity<?> getStats(
             @Valid @RequestParam Integer vocab_id
     ) {
         log.info("HTTP GET /api/stats/all?vocab_id=" + vocab_id);
         return ApiResponse.toResponseEntity(OK,
-                statsService.getStatsByVocabId(vocab_id));
+                statsService.getStats(vocab_id));
     }
 
     @GetMapping("/stats/detail")

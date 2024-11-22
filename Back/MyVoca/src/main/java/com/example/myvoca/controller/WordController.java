@@ -18,7 +18,7 @@ public class WordController{
     private final WordService wordService;
 
     @GetMapping("/words/all")
-    public ResponseEntity<?> getWordByVocabId(
+    public ResponseEntity<?> getWords(
             @Valid @RequestParam Integer vocab_id
     ){
         log.info("HTTP GET /api/words/all?vocab_id="+vocab_id);
@@ -27,12 +27,12 @@ public class WordController{
     }
 
     @GetMapping("/words/detail")
-    public ResponseEntity<?> getWordByWordId(
+    public ResponseEntity<?> getWordDetail(
             @Valid @RequestParam Integer word_id
     ){
         log.info("HTTP GET /api/words/detail?word_id="+word_id);
         return ApiResponse.toResponseEntity(ApiResponseCode.OK,
-                wordService.getWordDtoById(word_id));
+                wordService.getWordDetail(word_id));
     }
 
     @PostMapping("/words/{vocab_id}")

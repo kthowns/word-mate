@@ -12,7 +12,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static com.example.myvoca.code.ApiResponseCode.LOGIN_OK;
-import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -54,14 +53,14 @@ class AuthControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(
-                        jsonPath("$.data.userId",
-                                is(defaultUser.getUserId()))
+                        jsonPath("$.data.userId")
+                                .value(defaultUser.getUserId())
                 ).andExpect(
-                        jsonPath("$.data.username",
-                                is(defaultUser.getUsername()))
+                        jsonPath("$.data.username")
+                                .value(defaultUser.getUsername())
                 ).andExpect(
-                        jsonPath("$.message",
-                                is(LOGIN_OK.getMessage()))
+                        jsonPath("$.message")
+                                .value(LOGIN_OK.getMessage())
                 );
     }
 
