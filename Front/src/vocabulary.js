@@ -141,7 +141,7 @@ const Vocabulary = ({ vocabularies, onUpdateVocabulary }) => {
                 <div style={styles.backButton} onClick={goBack}>
                     ←
                 </div>
-                <h1>{vocabularyTitle}</h1>
+                <h1 style={styles.title}>{vocabularyTitle}</h1>
                 <div style={styles.vocabButtons}>
                     <button className="custom-button" onClick={() => navigate(`/flashcard/${id}`)}>플래시 카드</button>
                     <button className="custom-button" onClick={() => navigate(`/OXquiz/${id}`)}>O/X</button>
@@ -153,56 +153,34 @@ const Vocabulary = ({ vocabularies, onUpdateVocabulary }) => {
             <main>
                 <div style={styles.vocaList}>
                     {vocabulary.map((item, index) => (
-                        <div 
-                            key={item.id || index} 
-                            style={styles.vocaItem}
-                            onMouseEnter={() => setHoveredIndex(index)}
-                            onMouseLeave={() => setHoveredIndex(null)}
-                            onClick={() => toggleSelection(index)}
-                        >
+                        <div
+                        key={item.id || index}
+                        className={`vocaItem ${selectedItems.has(index) ? 'selectedVocaItem' : ''}`}
+                        style={styles.vocaItem}
+                        onMouseEnter={() => setHoveredIndex(index)}
+                        onMouseLeave={() => setHoveredIndex(null)}
+                        onDoubleClick={() => toggleSelection(index)}
+                    >
                             <div style={styles.vocaItemContent}>
                                 <div style={styles.checkbox}>
                                     <input
                                         type="checkbox"
                                         style={styles.checkboxInput}
                                         checked={selectedItems.has(index)}
-                                        onChange={(e) => {
-                                            e.stopPropagation(); // 이벤트 버블링 방지
-                                            toggleSelection(index);
-                                        }}
+                                        onChange={() => toggleSelection(index)}
                                     />
                                 </div>
                                 <div style={styles.wordContent}>
-                                    <div>{item.word}</div>
-                                    <div style={{ fontSize: '0.9em', color: '#666' }}>
-                                        {item.meanings}
-                                    </div>
+                                    <div style={styles.word}>{item.word}</div>
+                                    <div style={styles.meaning}>{item.meanings}</div>
                                 </div>
                             </div>
-                            <div style={{
-                                ...styles.actionButtons,
-                                opacity: hoveredIndex === index ? 1 : 0,
-                                transition: 'opacity 0.3s ease'
-                            }}>
-                                <button
-                                    className="action-button"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        openEditModal(index);
-                                    }}
-                                >
-                                    수정
-                                </button>
-                                <button
-                                    className="action-button"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        deleteVocabulary(index);
-                                    }}
-                                >
-                                    삭제
-                                </button>
-                            </div>
+                            {hoveredIndex === index && (
+                                <div style={styles.actionButtons}>
+                                    <button className="action-button" onClick={() => openEditModal(index)}>수정</button>
+                                    <button className="action-button" onClick={() => deleteVocabulary(index)}>삭제</button>
+                                </div>
+                            )}
                         </div>
                     ))}
                 </div>
@@ -327,9 +305,12 @@ const styles = {
     vocaList: {
         display: 'flex',
         flexDirection: 'column',
+        alignItems: 'center',
         gap: '10px'
     },
     vocaItem: {
+        width:'85%',
+        alignItems: 'center',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -339,8 +320,9 @@ const styles = {
         backgroundColor: '#fff',
         borderRadius: '8px',
         boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        cursor: 'pointer',
-        transition: 'background-color 0.3s ease'
+        position: 'relative',
+        overflow: 'hidden',
+        margin:'3px'
     },
     vocaItemContent: {
         display: 'flex',
@@ -348,16 +330,27 @@ const styles = {
         gap: '10px',
         cursor: 'pointer',
         flex: 1,
+        marginLeft: '15px'
     },
     wordContent: {
-        cursor: 'pointer',
         flex: 1,
+        marginLeft: '20px',
+    },
+    word: {
+        fontSize: '24px',
+        fontWeight: '500',
+        marginBottom: '8px'
+    },
+    meaning: {
+        fontSize: '18px',
+        color: '#666'
     },
     checkbox: {
         marginRight: '10px',
     },
     checkboxInput: {
-        accentColor: '#c5d8ff',
+        accentColor: '#a9c6f8',
+        cursor: 'pointer'
     },
     actionButtons: {
         display: 'flex',
@@ -400,8 +393,13 @@ const styles = {
         marginRight: '10px'
     },
     selectedVocaItem: {
-        borderLeft: '4px solid #a9c6f8',
+        borderLeft: '8px solid transparent', 
+        borderImage: 'linear-gradient(to bottom, #c5d8ff, #a9c6f8) 1'
     },
+    title: {
+        fontSize: '40px',
+        fontWeight: 'normal',
+    }
 };
 
 export default Vocabulary;
