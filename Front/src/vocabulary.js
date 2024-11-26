@@ -15,11 +15,13 @@ const Vocabulary = ({ vocabularies, onUpdateVocabulary }) => {
     const [editMeanings, setEditMeanings] = useState([{ meaning: '', partOfSpeech: '' }]);
     const [editIndex, setEditIndex] = useState(null);
     const [hoveredIndex, setHoveredIndex] = useState(null);
+    const [vocabularyTitle, setVocabularyTitle] = useState('');
 
     useEffect(() => {
         const currentVocab = vocabularies?.find(vocab => vocab.id === Number(id));
-        if (currentVocab?.words) {
-            setVocabulary(currentVocab.words);
+        if (currentVocab) {
+            setVocabulary(currentVocab.words || []);
+            setVocabularyTitle(currentVocab.title);
         }
     }, [vocabularies, id]);
 
@@ -139,7 +141,7 @@ const Vocabulary = ({ vocabularies, onUpdateVocabulary }) => {
                 <div style={styles.backButton} onClick={goBack}>
                     ←
                 </div>
-                <h1>{vocabulary.length > 0 ? vocabulary[0].title : '단어장'}</h1>
+                <h1>{vocabularyTitle}</h1>
                 <div style={styles.vocabButtons}>
                     <button className="custom-button" onClick={() => navigate(`/flashcard/${id}`)}>플래시 카드</button>
                     <button className="custom-button" onClick={() => navigate(`/OXquiz/${id}`)}>O/X</button>
