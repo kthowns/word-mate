@@ -86,17 +86,17 @@ const Flashcard = ({ vocabularies, onUpdateVocabulary }) => {
         const currentCard = flashcards[currentQuestion];
 
         // 선택된 단어장에 현재 단어가 이미 있는지 확인
-        const isWordExists = selectedVocab.words.some(
+        const isWordExists = selectedVocab.words?.some(
             word => word.word.toLowerCase() === currentCard.word.toLowerCase()
         );
 
         if (isWordExists) {
             alert('이미 해당 단어장에 존재하는 단어입니다.');
-            event.target.value = ''; // select 초기화
+            event.target.value = '';
             return;
         }
 
-        // 새 단어 추가
+        // 새 단어 객체 생성 - vocabularies의 words 배열에 들어갈 형식과 일치하도록 수정
         const newWord = {
             id: Date.now(),
             word: currentCard.word,
@@ -108,17 +108,17 @@ const Flashcard = ({ vocabularies, onUpdateVocabulary }) => {
             vocab.id === selectedVocabId
                 ? {
                     ...vocab,
-                    words: [...vocab.words, newWord],
-                    wordCount: vocab.wordCount + 1
+                    words: [...(vocab.words || []), newWord],
+                    wordCount: (vocab.words?.length || 0) + 1
                   }
                 : vocab
         );
 
-        // App 컴포넌트의 상태 업데이트를 위해 콜백 호출
+        // App 컴포넌트의 상태 업데이트
         onUpdateVocabulary(selectedVocabId, updatedVocabularies.find(v => v.id === selectedVocabId).words);
         
         alert('단어가 성공적으로 추가되었습니다.');
-        event.target.value = ''; // select 초기화
+        event.target.value = '';
     };
 
     const handleBackButton = () => {
@@ -145,16 +145,12 @@ const Flashcard = ({ vocabularies, onUpdateVocabulary }) => {
                 borderBottom: '1px solid #ddd',
                 padding: '10px 0'
             }}>
-                <div 
-                    style={{
-                        fontSize: '24px',
-                        cursor: 'pointer',
-                        padding: '10px'
-                    }}
-                    onClick={handleBackButton}
+                <button 
+                    className="back-button"
+                    onClick={() => navigate(-1)}
                 >
                     ←
-                </div>
+                </button>
                 <p style={{
                     fontSize: '18px',
                     color: '#333'

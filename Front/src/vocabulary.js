@@ -14,7 +14,6 @@ const Vocabulary = ({ vocabularies, onUpdateVocabulary }) => {
     const [editWordInput, setEditWordInput] = useState('');
     const [editMeanings, setEditMeanings] = useState([{ meaning: '', partOfSpeech: '' }]);
     const [editIndex, setEditIndex] = useState(null);
-    const [hoveredIndex, setHoveredIndex] = useState(null);
     const [vocabularyTitle, setVocabularyTitle] = useState('');
 
     useEffect(() => {
@@ -133,13 +132,16 @@ const Vocabulary = ({ vocabularies, onUpdateVocabulary }) => {
         }
     };
 
-    const goBack = () => window.history.back();
-
     return (
         <div style={styles.vocabularyContainer}>
             <header style={styles.header}>
-                <div style={styles.backButton} onClick={goBack}>
-                    ←
+                <div style={styles.headerLeft}>
+                    <button 
+                        className="back-button"
+                        onClick={() => navigate('/')}
+                    >
+                        ←
+                    </button>
                 </div>
                 <h1 style={styles.title}>{vocabularyTitle}</h1>
                 <div style={styles.vocabButtons}>
@@ -157,8 +159,6 @@ const Vocabulary = ({ vocabularies, onUpdateVocabulary }) => {
                         key={item.id || index}
                         className={`vocaItem ${selectedItems.has(index) ? 'selectedVocaItem' : ''}`}
                         style={styles.vocaItem}
-                        onMouseEnter={() => setHoveredIndex(index)}
-                        onMouseLeave={() => setHoveredIndex(null)}
                         onDoubleClick={() => toggleSelection(index)}
                     >
                             <div style={styles.vocaItemContent}>
@@ -175,12 +175,10 @@ const Vocabulary = ({ vocabularies, onUpdateVocabulary }) => {
                                     <div style={styles.meaning}>{item.meanings}</div>
                                 </div>
                             </div>
-                            {hoveredIndex === index && (
-                                <div style={styles.actionButtons}>
-                                    <button className="action-button" onClick={() => openEditModal(index)}>수정</button>
-                                    <button className="action-button" onClick={() => deleteVocabulary(index)}>삭제</button>
-                                </div>
-                            )}
+                            <div className="action-buttons">
+                                <button className="action-button" onClick={() => openEditModal(index)}>수정</button>
+                                <button className="action-button" onClick={() => deleteVocabulary(index)}>삭제</button>
+                            </div>
                         </div>
                     ))}
                 </div>
@@ -287,20 +285,29 @@ const styles = {
         padding: '20px'
     },
     header: {
+        borderTop: '1px solid #ddd',
         borderBottom: '1px solid #ddd',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: '20px'
+        marginBottom: '50px',
+        position: 'relative',
+        height: '60px'
+    },
+    headerLeft: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '20px',
+        position: 'absolute',
+        left: 0,
+        zIndex: 1
     },
     vocabButtons: {
         display: 'flex',
-        gap: '10px'
-    },
-    backButton: {
-        fontSize: '24px',
-        cursor: 'pointer',
-        padding: '10px'
+        gap: '10px',
+        position: 'absolute',
+        right: 0,
+        zIndex: 1
     },
     vocaList: {
         display: 'flex',
@@ -317,7 +324,7 @@ const styles = {
         fontSize: '18px',
         padding: '15px',
         borderBottom: '1px solid #ddd',
-        backgroundColor: '#fff',
+        backgroundColor: 'rgba(249, 249, 249, 0.7)',
         borderRadius: '8px',
         boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
         position: 'relative',
@@ -399,6 +406,12 @@ const styles = {
     title: {
         fontSize: '40px',
         fontWeight: 'normal',
+        position: 'absolute',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        margin: 0,
+        width: '100%',
+        textAlign: 'center'
     }
 };
 
