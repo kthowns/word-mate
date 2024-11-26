@@ -1,0 +1,31 @@
+.custom-button {
+    font-family: 'TTHakgyoansimEunhasuR';
+    font-size: 16px;
+    padding: 8px 16px;
+    background: linear-gradient(45deg, #f0bbf8, #a9c6f8);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.custom-button:hover {
+    background: linear-gradient(45deg, #ff9add, #55a2fa);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.action-button {
+    padding: 6px 12px;
+    font-size: 12px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    background-color: #f0f0f0;
+}
+
+.action-button:hover {
+    background-color: #e0e0e0;
+}
