@@ -1,10 +1,10 @@
 package com.example.myvoca.controller;
 
-import com.example.myvoca.dto.CreateDefinition;
-import com.example.myvoca.dto.DefinitionDto;
-import com.example.myvoca.entity.Definition;
+import com.example.myvoca.dto.CreateDef;
+import com.example.myvoca.dto.DefDto;
+import com.example.myvoca.entity.Def;
 import com.example.myvoca.entity.Word;
-import com.example.myvoca.service.DefinitionService;
+import com.example.myvoca.service.DefService;
 import com.example.myvoca.type.POS;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -24,8 +24,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(DefinitionController.class)
-class DefinitionControllerTest {
+@WebMvcTest(DefController.class)
+class DefControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
@@ -33,15 +33,15 @@ class DefinitionControllerTest {
     private ObjectMapper objectMapper;
 
     @MockBean
-    private DefinitionService definitionService;
+    private DefService defService;
     
     Word defaultWord = Word.builder()
             .wordId(1)
             .expression("expression")
             .build();
 
-    Definition defaultDef = Definition.builder()
-            .definitionId(1)
+    Def defaultDef = Def.builder()
+            .defId(1)
             .definition("definition")
             .type(POS.NOUN)
             .word(defaultWord)
@@ -49,11 +49,11 @@ class DefinitionControllerTest {
 
     @DisplayName("[API][GET] /api/defs/all 성공")
     @Test
-    void getDefinitionsTest_success() throws Exception {
+    void getDefTest_success() throws Exception {
         //given
-        List<DefinitionDto> response = Collections.singletonList(
-                DefinitionDto.fromEntity(defaultDef));
-        given(definitionService.getDefinitions(1))
+        List<DefDto> response = Collections.singletonList(
+                DefDto.fromEntity(defaultDef));
+        given(defService.getDefs(1))
                 .willReturn(response);
         //when & then
         mockMvc.perform(get("/api/defs/all")
@@ -63,8 +63,8 @@ class DefinitionControllerTest {
                         jsonPath("$.status")
                                 .value(200)
                 ).andExpect(
-                        jsonPath("$.data[0].definitionId")
-                                .value(defaultDef.getDefinitionId())
+                        jsonPath("$.data[0].defId")
+                                .value(defaultDef.getDefId())
                 ).andExpect(
                         jsonPath("$.data[0].definition")
                                 .value(defaultDef.getDefinition())
@@ -76,7 +76,7 @@ class DefinitionControllerTest {
 
     @DisplayName("[API][GET] /api/defs/all No param")
     @Test
-    void getDefinitionsTest_no_param() throws Exception {
+    void getDefTest_no_param() throws Exception {
         //given
         //when & then
         mockMvc.perform(get("/api/defs/all"))
@@ -92,12 +92,12 @@ class DefinitionControllerTest {
 
     @DisplayName("[API][POST] /api/defs/{user_id} 성공")
     @Test
-    void createDefinitionTest_success() throws Exception {
-        CreateDefinition.Request request = toRequest(defaultDef);
-        CreateDefinition.Response response = CreateDefinition.Response
+    void createDefTest_success() throws Exception {
+        CreateDef.Request request = toRequest(defaultDef);
+        CreateDef.Response response = CreateDef.Response
                         .fromEntity(defaultDef);
         //given
-        given(definitionService.createDefinition(1, request))
+        given(defService.createDef(1, request))
                 .willReturn(response);
         //when & then
         mockMvc.perform(post("/api/defs/{user_id}", 1)
@@ -108,8 +108,8 @@ class DefinitionControllerTest {
                         jsonPath("$.status")
                                 .value(200)
                 ).andExpect(
-                        jsonPath("$.data.definitionId")
-                                .value(defaultDef.getDefinitionId())
+                        jsonPath("$.data.defId")
+                                .value(defaultDef.getDefId())
                 ).andExpect(
                         jsonPath("$.data.definition")
                                 .value(defaultDef.getDefinition())
@@ -122,12 +122,12 @@ class DefinitionControllerTest {
     @DisplayName("[API][POST] /api/defs/{vocab_id} Invalid request")
     @Test
     void createDefinitionTest_invalid_request() throws Exception {
-        CreateDefinition.Request request = toRequest(defaultDef);
-        CreateDefinition.Response response = CreateDefinition.Response
+        CreateDef.Request request = toRequest(defaultDef);
+        CreateDef.Response response = CreateDef.Response
                 .fromEntity(defaultDef);
         request.setDefinition(null);
         //given
-        given(definitionService.createDefinition(1, request))
+        given(defService.createDef(1, request))
                 .willReturn(response);
         //when & then
         mockMvc.perform(post("/api/defs/{vocab_id}", 1)
@@ -143,18 +143,18 @@ class DefinitionControllerTest {
                 );
     }
 
-    @DisplayName("[API][PATCH] /api/defs/{definition_id} 성공")
+    @DisplayName("[API][PATCH] /api/defs/{def_id} 성공")
     @Test
-    void editDefinitionTest_success() throws Exception {
-        CreateDefinition.Request request = toRequest(defaultDef);
+    void editDefTest_success() throws Exception {
+        CreateDef.Request request = toRequest(defaultDef);
         request.setDefinition("Hello");
-        CreateDefinition.Response response = CreateDefinition.Response.fromEntity(defaultDef);
+        CreateDef.Response response = CreateDef.Response.fromEntity(defaultDef);
         response.setDefinition(request.getDefinition());
         //given
-        given(definitionService.editDefinition(1, request))
+        given(defService.editDef(1, request))
                 .willReturn(response);
         //when & then
-        mockMvc.perform(patch("/api/defs/{definition_id}", 1)
+        mockMvc.perform(patch("/api/defs/{def_id}", 1)
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -162,8 +162,8 @@ class DefinitionControllerTest {
                         jsonPath("$.status")
                                 .value(200)
                 ).andExpect(
-                        jsonPath("$.data.definitionId")
-                                .value(defaultDef.getDefinitionId())
+                        jsonPath("$.data.defId")
+                                .value(defaultDef.getDefId())
                 ).andExpect(
                         jsonPath("$.data.definition")
                                 .value(request.getDefinition())
@@ -173,22 +173,22 @@ class DefinitionControllerTest {
                 );
     }
 
-    @DisplayName("[API][DELETE] /api/defs/{definition_id} 성공")
+    @DisplayName("[API][DELETE] /api/defs/{def_id} 성공")
     @Test
-    void deleteDefinitionTest_success() throws Exception {
+    void deleteDefTest_success() throws Exception {
         //given
-        given(definitionService.deleteDefinition(1))
-                .willReturn(DefinitionDto.fromEntity(defaultDef));
+        given(defService.deleteDef(1))
+                .willReturn(DefDto.fromEntity(defaultDef));
         //when & then
-        mockMvc.perform(delete("/api/defs/{definition_id}", 1)
+        mockMvc.perform(delete("/api/defs/{def_id}", 1)
                         .contentType("application/json"))
                 .andExpect(status().isOk())
                 .andExpect(
                         jsonPath("$.status")
                                 .value(200)
                 ).andExpect(
-                        jsonPath("$.data.definitionId")
-                                .value(defaultDef.getDefinitionId())
+                        jsonPath("$.data.defId")
+                                .value(defaultDef.getDefId())
                 ).andExpect(
                         jsonPath("$.data.definition")
                                 .value(defaultDef.getDefinition())
@@ -198,10 +198,10 @@ class DefinitionControllerTest {
                 );
     }
 
-    private CreateDefinition.Request toRequest(Definition definition) {
-        return CreateDefinition.Request.builder()
-                .definition(definition.getDefinition())
-                .type(definition.getType())
+    private CreateDef.Request toRequest(Def def) {
+        return CreateDef.Request.builder()
+                .definition(def.getDefinition())
+                .type(def.getType())
                 .build();
     }
 }
