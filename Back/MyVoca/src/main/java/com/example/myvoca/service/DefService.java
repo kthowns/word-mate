@@ -48,7 +48,7 @@ public class DefService {
     @Transactional
     public CreateDef.Response editDef(Integer defId, CreateDef.Request request) {
         Def def = getDefById(defId);
-        validateDefDuplicate(def.getDefinition(), def.getWord());
+        validateDefDuplicate(request.getDefinition(), def.getWord());
         def.setDefinition(request.getDefinition());
         def.setType(request.getType());
 
