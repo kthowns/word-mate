@@ -4,9 +4,10 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Modal from './Modal';
 import './App.css';
 import logo from './logo.png';
-import Flashcard from './Flashcard'; // Flashcard 컴포넌트
-import OXQuiz from './OXQuiz'; // OXQuiz 컴포넌트
-import FillIn from './FillIn'; // FillIn 컴포넌트
+import Flashcard from './flashcard'; // Flashcard 컴포넌트
+import OXQuiz from './OXquiz'; // OXQuiz 컴포넌트
+import FillIn from './fillin'; // FillIn 컴포넌트
+import Vocabulary from './vocabulary'; // Vocabulary 컴포넌트
 
 function App() {
   const [vocabularies, setVocabularies] = useState(() => {
@@ -64,6 +65,18 @@ function App() {
     setVocabularies(vocabularies.filter((vocab) => vocab.id !== id));
   };
 
+  const updateVocabularyWords = (vocabId, newWords) => {
+    setVocabularies(vocabularies.map(vocab => 
+        vocab.id === vocabId 
+            ? { 
+                ...vocab, 
+                words: newWords,
+                wordCount: newWords.length 
+              }
+            : vocab
+    ));
+  };
+
   return (
     <Router>
       <div className="container">
@@ -82,21 +95,21 @@ function App() {
           <section className="vocab-list">
             {vocabularies.map((vocab) => (
               <div key={vocab.id} className="vocab-item">
-                <h2>
-                  {vocab.title} ({vocab.wordCount} 단어)
-                </h2>
-                <p className="description">{vocab.description}</p>
+                <Link to={`/vocabulary/${vocab.id}`} className="vocab-title">
+                  <h2>{vocab.title} ({vocab.wordCount} 단어)</h2>
+                  <p className="description">{vocab.description}</p>
+                </Link>
                 <div className="vocab-buttons-container">
                   <div className="vocab-buttons">
-                    <button className="vocab-button">
-                      <Link to="/flashcard">플래시 카드</Link>
-                    </button>
-                    <button className="vocab-button">
-                      <Link to="/oxquiz">O/X</Link>
-                    </button>
-                    <button className="vocab-button">
-                      <Link to="/fillin">빈칸 채우기</Link>
-                    </button>
+                    <Link to={`/flashcard/${vocab.id}`} className="vocab-button">
+                      플래시 카드
+                    </Link>
+                    <Link to={`/oxquiz/${vocab.id}`} className="vocab-button">
+                      O/X
+                    </Link>
+                    <Link to={`/fillin/${vocab.id}`} className="vocab-button">
+                      빈칸 채우기
+                    </Link>
                   </div>
                   <div className="action-buttons">
                     <button
@@ -171,9 +184,42 @@ function App() {
       </div>
 
       <Routes>
-        <Route path="/flashcard" element={<Flashcard />} />
-        <Route path="/oxquiz" element={<OXQuiz />} />
-        <Route path="/fillin" element={<FillIn />} />
+        <Route 
+          path="/vocabulary/:id" 
+          element={
+            <Vocabulary 
+              vocabularies={vocabularies}
+              onUpdateVocabulary={updateVocabularyWords}
+            />
+          } 
+        />
+        <Route 
+          path="/flashcard/:id" 
+          element={
+            <Flashcard 
+              vocabularies={vocabularies}
+              onUpdateVocabulary={updateVocabularyWords}
+            />
+          } 
+        />
+        <Route 
+          path="/oxquiz/:id" 
+          element={
+            <OXQuiz 
+              vocabularies={vocabularies}
+              onUpdateVocabulary={updateVocabularyWords}
+            />
+          } 
+        />
+        <Route 
+          path="/fillin/:id" 
+          element={
+            <FillIn 
+              vocabularies={vocabularies}
+              onUpdateVocabulary={updateVocabularyWords}
+            />
+          } 
+        />
       </Routes>
     </Router>
   );
