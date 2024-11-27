@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class ThemeDto {
+    private Integer themeId;
     private String font;
     private Integer fontSize;
     private String color;
@@ -20,6 +21,7 @@ public class ThemeDto {
                 .font(theme.getFont())
                 .fontSize(theme.getFontSize())
                 .color(theme.getColor())
+                .themeId(theme.getThemeId())
                 .build();
     }
 }

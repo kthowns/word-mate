@@ -1,7 +1,6 @@
 package com.example.myvoca.service;
 
 import com.example.myvoca.dto.CreateTheme;
-import com.example.myvoca.dto.EditTheme;
 import com.example.myvoca.dto.ThemeDto;
 import com.example.myvoca.entity.Theme;
 import com.example.myvoca.entity.User;
@@ -26,13 +25,13 @@ public class ThemeService {
     private final ThemeRepository themeRepository;
     private final UserRepository userRepository;
 
-    public List<ThemeDto> getThemeByUserId(Integer userId) {
+    public List<ThemeDto> getThemes(Integer userId) {
         return themeRepository.findByUser(getUserById(userId))
                 .stream().map(ThemeDto::fromEntity)
                 .collect(Collectors.toList());
     }
 
-    public ThemeDto getThemeDtoById(Integer themeId) {
+    public ThemeDto getThemeDetail(Integer themeId) {
         return ThemeDto.fromEntity(getThemeById(themeId));
     }
 
@@ -49,13 +48,13 @@ public class ThemeService {
     }
 
     @Transactional
-    public ThemeDto editTheme(Integer themeId, EditTheme.Request request) {
+    public CreateTheme.Response editTheme(Integer themeId, CreateTheme.Request request) {
         Theme theme = getThemeById(themeId);
         theme.setFont(request.getFont());
         theme.setFontSize(request.getFontSize());
         theme.setColor(request.getColor());
 
-        return ThemeDto.fromEntity(theme);
+        return CreateTheme.Response.fromEntity(theme);
     }
 
     @Transactional

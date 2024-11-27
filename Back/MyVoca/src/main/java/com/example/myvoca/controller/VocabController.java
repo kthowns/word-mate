@@ -3,7 +3,6 @@ package com.example.myvoca.controller;
 import com.example.myvoca.code.ApiResponseCode;
 import com.example.myvoca.dto.ApiResponse;
 import com.example.myvoca.dto.CreateVocab;
-import com.example.myvoca.dto.EditVocab;
 import com.example.myvoca.service.VocabService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,21 +18,21 @@ public class VocabController{
     private final VocabService vocabService;
 
     @GetMapping("/vocabs/all")
-    public ResponseEntity<?> getVocabByUserId(
+    public ResponseEntity<?> getVocabs(
             @Valid @RequestParam Integer user_id
     ){
         log.info("HTTP GET /api/vocabs/all?user_id="+user_id);
         return ApiResponse.toResponseEntity(ApiResponseCode.OK,
-                vocabService.getVocabByUserId(user_id));
+                vocabService.getVocabs(user_id));
     }
 
     @GetMapping("/vocabs/detail")
-    public ResponseEntity<?> getVocabByVocabId(
+    public ResponseEntity<?> getVocabDetail(
             @Valid @RequestParam Integer vocab_id
     ){
         log.info("HTTP GET /api/vocabs/detail?vocab_id="+vocab_id);
         return ApiResponse.toResponseEntity(ApiResponseCode.OK,
-                vocabService.getVocabDtoById(vocab_id));
+                vocabService.getVocabDetail(vocab_id));
     }
 
     @PostMapping("/vocabs/{user_id}")
@@ -49,7 +48,7 @@ public class VocabController{
     @PatchMapping("/vocabs/{vocab_id}")
     public ResponseEntity<?> editVocab(
             @Valid @PathVariable Integer vocab_id,
-            @Valid @RequestBody EditVocab.Request request
+            @Valid @RequestBody CreateVocab.Request request
     ){
         log.info("HTTP PATCH /api/vocabs/"+vocab_id);
         return ApiResponse.toResponseEntity(ApiResponseCode.OK,

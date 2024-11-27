@@ -1,8 +1,7 @@
 package com.example.myvoca.service;
 
 import com.example.myvoca.dto.CreateWord;
-import com.example.myvoca.dto.EditWord;
-import com.example.myvoca.dto.UpdateStats;
+import com.example.myvoca.dto.UpdateStat;
 import com.example.myvoca.dto.WordDto;
 import com.example.myvoca.entity.Vocab;
 import com.example.myvoca.entity.Word;
@@ -17,8 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.example.myvoca.code.ApiResponseCode.NO_VOCAB;
-import static com.example.myvoca.code.ApiResponseCode.NO_WORD;
+import static com.example.myvoca.code.ApiResponseCode.*;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -26,10 +24,10 @@ import static com.example.myvoca.code.ApiResponseCode.NO_WORD;
 public class WordService {
     private final VocabRepository vocabRepository;
     private final WordRepository wordRepository;
-    private final StatsService statsService;
+    private final StatService statService;
 
-    public List<WordDto> getWordByVocabId(Integer vocabId) {
-        return wordRepository.findWordsByVocabId(getVocabById(vocabId).getVocabId())
+    public List<WordDto> getWords(Integer vocabId) {
+        return wordRepository.findByVocab(getVocabById(vocabId))
                 .stream().map(WordDto::fromEntity)
                 .collect(Collectors.toList());
     }
@@ -37,6 +35,7 @@ public class WordService {
     @Transactional
     public CreateWord.Response createWord(Integer vocabId, CreateWord.Request request) {
         Vocab vocab = getVocabById(vocabId);
+        validateWordDuplicate(request.getExpression(), vocab);
         Word word = Word.builder()
                 .vocab(vocab)
                 .expression(request.getExpression())
@@ -45,21 +44,27 @@ public class WordService {
 
         vocab.setWordCount(vocabRepository.countWords(vocab.getVocabId()));
 
-        statsService.updateStats(word.getWordId(), new UpdateStats.Response());
+        UpdateStat.Request statsRequest = UpdateStat.Request.builder()
+                .isLearned(0)
+                .incorrectCount(0)
+                .correctCount(0)
+                .build();
+        statService.updateStat(word.getWordId(), statsRequest);
 
         return CreateWord.Response.fromEntity(word);
     }
 
-    public WordDto getWordDtoById(Integer wordId) {
+    public WordDto getWordDetail(Integer wordId) {
         return WordDto.fromEntity(getWordById(wordId));
     }
 
     @Transactional
-    public WordDto editWord(Integer wordId, EditWord.Request request) {
+    public CreateWord.Response editWord(Integer wordId, CreateWord.Request request) {
         Word word = getWordById(wordId);
+        validateWordDuplicate(request.getExpression(), word.getVocab());
         word.setExpression(request.getExpression());
 
-        return WordDto.fromEntity(word);
+        return CreateWord.Response.fromEntity(word);
     }
 
     @Transactional
@@ -80,5 +85,10 @@ public class WordService {
     private Word getWordById(Integer wordId) {
         return wordRepository.findById(wordId)
                 .orElseThrow(() -> new ApiException(NO_WORD));
+    }
+
+    private void validateWordDuplicate(String expression, Vocab vocab){
+        wordRepository.findByExpressionAndVocab(expression, vocab)
+                .ifPresent((e) -> { throw new ApiException(DUPLICATED_WORD); });
     }
 }
