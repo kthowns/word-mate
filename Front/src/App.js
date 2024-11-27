@@ -1,13 +1,13 @@
 // App.js
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import Modal from './Modal';
-import './App.css';
-import logo from './logo.png';
-import Flashcard from './flashcard'; // Flashcard 컴포넌트
-import OXQuiz from './OXquiz'; // OXQuiz 컴포넌트
-import FillIn from './fillin'; // FillIn 컴포넌트
-import Vocabulary from './vocabulary'; // Vocabulary 컴포넌트
+import Modal from './components/Modal';
+import './styles/App.css';
+import logo from './resources/logo.png';
+import Flashcard from './components/flashcard'; // Flashcard 컴포넌트
+import OXQuiz from './components/OXquiz'; // OXQuiz 컴포넌트
+import FillIn from './components/fillin'; // FillIn 컴포넌트
+import Vocabulary from './components/vocabulary'; // Vocabulary 컴포넌트
 
 function App() {
   const [vocabularies, setVocabularies] = useState(() => {

@@ -1,6 +1,6 @@
 //flashcard.js
 import React, { useState, useEffect } from 'react';
-import './vocabulary.css';
+import '../styles/vocabulary.css';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const Flashcard = ({ vocabularies, onUpdateVocabulary }) => {
