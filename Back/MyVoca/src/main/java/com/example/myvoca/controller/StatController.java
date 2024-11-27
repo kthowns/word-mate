@@ -1,8 +1,8 @@
 package com.example.myvoca.controller;
 
 import com.example.myvoca.dto.ApiResponse;
-import com.example.myvoca.dto.UpdateStats;
-import com.example.myvoca.service.StatsService;
+import com.example.myvoca.dto.UpdateStat;
+import com.example.myvoca.service.StatService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,8 +15,8 @@ import static com.example.myvoca.code.ApiResponseCode.OK;
 @RestController
 @Slf4j
 @RequestMapping("/api")
-public class StatsController {
-    private final StatsService statsService;
+public class StatController {
+    private final StatService statService;
 
     @GetMapping("/stats/all")
     public ResponseEntity<?> getStats(
@@ -24,7 +24,7 @@ public class StatsController {
     ) {
         log.info("HTTP GET /api/stats/all?vocab_id=" + vocab_id);
         return ApiResponse.toResponseEntity(OK,
-                statsService.getStats(vocab_id));
+                statService.getStats(vocab_id));
     }
 
     @GetMapping("/stats/detail")
@@ -33,7 +33,7 @@ public class StatsController {
     ) {
         log.info("HTTP GET /api/stats/detail?word_id=" + word_id);
         return ApiResponse.toResponseEntity(OK,
-                statsService.getStatsDetail(word_id));
+                statService.getStatDetail(word_id));
     }
 
     @GetMapping("/stats/lr")
@@ -42,7 +42,7 @@ public class StatsController {
     ) {
         log.info("HTTP GET /api/stats/lr?vocab_id=" + vocab_id);
         return ApiResponse.toResponseEntity(OK,
-                statsService.getLearningRate(vocab_id));
+                statService.getLearningRate(vocab_id));
     }
 
     @GetMapping("/stats/diff")
@@ -51,16 +51,16 @@ public class StatsController {
     ) {
         log.info("HTTP GET /api/stats/diff?word_id=" + word_id);
         return ApiResponse.toResponseEntity(OK,
-                statsService.getDifficulty(word_id));
+                statService.getDifficulty(word_id));
     }
 
     @PatchMapping("/stats/{word_id}")
     public ResponseEntity<?> updateStats(
             @Valid @PathVariable Integer word_id,
-            @Valid @RequestBody UpdateStats.Request request
+            @Valid @RequestBody UpdateStat.Request request
     ) {
         log.info("HTTP PUT /api/stats/" + word_id);
         return ApiResponse.toResponseEntity(OK,
-                statsService.updateStats(word_id, request));
+                statService.updateStat(word_id, request));
     }
 }

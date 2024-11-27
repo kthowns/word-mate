@@ -1,7 +1,7 @@
 package com.example.myvoca.service;
 
 import com.example.myvoca.dto.CreateWord;
-import com.example.myvoca.dto.UpdateStats;
+import com.example.myvoca.dto.UpdateStat;
 import com.example.myvoca.dto.WordDto;
 import com.example.myvoca.entity.Vocab;
 import com.example.myvoca.entity.Word;
@@ -24,7 +24,7 @@ import static com.example.myvoca.code.ApiResponseCode.*;
 public class WordService {
     private final VocabRepository vocabRepository;
     private final WordRepository wordRepository;
-    private final StatsService statsService;
+    private final StatService statService;
 
     public List<WordDto> getWords(Integer vocabId) {
         return wordRepository.findByVocab(getVocabById(vocabId))
@@ -44,12 +44,12 @@ public class WordService {
 
         vocab.setWordCount(vocabRepository.countWords(vocab.getVocabId()));
 
-        UpdateStats.Request statsRequest = UpdateStats.Request.builder()
+        UpdateStat.Request statsRequest = UpdateStat.Request.builder()
                 .isLearned(0)
                 .incorrectCount(0)
                 .correctCount(0)
                 .build();
-        statsService.updateStats(word.getWordId(), statsRequest);
+        statService.updateStat(word.getWordId(), statsRequest);
 
         return CreateWord.Response.fromEntity(word);
     }
@@ -61,6 +61,7 @@ public class WordService {
     @Transactional
     public CreateWord.Response editWord(Integer wordId, CreateWord.Request request) {
         Word word = getWordById(wordId);
+        validateWordDuplicate(request.getExpression(), word.getVocab());
         word.setExpression(request.getExpression());
 
         return CreateWord.Response.fromEntity(word);

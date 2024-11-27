@@ -32,7 +32,7 @@ public class VocabService {
 
     @Transactional
     public CreateVocab.Response createVocab(Integer userId, CreateVocab.Request request) {
-        validateVocabDuplicate(request.getTitle(), userId);
+        validateVocabDuplicate(request.getTitle(), getUserById(userId));
         Vocab vocab = Vocab.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
@@ -51,6 +51,7 @@ public class VocabService {
     @Transactional
     public CreateVocab.Response editVocab(Integer vocabId, CreateVocab.Request request) {
         Vocab vocab = getVocabById(vocabId);
+        validateVocabDuplicate(request.getTitle(), vocab.getUser());
         vocab.setTitle(request.getTitle());
         vocab.setDescription(request.getDescription());
 
@@ -74,8 +75,8 @@ public class VocabService {
                 .orElseThrow(() -> new ApiException(NO_USER));
     }
 
-    private void validateVocabDuplicate(String title, Integer userId){
-        vocabRepository.findByTitleAndUser(title, getUserById(userId))
+    private void validateVocabDuplicate(String title, User user){
+        vocabRepository.findByTitleAndUser(title, user)
                 .ifPresent((e) -> { throw new ApiException(DUPLICATED_TITLE); });
     }
 }
