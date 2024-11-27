@@ -2,8 +2,8 @@ show tables;
 describe users;
 describe vocabs;
 describe words;
-describe definition;
-describe word_stats;
+describe defs;
+describe stats;
 
 INSERT INTO users (username, password)
 VALUES ('user1', 'password1'),
@@ -41,7 +41,7 @@ VALUES (1, 'apple'),
        (4, 'slowly'),
        (5, 'orange');
 
-INSERT INTO definition (word_id, definition, type)
+INSERT INTO defs (word_id, definition, type)
 VALUES (1, '사과', 'NOUN'),
        (2, '달리다', 'VERB'),
        (3, '행복한', 'ADJECTIVE'),
@@ -53,7 +53,7 @@ VALUES (1, '사과', 'NOUN'),
        (9, '천천히', 'ADVERB'),
        (10, '오렌지', 'NOUN');
 
-INSERT INTO word_stats (word_id, correct_count, incorrect_count, is_learned)
+INSERT INTO stats (word_id, correct_count, incorrect_count, is_learned)
 VALUES (1, 10, 2, 1),
        (2, 5, 3, 1),
        (3, 8, 1, 1),
@@ -65,8 +65,13 @@ VALUES (1, 10, 2, 1),
        (9, 1, 1, 0),
        (10, 8, 2, 1);
 
-select * from users;
-select * from vocabs;
-select * from words;
-select * from definition;
-select * from word_stats;
+select *
+from users;
+select *
+from vocabs;
+select *
+from words;
+select *
+from defs;
+select *
+from stats;

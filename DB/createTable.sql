@@ -14,7 +14,7 @@ CREATE TABLE vocabs
 (
     vocab_id    INT AUTO_INCREMENT PRIMARY KEY,
     user_id     INT         NOT NULL,
-    title       VARCHAR(16) NOT NULL UNIQUE,
+    title       VARCHAR(16) NOT NULL,
     description VARCHAR(32),
     word_count  INT,
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -30,7 +30,7 @@ CREATE TABLE words
     FOREIGN KEY (vocab_id) REFERENCES vocabs (vocab_id) ON DELETE CASCADE
 );
 
-CREATE TABLE word_stats
+CREATE TABLE stats
 (
     word_id         INT PRIMARY KEY,
     correct_count   INT     DEFAULT 0,
@@ -39,11 +39,11 @@ CREATE TABLE word_stats
     FOREIGN KEY (word_id) REFERENCES words (word_id) ON DELETE CASCADE
 );
 
-CREATE TABLE definition
+CREATE TABLE defs
 (
-    definition_id INT AUTO_INCREMENT PRIMARY KEY,
-    word_id       INT         NOT NULL,
-    definition    VARCHAR(64) NOT NULL,
-    type          VARCHAR(32) NOT NULL,
+    def_id     INT AUTO_INCREMENT PRIMARY KEY,
+    word_id    INT         NOT NULL,
+    definition VARCHAR(64) NOT NULL,
+    type       VARCHAR(32) NOT NULL,
     FOREIGN KEY (word_id) REFERENCES words (word_id) ON DELETE CASCADE
 );
