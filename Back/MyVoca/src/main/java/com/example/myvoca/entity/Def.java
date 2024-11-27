@@ -9,13 +9,13 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name="definition")
+@Table(name="defs")
 @EqualsAndHashCode
-public class Definition {
+public class Def {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="definition_id")
-    private Integer definitionId;
+    @Column(name="def_id")
+    private Integer defId;
     @ManyToOne
     @JoinColumn(name="word_id")
     private Word word;

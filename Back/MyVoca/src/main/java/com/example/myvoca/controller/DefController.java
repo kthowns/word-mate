@@ -1,8 +1,8 @@
 package com.example.myvoca.controller;
 
 import com.example.myvoca.dto.ApiResponse;
-import com.example.myvoca.dto.CreateDefinition;
-import com.example.myvoca.service.DefinitionService;
+import com.example.myvoca.dto.CreateDef;
+import com.example.myvoca.service.DefService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,41 +15,41 @@ import static com.example.myvoca.code.ApiResponseCode.OK;
 @RestController
 @Slf4j
 @RequestMapping("/api")
-public class DefinitionController {
-    private final DefinitionService definitionService;
+public class DefController {
+    private final DefService defService;
 
     @GetMapping("/defs/all")
-    public ResponseEntity<?> getDefinitions(
+    public ResponseEntity<?> getDef(
             @Valid @RequestParam Integer word_id
     ) {
         log.info("HTTP GET /api/all/def/" + word_id);
 
-        return ApiResponse.toResponseEntity(OK, definitionService.getDefinitions(word_id));
+        return ApiResponse.toResponseEntity(OK, defService.getDefs(word_id));
     }
 
     @PostMapping("/defs/{word_id}")
-    public ResponseEntity<?> createDefinition(
+    public ResponseEntity<?> createDef(
             @Valid @PathVariable Integer word_id,
-            @Valid @RequestBody CreateDefinition.Request request
+            @Valid @RequestBody CreateDef.Request request
     ) {
         log.info("HTTP POST /api/def/" + word_id);
-        return ApiResponse.toResponseEntity(OK, definitionService.createDefinition(word_id, request));
+        return ApiResponse.toResponseEntity(OK, defService.createDef(word_id, request));
     }
 
     @PatchMapping("/defs/{def_id}")
-    public ResponseEntity<?> editDefinition(
+    public ResponseEntity<?> editDef(
             @Valid @PathVariable Integer def_id,
-            @Valid @RequestBody CreateDefinition.Request request
+            @Valid @RequestBody CreateDef.Request request
     ) {
         log.info("HTTP PATCH /api/def/" + def_id);
-        return ApiResponse.toResponseEntity(OK, definitionService.editDefinition(def_id, request));
+        return ApiResponse.toResponseEntity(OK, defService.editDef(def_id, request));
     }
 
     @DeleteMapping("/defs/{def_id}")
-    public ResponseEntity<?> deleteDefinition(
+    public ResponseEntity<?> deleteDef(
             @Valid @PathVariable Integer def_id
     ){
         log.info("HTTP DELETE /api/def/" + def_id);
-        return ApiResponse.toResponseEntity(OK, definitionService.deleteDefinition(def_id));
+        return ApiResponse.toResponseEntity(OK, defService.deleteDef(def_id));
     }
 }

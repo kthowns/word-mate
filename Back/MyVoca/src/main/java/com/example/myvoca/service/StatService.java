@@ -1,12 +1,12 @@
 package com.example.myvoca.service;
 
-import com.example.myvoca.dto.StatsDto;
-import com.example.myvoca.dto.UpdateStats;
-import com.example.myvoca.entity.Stats;
+import com.example.myvoca.dto.StatDto;
+import com.example.myvoca.dto.UpdateStat;
+import com.example.myvoca.entity.Stat;
 import com.example.myvoca.entity.Vocab;
 import com.example.myvoca.entity.Word;
 import com.example.myvoca.exception.ApiException;
-import com.example.myvoca.repository.StatsRepository;
+import com.example.myvoca.repository.StatRepository;
 import com.example.myvoca.repository.VocabRepository;
 import com.example.myvoca.repository.WordRepository;
 import jakarta.transaction.Transactional;
@@ -23,66 +23,66 @@ import static com.example.myvoca.code.ApiResponseCode.*;
 @RequiredArgsConstructor
 @Service
 @Slf4j
-public class StatsService {
-    private final StatsRepository statsRepository;
+public class StatService {
+    private final StatRepository statRepository;
     private final VocabRepository vocabRepository;
     private final WordRepository wordRepository;
 
-    @Transactional
-    public UpdateStats.Response updateStats(Integer wordId, UpdateStats.Request request) {
-        Optional<Stats> OpStats = statsRepository.findById(wordId);
+    public List<StatDto> getStats(Integer vocabId) {
+        return statRepository.findByVocab(getVocabById(vocabId))
+                .stream().map(StatDto::fromEntity)
+                .collect(Collectors.toList());
+    }
 
-        if(OpStats.isEmpty()){
-            //Stats을 최초 생성하는 경우
+    public StatDto getStatDetail(Integer wordId) {
+        return StatDto.fromEntity(getStatsById(wordId));
+    }
+
+    public double getDifficulty(Integer wordId) {
+        Stat stat = getStatsById(wordId);
+        return calcDifficulty(stat.getCorrectCount(), stat.getIncorrectCount());
+    }
+
+    public double getLearningRate(Integer vocabId) {
+        return statRepository.getLearningRateByVocab(getVocabById(vocabId));
+    }
+
+    @Transactional
+    public UpdateStat.Response updateStat(Integer wordId, UpdateStat.Request request) {
+        Optional<Stat> OpStat = statRepository.findById(wordId);
+
+        if(OpStat.isEmpty()){
+            //Stat을 최초 생성하는 경우
             if (request.getIsLearned() == null)
                 request.setIsLearned(0);
             if (request.getCorrectCount() == null)
                 request.setCorrectCount(0);
             if (request.getIncorrectCount() == null)
                 request.setIncorrectCount(0);
-            Stats stats = Stats.builder()
+            Stat stat = Stat.builder()
                     .word(getWordById(wordId))
                     .correctCount(request.getCorrectCount())
                     .incorrectCount(request.getIncorrectCount())
                     .isLearned(request.getIsLearned())
                     .build();
 
-            return UpdateStats.Response.fromEntity(statsRepository.save(stats));
+            return UpdateStat.Response.fromEntity(statRepository.save(stat));
         }
 
-        //Stats이 이미 존재하는 경우
-        Stats stats = OpStats.get();
+        //Stat이 이미 존재하는 경우
+        Stat stat = OpStat.get();
         if (request.getIsLearned() != null)
-            stats.setIsLearned(request.getIsLearned());
+            stat.setIsLearned(request.getIsLearned());
         if (request.getIncorrectCount() != null)
-            stats.setIncorrectCount(request.getIncorrectCount());
+            stat.setIncorrectCount(request.getIncorrectCount());
         if (request.getCorrectCount() != null)
-            stats.setCorrectCount(request.getCorrectCount());
+            stat.setCorrectCount(request.getCorrectCount());
 
-        return UpdateStats.Response.fromEntity(stats);
+        return UpdateStat.Response.fromEntity(stat);
     }
 
-    public StatsDto getStatsDetail(Integer wordId) {
-        return StatsDto.fromEntity(getStatsById(wordId));
-    }
-
-    public double getDifficulty(Integer wordId) {
-        Stats stats = getStatsById(wordId);
-        return calcDifficulty(stats.getCorrectCount(), stats.getIncorrectCount());
-    }
-
-    public double getLearningRate(Integer vocabId) {
-        return statsRepository.getLearningRateByVocab(getVocabById(vocabId));
-    }
-
-    public List<StatsDto> getStats(Integer vocabId) {
-        return statsRepository.findByVocab(getVocabById(vocabId))
-                .stream().map(StatsDto::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-    private Stats getStatsById(Integer wordId) {
-        return statsRepository.findById(wordId)
+    private Stat getStatsById(Integer wordId) {
+        return statRepository.findById(wordId)
                 .orElseThrow(() -> new ApiException(NO_STATS));
     }
 

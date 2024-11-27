@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity
 @Table(name = "stats")
-public class Stats {
+public class Stat {
     @Id
     private Integer wordId;
 
