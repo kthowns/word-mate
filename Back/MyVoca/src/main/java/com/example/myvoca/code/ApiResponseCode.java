@@ -16,7 +16,7 @@ public enum ApiResponseCode {
     NO_USER(HttpStatus.NOT_FOUND, "No user found"),
     NO_VOCAB(HttpStatus.NOT_FOUND, "No vocab found"),
     NO_WORD(HttpStatus.NOT_FOUND, "No word found"),
-    NO_DEFINITION(HttpStatus.NOT_FOUND, "No definition found"),
+    NO_DEF(HttpStatus.NOT_FOUND, "No def found"),
     NO_THEME(HttpStatus.NOT_FOUND, "No theme found"),
     NO_STATS(HttpStatus.NOT_FOUND, "No stats found"),
     DUPLICATED_TITLE(HttpStatus.CONFLICT, "Title is duplicated"),

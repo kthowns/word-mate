@@ -34,7 +34,7 @@ class WordServiceTest {
     @Mock
     private VocabRepository vocabRepository;
     @Mock
-    private StatsService statsService;
+    private StatService statService;
 
     @InjectMocks
     private WordService wordService;

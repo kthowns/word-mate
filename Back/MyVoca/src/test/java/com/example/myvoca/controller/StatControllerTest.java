@@ -1,11 +1,11 @@
 package com.example.myvoca.controller;
 
-import com.example.myvoca.dto.StatsDto;
-import com.example.myvoca.dto.UpdateStats;
-import com.example.myvoca.entity.Stats;
+import com.example.myvoca.dto.StatDto;
+import com.example.myvoca.dto.UpdateStat;
+import com.example.myvoca.entity.Stat;
 import com.example.myvoca.entity.Vocab;
 import com.example.myvoca.entity.Word;
-import com.example.myvoca.service.StatsService;
+import com.example.myvoca.service.StatService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,8 +25,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(StatsController.class)
-class StatsControllerTest {
+@WebMvcTest(StatController.class)
+class StatControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
@@ -34,7 +34,7 @@ class StatsControllerTest {
     private ObjectMapper objectMapper;
 
     @MockBean
-    private StatsService statsService;
+    private StatService statService;
 
     Vocab defaultVocab = Vocab.builder()
             .vocabId(1)
@@ -49,7 +49,7 @@ class StatsControllerTest {
             .expression("expression")
             .build();
 
-    Stats defaultStats = Stats.builder()
+    Stat defaultStat = Stat.builder()
             .word(defaultWord)
             .correctCount(6)
             .incorrectCount(3)
@@ -60,9 +60,9 @@ class StatsControllerTest {
     @Test
     void getStatsTest_success() throws Exception {
         //given
-        List<StatsDto> response = Collections.singletonList(
-                StatsDto.fromEntity(defaultStats));
-        given(statsService.getStats(1))
+        List<StatDto> response = Collections.singletonList(
+                StatDto.fromEntity(defaultStat));
+        given(statService.getStats(1))
                 .willReturn(response);
         //when & then
         mockMvc.perform(get("/api/stats/all")
@@ -73,16 +73,16 @@ class StatsControllerTest {
                                 .value(200)
                 ).andExpect(
                         jsonPath("$.data[0].wordId")
-                                .value(defaultStats.getWord().getWordId())
+                                .value(defaultStat.getWord().getWordId())
                 ).andExpect(
                         jsonPath("$.data[0].correctCount")
-                                .value(defaultStats.getCorrectCount())
+                                .value(defaultStat.getCorrectCount())
                 ).andExpect(
                         jsonPath("$.data[0].incorrectCount")
-                                .value(defaultStats.getIncorrectCount())
+                                .value(defaultStat.getIncorrectCount())
                 ).andExpect(
                         jsonPath("$.data[0].isLearned")
-                                .value(defaultStats.getIsLearned())
+                                .value(defaultStat.getIsLearned())
                 );
     }
 
@@ -106,8 +106,8 @@ class StatsControllerTest {
     @Test
     void getStatsDetailTest_success() throws Exception {
         //given
-        StatsDto response = StatsDto.fromEntity(defaultStats);
-        given(statsService.getStatsDetail(1))
+        StatDto response = StatDto.fromEntity(defaultStat);
+        given(statService.getStatDetail(1))
                 .willReturn(response);
         //when & then
         mockMvc.perform(get("/api/stats/detail")
@@ -118,16 +118,16 @@ class StatsControllerTest {
                                 .value(200)
                 ).andExpect(
                         jsonPath("$.data.wordId")
-                                .value(defaultStats.getWord().getWordId())
+                                .value(defaultStat.getWord().getWordId())
                 ).andExpect(
                         jsonPath("$.data.correctCount")
-                                .value(defaultStats.getCorrectCount())
+                                .value(defaultStat.getCorrectCount())
                 ).andExpect(
                         jsonPath("$.data.incorrectCount")
-                                .value(defaultStats.getIncorrectCount())
+                                .value(defaultStat.getIncorrectCount())
                 ).andExpect(
                         jsonPath("$.data.isLearned")
-                                .value(defaultStats.getIsLearned())
+                                .value(defaultStat.getIsLearned())
                 );
     }
 
@@ -150,12 +150,12 @@ class StatsControllerTest {
     @DisplayName("[API][PATCH] /api/stats/{stats_id} 성공")
     @Test
     void updateStatsTest_success() throws Exception {
-        UpdateStats.Request request = toRequest(defaultStats);
+        UpdateStat.Request request = toRequest(defaultStat);
         request.setCorrectCount(5);
-        UpdateStats.Response response = UpdateStats.Response.fromEntity(defaultStats);
+        UpdateStat.Response response = UpdateStat.Response.fromEntity(defaultStat);
         response.setCorrectCount(request.getCorrectCount());
         //given
-        given(statsService.updateStats(1, request))
+        given(statService.updateStat(1, request))
                 .willReturn(response);
         //when & then
         mockMvc.perform(patch("/api/stats/{stats_id}", 1)
@@ -167,28 +167,28 @@ class StatsControllerTest {
                                 .value(200)
                 ).andExpect(
                         jsonPath("$.data.wordId")
-                                .value(defaultStats.getWord().getWordId())
+                                .value(defaultStat.getWord().getWordId())
                 ).andExpect(
                         jsonPath("$.data.correctCount")
                                 .value(request.getCorrectCount())
                 ).andExpect(
                         jsonPath("$.data.incorrectCount")
-                                .value(defaultStats.getIncorrectCount())
+                                .value(defaultStat.getIncorrectCount())
                 ).andExpect(
                         jsonPath("$.data.isLearned")
-                                .value(defaultStats.getIsLearned())
+                                .value(defaultStat.getIsLearned())
                 );
     }
 
     @DisplayName("[API][PATCH] /api/stats/{stats_id} Invalid request")
     @Test
     void updateStatsTest_invalid_request() throws Exception {
-        UpdateStats.Request request = toRequest(defaultStats);
-        UpdateStats.Response response = UpdateStats.Response
-                .fromEntity(defaultStats);
+        UpdateStat.Request request = toRequest(defaultStat);
+        UpdateStat.Response response = UpdateStat.Response
+                .fromEntity(defaultStat);
         request.setCorrectCount(-1);
         //given
-        given(statsService.updateStats(1, request))
+        given(statService.updateStat(1, request))
                 .willReturn(response);
         //when & then
         mockMvc.perform(patch("/api/stats/{stats_id}", 1)
@@ -208,7 +208,7 @@ class StatsControllerTest {
     @Test
     void getLearningRateTest_success() throws Exception {
         //given
-        given(statsService.getLearningRate(1))
+        given(statService.getLearningRate(1))
                 .willReturn(0.5);
         //when & then
         mockMvc.perform(get("/api/stats/lr")
@@ -227,7 +227,7 @@ class StatsControllerTest {
     @Test
     void getDifficultyTest_success() throws Exception {
         //given
-        given(statsService.getDifficulty(1))
+        given(statService.getDifficulty(1))
                 .willReturn(0.5);
         //when & then
         mockMvc.perform(get("/api/stats/diff")
@@ -242,11 +242,11 @@ class StatsControllerTest {
                 );
     }
 
-    private UpdateStats.Request toRequest(Stats stats) {
-        return UpdateStats.Request.builder()
-                .correctCount(stats.getCorrectCount())
-                .incorrectCount(stats.getIncorrectCount())
-                .isLearned(stats.getIsLearned())
+    private UpdateStat.Request toRequest(Stat stat) {
+        return UpdateStat.Request.builder()
+                .correctCount(stat.getCorrectCount())
+                .incorrectCount(stat.getIncorrectCount())
+                .isLearned(stat.getIsLearned())
                 .build();
     }
 }

@@ -16,8 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Collections;
 import java.util.List;
 
-import static com.example.myvoca.code.ApiResponseCode.INTERNAL_SERVER_ERROR;
-import static com.example.myvoca.code.ApiResponseCode.INVALID_REQUEST_BODY;
+import static com.example.myvoca.code.ApiResponseCode.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -72,6 +71,9 @@ class VocabControllerTest {
                 ).andExpect(
                         jsonPath("$.data[0].description")
                                 .value(defaultVocab.getDescription())
+                ).andExpect(
+                        jsonPath("$.message")
+                                .value(OK.getMessage())
                 );
     }
 

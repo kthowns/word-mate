@@ -1,12 +1,12 @@
 package com.example.myvoca.service;
 
-import com.example.myvoca.dto.StatsDto;
-import com.example.myvoca.dto.UpdateStats;
-import com.example.myvoca.entity.Stats;
+import com.example.myvoca.dto.StatDto;
+import com.example.myvoca.dto.UpdateStat;
+import com.example.myvoca.entity.Stat;
 import com.example.myvoca.entity.User;
 import com.example.myvoca.entity.Vocab;
 import com.example.myvoca.entity.Word;
-import com.example.myvoca.repository.StatsRepository;
+import com.example.myvoca.repository.StatRepository;
 import com.example.myvoca.repository.VocabRepository;
 import com.example.myvoca.repository.WordRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -30,16 +30,16 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class StatsServiceTest {
+class StatServiceTest {
     @Mock
     private VocabRepository vocabRepository;
     @Mock
     private WordRepository wordRepository;
     @Mock
-    private StatsRepository statsRepository;
+    private StatRepository statRepository;
 
     @InjectMocks
-    private StatsService statsService;
+    private StatService statService;
 
     private final User defaultUser = User.builder()
             .userId(1)
@@ -61,7 +61,7 @@ class StatsServiceTest {
             .vocab(defaultVocab)
             .build();
 
-    private final Stats defaultStats = Stats.builder()
+    private final Stat defaultStat = Stat.builder()
             .word(defaultWord)
             .correctCount(6)
             .incorrectCount(3)
@@ -70,66 +70,66 @@ class StatsServiceTest {
 
     @DisplayName("[Service] 통계 최초 등록")
     @Test
-    void updateStatsTest_initial() {
+    void updateStatTest_initial() {
         //given
         given(wordRepository.findById(1))
                 .willReturn(Optional.of(defaultWord));
-        given(statsRepository.save(any(Stats.class)))
-                .willReturn(defaultStats);
-        ArgumentCaptor<Stats> captor =
-                ArgumentCaptor.forClass(Stats.class);
-        UpdateStats.Request request = toRequest(defaultStats);
+        given(statRepository.save(any(Stat.class)))
+                .willReturn(defaultStat);
+        ArgumentCaptor<Stat> captor =
+                ArgumentCaptor.forClass(Stat.class);
+        UpdateStat.Request request = toRequest(defaultStat);
         request.setIncorrectCount(null);
         request.setCorrectCount(null);
         request.setIsLearned(null);
         //when
-        statsService.updateStats(1, request);
+        statService.updateStat(1, request);
         //then
-        verify(statsRepository, times(1))
+        verify(statRepository, times(1))
                 .save(captor.capture());
-        Stats savedStats = captor.getValue();
-        assertEquals(0, savedStats.getCorrectCount());
-        assertEquals(0, savedStats.getIncorrectCount());
-        assertEquals(0, savedStats.getIsLearned());
+        Stat savedStat = captor.getValue();
+        assertEquals(0, savedStat.getCorrectCount());
+        assertEquals(0, savedStat.getIncorrectCount());
+        assertEquals(0, savedStat.getIsLearned());
     }
 
     @DisplayName("[Service] 통계 업데이트 성공")
     @Test
-    void updateStatsTest_success() {
+    void updateStatTest_success() {
         //given
         given(wordRepository.findById(1))
                 .willReturn(Optional.of(defaultWord));
-        given(statsRepository.save(any(Stats.class)))
-                .willReturn(defaultStats);
-        UpdateStats.Request request = toRequest(defaultStats);
+        given(statRepository.save(any(Stat.class)))
+                .willReturn(defaultStat);
+        UpdateStat.Request request = toRequest(defaultStat);
         //when
-        UpdateStats.Response response = statsService.updateStats(1, request);
+        UpdateStat.Response response = statService.updateStat(1, request);
         //then
-        assertEquals(response.getCorrectCount(), defaultStats.getCorrectCount());
-        assertEquals(response.getIncorrectCount(), defaultStats.getIncorrectCount());
-        assertEquals(response.getIsLearned(), defaultStats.getIsLearned());
-        assertEquals(response.getWordId(), defaultStats.getWord().getWordId());
+        assertEquals(response.getCorrectCount(), defaultStat.getCorrectCount());
+        assertEquals(response.getIncorrectCount(), defaultStat.getIncorrectCount());
+        assertEquals(response.getIsLearned(), defaultStat.getIsLearned());
+        assertEquals(response.getWordId(), defaultStat.getWord().getWordId());
     }
 
     @DisplayName("[Service] 통계 업데이트 단일 변수")
     @Test
-    void updateStatsTest_success_single() {
-        UpdateStats.Request request = toRequest(defaultStats);
+    void updateStatTest_success_single() {
+        UpdateStat.Request request = toRequest(defaultStat);
         request.setIncorrectCount(null);
         request.setIsLearned(null);
 
         //given
         given(wordRepository.findById(1))
                 .willReturn(Optional.of(defaultWord));
-        given(statsRepository.save(any(Stats.class)))
-                .willReturn(defaultStats);
+        given(statRepository.save(any(Stat.class)))
+                .willReturn(defaultStat);
         //when
-        UpdateStats.Response response = statsService.updateStats(1, request);
+        UpdateStat.Response response = statService.updateStat(1, request);
         //then
-        assertEquals(response.getCorrectCount(), defaultStats.getCorrectCount());
-        assertEquals(response.getIncorrectCount(), defaultStats.getIncorrectCount());
-        assertEquals(response.getIsLearned(), defaultStats.getIsLearned());
-        assertEquals(response.getWordId(), defaultStats.getWord().getWordId());
+        assertEquals(response.getCorrectCount(), defaultStat.getCorrectCount());
+        assertEquals(response.getIncorrectCount(), defaultStat.getIncorrectCount());
+        assertEquals(response.getIsLearned(), defaultStat.getIsLearned());
+        assertEquals(response.getWordId(), defaultStat.getWord().getWordId());
     }
 
     @DisplayName("[Service] 통계 업데이트 NO_WORD")
@@ -140,7 +140,7 @@ class StatsServiceTest {
                 .willReturn(Optional.empty());
         //when
         Throwable e = assertThrows(Exception.class, () ->
-                statsService.updateStats(1, toRequest(defaultStats))
+                statService.updateStat(1, toRequest(defaultStat))
         );
         //then
         assertEquals(e.getMessage(), NO_WORD.getMessage());
@@ -148,14 +148,14 @@ class StatsServiceTest {
 
     @DisplayName("[Service] 통계 업데이트 NO_WORD ")
     @Test
-    void updateStatsTest_no_word() {
+    void updateStatTest_no_word() {
         //given
         given(wordRepository.findById(1))
                 .willReturn(Optional.empty());
-        UpdateStats.Request request = toRequest(defaultStats);
+        UpdateStat.Request request = toRequest(defaultStat);
         //when
         Throwable e = assertThrows(Exception.class, () ->
-                statsService.updateStats(1, request)
+                statService.updateStat(1, request)
         );
         //then
         assertEquals(e.getMessage(), NO_WORD.getMessage());
@@ -163,24 +163,24 @@ class StatsServiceTest {
 
     @DisplayName("[Service] 통계 Detail 성공")
     @Test
-    void getStatsDetailTest_success(){
+    void getStatDetailTest_success(){
         //given
-        given(statsRepository.findById(1))
-                .willReturn(Optional.of(defaultStats));
+        given(statRepository.findById(1))
+                .willReturn(Optional.of(defaultStat));
         //when
-        StatsDto stats = statsService.getStatsDetail(1);
+        StatDto stats = statService.getStatDetail(1);
         //then
-        assertEquals(stats.getWordId(), defaultStats.getWord().getWordId());
+        assertEquals(stats.getWordId(), defaultStat.getWord().getWordId());
     }
 
     @DisplayName("[Service] 단어 난이도 받기 성공")
     @Test
     void getDifficultyTest_success(){
         //given
-        given(statsRepository.findById(1))
-                .willReturn(Optional.of(defaultStats));
+        given(statRepository.findById(1))
+                .willReturn(Optional.of(defaultStat));
         //when
-        Double diff = statsService.getDifficulty(1);
+        Double diff = statService.getDifficulty(1);
         //then
         assertEquals(0.41000000000000003, diff);
     }
@@ -191,22 +191,22 @@ class StatsServiceTest {
         //given
         given(vocabRepository.findById(1))
                 .willReturn(Optional.of(defaultVocab));
-        given(statsRepository.findByVocab(any(Vocab.class)))
-                .willReturn(Collections.singletonList(defaultStats));
+        given(statRepository.findByVocab(any(Vocab.class)))
+                .willReturn(Collections.singletonList(defaultStat));
         //when
-        List<StatsDto> statsList = statsService.getStats(1);
+        List<StatDto> statsList = statService.getStats(1);
         //then
-        assertEquals(defaultStats.getWord().getWordId(), statsList.get(0).getWordId());
-        assertEquals(defaultStats.getIsLearned(), statsList.get(0).getIsLearned());
-        assertEquals(defaultStats.getCorrectCount(), statsList.get(0).getCorrectCount());
-        assertEquals(defaultStats.getIncorrectCount(), statsList.get(0).getIncorrectCount());
+        assertEquals(defaultStat.getWord().getWordId(), statsList.get(0).getWordId());
+        assertEquals(defaultStat.getIsLearned(), statsList.get(0).getIsLearned());
+        assertEquals(defaultStat.getCorrectCount(), statsList.get(0).getCorrectCount());
+        assertEquals(defaultStat.getIncorrectCount(), statsList.get(0).getIncorrectCount());
     }
 
-    private UpdateStats.Request toRequest(Stats stats) {
-        return UpdateStats.Request.builder()
-                .correctCount(stats.getCorrectCount())
-                .incorrectCount(stats.getIncorrectCount())
-                .isLearned(stats.getIsLearned())
+    private UpdateStat.Request toRequest(Stat stat) {
+        return UpdateStat.Request.builder()
+                .correctCount(stat.getCorrectCount())
+                .incorrectCount(stat.getIncorrectCount())
+                .isLearned(stat.getIsLearned())
                 .build();
     }
 }
