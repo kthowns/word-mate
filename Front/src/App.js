@@ -46,7 +46,7 @@ function App() {
       setNewVocab({ title: '', description: '' });
       closeAddModal();
     } else {
-      alert('제목123123132을 입력해 주세요.');
+      alert('제목을 입력해 주세요.');
     }
   };
 
