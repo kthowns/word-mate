@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Modal from './Modal';
-import './vocabulary.css';
+import '../styles/vocabulary.css';
 
 const Vocabulary = ({ vocabularies, onUpdateVocabulary }) => {
     const { id } = useParams();
