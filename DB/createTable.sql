@@ -47,13 +47,3 @@ CREATE TABLE definition
     type          VARCHAR(32) NOT NULL,
     FOREIGN KEY (word_id) REFERENCES words (word_id) ON DELETE CASCADE
 );
-
-CREATE TABLE theme
-(
-    theme_id  INT AUTO_INCREMENT PRIMARY KEY,
-    user_id   INT         NOT NULL,
-    font      VARCHAR(32) NOT NULL,
-    font_size INT         NOT NULL,
-    color     CHAR(7)     NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE
-);

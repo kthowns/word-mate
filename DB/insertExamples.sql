@@ -4,7 +4,6 @@ describe vocabs;
 describe words;
 describe definition;
 describe word_stats;
-describe theme;
 
 INSERT INTO users (username, password)
 VALUES ('user1', 'password1'),
@@ -66,21 +65,8 @@ VALUES (1, 10, 2, 1),
        (9, 1, 1, 0),
        (10, 8, 2, 1);
 
-INSERT INTO theme (user_id, font, font_size, color)
-VALUES (1, 'Arial', 12, '#000000'),
-       (2, 'Times New Roman', 14, '#FF5733'),
-       (3, 'Verdana', 16, '#33FF57'),
-       (4, 'Courier New', 18, '#3357FF'),
-       (5, 'Georgia', 20, '#FF33A1'),
-       (6, 'Helvetica', 22, '#F1C40F'),
-       (7, 'Comic Sans MS', 10, '#9B59B6'),
-       (8, 'Trebuchet MS', 24, '#2ECC71'),
-       (9, 'Impact', 26, '#E74C3C'),
-       (10, 'Lucida Console', 28, '#3498DB');
-
 select * from users;
 select * from vocabs;
 select * from words;
 select * from definition;
 select * from word_stats;
-select * from theme;
