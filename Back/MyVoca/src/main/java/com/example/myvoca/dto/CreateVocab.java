@@ -34,8 +34,8 @@ public class CreateVocab {
         private Timestamp createdAt;
         public static CreateVocab.Response fromEntity(Vocab vocab){
             String desc = vocab.getDescription();
-            if(desc.length() > 10)
-                desc = desc.substring(0,  10) + "...";
+            if(desc.length() > 15)
+                desc = desc.substring(0,  15) + "...";
             return Response.builder()
                     .vocabId(vocab.getVocabId())
                     .title(vocab.getTitle())
