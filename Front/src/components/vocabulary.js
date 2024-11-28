@@ -123,14 +123,19 @@ const Vocabulary = ({ vocabularies, onUpdateVocabulary }) => {
             return;
         }
 
-        const duplicateVocab = vocabularies.find(vocab => 
-            vocab.words?.some(item => 
-                item.word.toLowerCase() === trimmedWord.toLowerCase()
+        const duplicateVocabs = vocabularies
+            .filter(vocab => 
+                vocab.words?.some(item => 
+                    item.word.toLowerCase() === trimmedWord.toLowerCase()
+                )
             )
-        );
+            .map(vocab => vocab.title);
 
-        if (duplicateVocab) {
-            const confirmAdd = window.confirm(`'${duplicateVocab.title}' 단어장에 이미 추가된 단어입니다. 계속 추가하시겠습니까?`);
+        if (duplicateVocabs.length > 0) {
+            const vocabList = duplicateVocabs.map(title => `'${title}'`).join(', ');
+            const confirmAdd = window.confirm(
+                `${vocabList} 에 이미 추가된 단어입니다. 계속하시겠습니까?`
+            );
             if (!confirmAdd) return;
         }
 

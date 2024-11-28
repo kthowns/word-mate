@@ -81,3 +81,54 @@
 .back-button:hover {
     transform: translateX(-2px);
 }
+
+/* 난이도별 보더 스타일 */
+.vocab-item--difficulty-easy {
+    border-left: 8px solid rgba(76, 175, 80, 0.5);
+    background-color: rgba(76, 175, 80, 0.02);
+}
+
+.vocab-item--difficulty-medium {
+    border-left: 8px solid rgba(255, 193, 7, 0.5);
+    background-color: rgba(255, 193, 7, 0.02);
+}
+
+.vocab-item--difficulty-hard {
+    border-left: 8px solid rgba(255, 82, 82, 0.5); 
+    background-color: rgba(255, 82, 82, 0.02);
+}
+
+/* 체크된 아이템 스타일 */
+.selectedVocaItem.vocab-item--difficulty-easy,
+.selectedVocaItem.vocab-item--difficulty-medium,
+.selectedVocaItem.vocab-item--difficulty-hard {
+    border-left: none !important;
+    background-color: rgba(249, 249, 249, 0.7) !important;
+    border-top: 2px solid rgba(240, 187, 248, 0.5) !important;
+    border-bottom: 2px solid rgba(169, 198, 248, 0.5) !important;
+}
+
+.addMeaningButton {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: 50%;
+    margin-right: 10px;
+    font-size: 20px;
+    line-height: 1;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    background: linear-gradient(45deg, #f0bbf8, #a9c6f8);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.addMeaningButton:hover {
+    background: linear-gradient(45deg, #ff9add, #55a2fa);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
