@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Modal from './Modal';
 import '../styles/vocabulary.css';
 
-const Vocabulary = ({ vocabularies, onUpdateVocabulary }) => {
+const Vocabulary = ({ vocabularies, onUpdateVocabulary, isDarkMode }) => {
     const { id } = useParams();
     const [vocabulary, setVocabulary] = useState([]);
     const [selectedItems, setSelectedItems] = useState(() => {
@@ -211,7 +211,7 @@ const Vocabulary = ({ vocabularies, onUpdateVocabulary }) => {
     };
 
     return (
-        <div style={styles.vocabularyContainer}>
+        <div className={`${isDarkMode ? 'dark-mode' : ''}`} style={styles.vocabularyContainer}>
             <header style={styles.header}>
                 <div style={styles.headerLeft}>
                     <button 
@@ -226,7 +226,7 @@ const Vocabulary = ({ vocabularies, onUpdateVocabulary }) => {
                     <button className="custom-button" onClick={() => navigate(`/flashcard/${id}`)}>플래시 카드</button>
                     <button className="custom-button" onClick={() => navigate(`/OXquiz/${id}`)}>O/X</button>
                     <button className="custom-button" onClick={() => navigate(`/fillin/${id}`)}>빈칸 채우기</button>
-                    <button className="custom-button" onClick={openAddModal}>+</button>
+                    <button className="custom-button" onClick={openAddModal}>Add</button>
                 </div>
             </header>
 
@@ -282,7 +282,13 @@ const Vocabulary = ({ vocabularies, onUpdateVocabulary }) => {
                                     onChange={(e) => handleMeaningChange(index, 'meaning', e.target.value)}
                                 />
                                 <select
-                                    style={{...styles.commonInput, ...styles.selectBox}}
+                                    style={{
+                                        ...styles.commonInput,
+                                        ...styles.selectBox,
+                                        backgroundColor: isDarkMode ? '#5a5b5d' : '#fff',
+                                        color: isDarkMode ? '#e4e6eb' : '#000',
+                                        borderColor: isDarkMode ? '#3a3b3c' : '#ddd'
+                                    }}
                                     value={meaning.partOfSpeech}
                                     onChange={(e) => handleMeaningChange(index, 'partOfSpeech', e.target.value)}
                                 >
@@ -304,7 +310,7 @@ const Vocabulary = ({ vocabularies, onUpdateVocabulary }) => {
                         ))}
                     </div>
                     <button 
-                        className="addMeaningButton"
+                        className="add-meaning-button"
                         onClick={addMeaning}
                     >
                         +
@@ -333,7 +339,13 @@ const Vocabulary = ({ vocabularies, onUpdateVocabulary }) => {
                                     onChange={(e) => handleEditMeaningChange(index, 'meaning', e.target.value)}
                                 />
                                 <select
-                                    style={{...styles.commonInput, ...styles.selectBox}}
+                                    style={{
+                                        ...styles.commonInput,
+                                        ...styles.selectBox,
+                                        backgroundColor: isDarkMode ? '#5a5b5d' : '#fff',
+                                        color: isDarkMode ? '#e4e6eb' : '#000',
+                                        borderColor: isDarkMode ? '#3a3b3c' : '#ddd'
+                                    }}
                                     value={meaning.partOfSpeech}
                                     onChange={(e) => handleEditMeaningChange(index, 'partOfSpeech', e.target.value)}
                                 >
@@ -355,7 +367,7 @@ const Vocabulary = ({ vocabularies, onUpdateVocabulary }) => {
                         ))}
                     </div>
                     <button 
-                        className="addMeaningButton"
+                        className="add-meaning-button"
                         onClick={addEditMeaning}
                     >
                         +
