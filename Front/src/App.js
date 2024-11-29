@@ -12,7 +12,7 @@ import { AuthProvider, AuthContext } from './AuthContext';
 import './App.css';
 import logo from './logo.png';
 import Flashcard from './flashcard.js';
-import OXQuiz from './OXquiz.js';
+import OXQuiz from './OXQuiz.js'; // 정확한 대소문자로 수정
 import FillIn from './fillin.js';
 import LoginForm from './LoginForm';
 import SignUpForm from './SignUpForm';
