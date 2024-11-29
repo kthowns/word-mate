@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import '../styles/vocabulary.css';
 import { useParams, useNavigate } from 'react-router-dom';
 
-const Flashcard = ({ vocabularies, onUpdateVocabulary }) => {
+const Flashcard = ({ vocabularies, onUpdateVocabulary, isDarkMode }) => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -130,30 +130,34 @@ const Flashcard = ({ vocabularies, onUpdateVocabulary }) => {
     return (
         <div style={{
             fontFamily: 'TTHakgyoansimEunhasuR',
-            backgroundColor: '#f8f9fa',
+            backgroundColor: isDarkMode ? '#242526' : '#f8f9fa',
             display: 'flex',
             flexDirection: 'column',
             height: '100vh',
             position: 'relative',
-            padding: '20px'
+            padding: '20px',
+            color: isDarkMode ? '#e4e6eb' : '#000'
         }}>
             <header style={{
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 marginBottom: '20px',
-                borderBottom: '1px solid #ddd',
+                borderBottom: `1px solid ${isDarkMode ? '#4a4b4c' : '#ddd'}`,
                 padding: '10px 0'
             }}>
                 <button 
                     className="back-button"
                     onClick={() => navigate(-1)}
+                    style={{
+                        color: isDarkMode ? '#e4e6eb' : '#000'
+                    }}
                 >
                     ←
                 </button>
                 <p style={{
-                    fontSize: '18px',
-                    color: '#333'
+                    fontSize: '25px',
+                    color: isDarkMode ? '#e4e6eb' : '#333'
                 }}>{progress}</p>
                 <div style={{ width: '40px' }}></div>
             </header>
@@ -167,16 +171,16 @@ const Flashcard = ({ vocabularies, onUpdateVocabulary }) => {
                 <div style={{
                     width: '500px',
                     height: '300px',
-                    backgroundColor: '#fff',
+                    backgroundColor: isDarkMode ? '#3a3b3c' : '#fff',
                     borderRadius: '8px',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                    boxShadow: isDarkMode ? '0 2px 4px rgba(0,0,0,0.2)' : '0 2px 4px rgba(0,0,0,0.1)',
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    fontSize: '24px',
                     textAlign: 'center',
                     position: 'relative',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    color: isDarkMode ? '#e4e6eb' : '#000'
                 }} onClick={toggleFlashcard}>
                     <div style={{
                         display: isMeaningVisible ? 'none' : 'flex',
@@ -186,7 +190,7 @@ const Flashcard = ({ vocabularies, onUpdateVocabulary }) => {
                     }}>
                         <p>{currentCard.word}</p>
                         <button 
-                            className="custom-button"
+                            className="flashcard-button"
                             onClick={playAudio}
                             style={{
                                 position: 'absolute',
@@ -214,11 +218,11 @@ const Flashcard = ({ vocabularies, onUpdateVocabulary }) => {
                 justifyContent: 'space-around',
                 alignItems: 'center',
                 padding: '20px 0',
-                borderTop: '1px solid #ddd',
+                borderTop: `1px solid ${isDarkMode ? '#4a4b4c' : '#ddd'}`,
                 gap: '10px'
             }}>
                 <button 
-                    className="custom-button"
+                    className="flashcard-button"
                     onClick={handlePrevCard}
                 >
                     이전
@@ -229,10 +233,11 @@ const Flashcard = ({ vocabularies, onUpdateVocabulary }) => {
                     style={{
                         fontFamily: 'TTHakgyoansimEunhasuR',
                         padding: '8px 12px',
-                        border: '1px solid #ddd',
+                        border: `1px solid ${isDarkMode ? '#4a4b4c' : '#ddd'}`,
                         borderRadius: '4px',
                         fontSize: '14px',
-                        backgroundColor: '#fff',
+                        backgroundColor: isDarkMode ? '#3a3b3c' : '#fff',
+                        color: isDarkMode ? '#e4e6eb' : '#000',
                         cursor: !hasWords ? 'not-allowed' : 'pointer',
                         opacity: !hasWords ? 0.6 : 1
                     }}
@@ -249,12 +254,8 @@ const Flashcard = ({ vocabularies, onUpdateVocabulary }) => {
                     ))}
                 </select>
                 <button 
-                    className="custom-button"
+                    className="flashcard-button"
                     onClick={handleNextCard}
-                    style={{
-                        ...styles.button,
-                        backgroundColor: isLastCard ? '#4CAF50' : undefined
-                    }}
                 >
                     {isLastCard ? '완료' : '다음'}
                 </button>

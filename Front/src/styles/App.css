@@ -39,25 +39,41 @@ header {
 }
 
 /* 추가 버튼 스타일 */
-.add-button, .UIset {
+.add-button, .mode-toggle-button {
   font-family: 'TTHakgyoansimEunhasuR';
-  font-size: 30px;
-  padding: 10px 20px;
-  color: white;
+  font-size: 20px;
+  padding: 12px 24px;
   background: linear-gradient(45deg, #f0bbf8, #a9c6f8);
   border: none;
-  border-radius: 8px;
-  margin-right: 10px;
+  border-radius: 50px;
   cursor: pointer;
   transition: all 0.3s ease;
+  color: white;
+  margin-right: 15px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  min-width: 100px;
 }
 
-/* 버튼 마우스 오버 효과 */
-.add-button:hover, .UIset:hover {
+.add-button:hover, .mode-toggle-button:hover {
   background: linear-gradient(45deg, #ff9add, #55a2fa);
   transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* 다크모드에서의 버튼 스타일 */
+.dark-mode .add-button, 
+.dark-mode .mode-toggle-button {
+  border: 2px solid #a9c6f8;
+  color: #ffffff;
+  background: none;
+  box-shadow: none;
+}
+
+.dark-mode .add-button:hover,
+.dark-mode .mode-toggle-button:hover {
+  transform: translateY(-2px);
+  border-color: #ff9add;
+  background: none;
 }
 
 .learning-rate {
@@ -125,12 +141,12 @@ input[type="text"]:focus, textarea:focus {
   font-family: 'TTHakgyoansimEunhasuR';
   font-size: 18px;
   padding: 8px 16px;
-  color: white;
   background: linear-gradient(45deg, #f0bbf8, #a9c6f8);
   border: none;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
+  color: white;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
@@ -140,13 +156,35 @@ input[type="text"]:focus, textarea:focus {
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
-/* delete-button 스타일 */
+/* 다크모드에서의 단어장 버튼 스타일 */
+.dark-mode .vocab-button {
+  border: 2px solid #a9c6f8;
+  color: #ffffff;
+  background: none;
+  box-shadow: none;
+}
+
+.dark-mode .vocab-button:hover {
+  transform: translateY(-2px);
+  border-color: #ff9add;
+  background: none;
+}
+
+/* 삭제 버튼은 빨간색 계열로 유지 */
 .delete-button {
-  background: linear-gradient(45deg, #f48b8b, #e66b6b);
+  background: linear-gradient(45deg, #ffb3b3, #ff9999);
 }
 
 .delete-button:hover {
-  background: linear-gradient(45deg, #ff6e6e, #ff5050);
+  background: linear-gradient(45deg, #ff9999, #ff8080);
+}
+
+.dark-mode .delete-button {
+  border: 2px solid #ff9999;
+}
+
+.dark-mode .delete-button:hover {
+  border-color: #ff8080;
 }
 
 .vocab-buttons-container {
@@ -218,7 +256,7 @@ input[type="text"]:focus, textarea:focus {
 
 /* 수정 버튼 스타일 */
 .edit-button {
-  background: linear-gradient(45deg, #6fb8ff, #4a91ff);
+  background: linear-gradient(45deg, #9ed2ff, #7eb6ff);
   color: white;
   border: none;
   border-radius: 8px;
@@ -230,7 +268,7 @@ input[type="text"]:focus, textarea:focus {
 }
 
 .edit-button:hover {
-  background: linear-gradient(45deg, #4a91ff, #3177ff);
+  background: linear-gradient(45deg, #7eb6ff, #6ba6ff);
   transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
@@ -238,4 +276,173 @@ input[type="text"]:focus, textarea:focus {
 .vocab-title {
   text-decoration: none;
   color: inherit;
+}
+
+.vocab-item:hover .action-buttons {
+    opacity: 1;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.edit-button, .delete-button {
+    background: none;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.edit-button {
+    background: linear-gradient(45deg, #9ed2ff, #7eb6ff);
+    color: white;
+}
+
+.delete-button {
+    background: linear-gradient(45deg, #ffb3b3, #ff9999);
+    color: white;
+}
+
+/* 다크드 스타일 */
+.dark-mode {
+  background-color: #242526;
+  color: #e4e6eb;
+}
+
+.dark-mode .vocab-item {
+  background-color: #5a5b5d;
+  border-color: #4a4b4c;
+  color: #e4e6eb;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.dark-mode .vocab-title {
+  color: #ffffff;
+}
+
+.dark-mode .description {
+  color: #b0b3b8;
+}
+
+.dark-mode header {
+  border-color: #4a4b4c;
+}
+
+.dark-mode .modal {
+  background-color: #3a3b3c;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.dark-mode input[type="text"],
+.dark-mode textarea,
+.dark-mode select {
+  background-color: #5a5b5d;
+  color: #e4e6eb;
+  border-color: #4a4b4c;
+}
+
+.dark-mode input[type="text"]:focus,
+.dark-mode textarea:focus {
+  background-color: #5a5b5d;
+  border-color: #6b4c7c;
+}
+
+.dark-mode .close-button {
+  color: #ffffff;
+}
+
+.dark-mode .modal-overlay {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+/* 다크모드에서의 버튼 스타일 */
+.dark-mode .custom-button {
+  background: linear-gradient(45deg, #7b68ee, #4a91ff);
+  color: #ffffff;
+  border: none;
+}
+
+.dark-mode .custom-button:hover {
+  background: linear-gradient(45deg, #8b78ff, #5aa1ff);
+  transform: translateY(-2px);
+}
+
+.dark-mode .action-button {
+  background-color: #404040;
+  color: #ffffff;
+}
+
+.dark-mode .action-button:hover {
+  background-color: #505050;
+}
+
+/* 전역 다크모드  */
+body.dark-mode {
+  background-color: #242526;
+  color: #e4e6eb;
+}
+
+/* 모든 컴포넌트에 적용될 다크모드 스타일 */
+.dark-mode {
+  background-color: #242526;
+  color: #e4e6eb;
+}
+
+/* 기존 다크모드 스타일들... */
+
+/* 다크모드에서의 제목 색상 */
+.dark-mode .vocab-item h2 {
+    color: #e4e6eb;
+}
+
+/* 다크모드에서의 설명 텍스트 색상 */
+.dark-mode .description {
+    color: #b0b3b8;
+}
+
+/* 다크모드에서의 수정 버튼 스타일 */
+.dark-mode .edit-button {
+    border: 2px solid #7eb6ff;
+}
+
+.dark-mode .edit-button:hover {
+    border-color: #6ba6ff;
+}
+
+/* 플래시카드 버튼 스타일 */
+.flashcard-button {
+    font-family: 'TTHakgyoansimEunhasuR';
+    font-size: 18px;
+    padding: 8px 16px;
+    background: linear-gradient(45deg, #f0bbf8, #a9c6f8);
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.flashcard-button:hover {
+    background: linear-gradient(45deg, #ff9add, #55a2fa);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* 다크모드에서의 플래시카드 버튼 스타일 */
+.dark-mode .flashcard-button {
+    border: 2px solid #a9c6f8;
+    color: #ffffff;
+    background: none;
+    box-shadow: none;
+}
+
+.dark-mode .flashcard-button:hover {
+    transform: translateY(-2px);
+    border-color: #ff9add;
+    background: none;
 }

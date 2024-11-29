@@ -3,10 +3,13 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Modal from './Modal';
 import '../styles/vocabulary.css';
 
-const Vocabulary = ({ vocabularies, onUpdateVocabulary }) => {
+const Vocabulary = ({ vocabularies, onUpdateVocabulary, isDarkMode }) => {
     const { id } = useParams();
     const [vocabulary, setVocabulary] = useState([]);
-    const [selectedItems, setSelectedItems] = useState(new Set());
+    const [selectedItems, setSelectedItems] = useState(() => {
+        const saved = localStorage.getItem(`vocabulary_checked_${id}`);
+        return saved ? new Set(JSON.parse(saved)) : new Set();
+    });
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [wordInput, setWordInput] = useState('');
     const [meanings, setMeanings] = useState([{ meaning: '', partOfSpeech: '' }]);
@@ -17,21 +20,27 @@ const Vocabulary = ({ vocabularies, onUpdateVocabulary }) => {
     const [vocabularyTitle, setVocabularyTitle] = useState('');
 
     useEffect(() => {
+        const saved = localStorage.getItem(`vocabulary_checked_${id}`);
+        setSelectedItems(saved ? new Set(JSON.parse(saved)) : new Set());
+        
         const currentVocab = vocabularies?.find(vocab => vocab.id === Number(id));
         if (currentVocab) {
             setVocabulary(currentVocab.words || []);
             setVocabularyTitle(currentVocab.title);
         }
-    }, [vocabularies, id]);
+    }, [id, vocabularies]);
 
-    const toggleSelection = (index) => {
-        const newSelected = new Set(selectedItems);
-        if (newSelected.has(index)) {
-            newSelected.delete(index);
-        } else {
-            newSelected.add(index);
-        }
-        setSelectedItems(newSelected);
+    const toggleSelection = (wordId) => {
+        setSelectedItems(prev => {
+            const newSet = new Set(prev);
+            if (newSet.has(wordId)) {
+                newSet.delete(wordId);
+            } else {
+                newSet.add(wordId);
+            }
+            localStorage.setItem(`vocabulary_checked_${id}`, JSON.stringify([...newSet]));
+            return newSet;
+        });
     };
 
     const navigate = useNavigate();
@@ -92,36 +101,101 @@ const Vocabulary = ({ vocabularies, onUpdateVocabulary }) => {
     };
 
     const submitWord = () => {
-        if (wordInput && meanings.every((m) => m.meaning && m.partOfSpeech)) {
-            const newWord = {
-                id: Date.now(),
-                word: wordInput,
-                meanings: meanings.map((m) => `${m.meaning} (${m.partOfSpeech})`).join(', ')
-            };
-            
-            const updatedVocabulary = [...vocabulary, newWord];
-            setVocabulary(updatedVocabulary);
-            onUpdateVocabulary(Number(id), updatedVocabulary);
-            closeAddModal();
-        } else {
-            alert('모든 필드를 입력해주세요.');
+        const trimmedWord = wordInput.trim();
+        if (!trimmedWord) {
+            alert('단어를 입력해주세요.');
+            return;
         }
+
+        if (trimmedWord.length > 50) {
+            alert('단어는 50자를 초과할 수 없습니다.');
+            return;
+        }
+
+        const specialChars = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>?~`]/;
+        if (specialChars.test(trimmedWord)) {
+            alert('단어에는 특수문자를 포함할 수 없습니다.');
+            return;
+        }
+
+        if (!meanings.every((m) => m.meaning.trim() && m.partOfSpeech)) {
+            alert('모든 의미와 품사를 입력해주세요.');
+            return;
+        }
+
+        const duplicateVocabs = vocabularies
+            .filter(vocab => 
+                vocab.words?.some(item => 
+                    item.word.toLowerCase() === trimmedWord.toLowerCase()
+                )
+            )
+            .map(vocab => vocab.title);
+
+        if (duplicateVocabs.length > 0) {
+            const vocabList = duplicateVocabs.map(title => `'${title}'`).join(', ');
+            const confirmAdd = window.confirm(
+                `${vocabList} 에 이미 추가된 단어입니다. 계속하시겠습니까?`
+            );
+            if (!confirmAdd) return;
+        }
+
+        const newWord = {
+            id: Date.now(),
+            word: trimmedWord,
+            meanings: meanings.map((m) => `${m.meaning.trim()} (${m.partOfSpeech})`).join(', '),
+            difficulty: 0.5
+        };
+        
+        const updatedVocabulary = [...vocabulary, newWord];
+        setVocabulary(updatedVocabulary);
+        onUpdateVocabulary(Number(id), updatedVocabulary);
+        closeAddModal();
     };
 
     const submitEditWord = () => {
-        if (editWordInput && editMeanings.every((m) => m.meaning && m.partOfSpeech)) {
-            const updatedVocabulary = [...vocabulary];
-            updatedVocabulary[editIndex] = {
-                ...updatedVocabulary[editIndex],
-                word: editWordInput,
-                meanings: editMeanings.map((m) => `${m.meaning} (${m.partOfSpeech})`).join(', '),
-            };
-            setVocabulary(updatedVocabulary);
-            onUpdateVocabulary(Number(id), updatedVocabulary);
-            closeEditModal();
-        } else {
-            alert('모든 필드를 입력해주세요.');
+        const trimmedWord = editWordInput.trim();
+        if (!trimmedWord) {
+            alert('단어를 입력해주세요.');
+            return;
         }
+
+        if (trimmedWord.length > 50) {
+            alert('단어는 50자를 초과할 수 없습니다.');
+            return;
+        }
+
+        const specialChars = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>?~`]/;
+        if (specialChars.test(trimmedWord)) {
+            alert('단어에는 특수문자를 포함할 수 없습니다.');
+            return;
+        }
+
+        if (!editMeanings.every((m) => m.meaning.trim() && m.partOfSpeech)) {
+            alert('모든 의미와 품사를 입력해주세요.');
+            return;
+        }
+
+        const duplicateVocab = vocabularies.find(vocab => 
+            vocab.id !== Number(id) && 
+            vocab.words?.some(item => 
+                item.word.toLowerCase() === trimmedWord.toLowerCase()
+            )
+        );
+
+        if (duplicateVocab) {
+            const confirmEdit = window.confirm(`'${duplicateVocab.title}' 단어장에 이미 추가된 단어입니다. 계속 수정하시겠습니까?`);
+            if (!confirmEdit) return;
+        }
+
+        const updatedVocabulary = [...vocabulary];
+        updatedVocabulary[editIndex] = {
+            ...updatedVocabulary[editIndex],
+            word: trimmedWord,
+            meanings: editMeanings.map((m) => `${m.meaning.trim()} (${m.partOfSpeech})`).join(', ')
+        };
+        setVocabulary(updatedVocabulary);
+        onUpdateVocabulary(Number(id), updatedVocabulary);
+        closeEditModal();
     };
 
     const deleteVocabulary = (index) => {
@@ -132,8 +206,12 @@ const Vocabulary = ({ vocabularies, onUpdateVocabulary }) => {
         }
     };
 
+    const getDifficultyClass = (wordId, difficulty = 0.5) => {
+        return 'vocab-item--difficulty-medium';
+    };
+
     return (
-        <div style={styles.vocabularyContainer}>
+        <div className={`${isDarkMode ? 'dark-mode' : ''}`} style={styles.vocabularyContainer}>
             <header style={styles.header}>
                 <div style={styles.headerLeft}>
                     <button 
@@ -148,7 +226,7 @@ const Vocabulary = ({ vocabularies, onUpdateVocabulary }) => {
                     <button className="custom-button" onClick={() => navigate(`/flashcard/${id}`)}>플래시 카드</button>
                     <button className="custom-button" onClick={() => navigate(`/OXquiz/${id}`)}>O/X</button>
                     <button className="custom-button" onClick={() => navigate(`/fillin/${id}`)}>빈칸 채우기</button>
-                    <button className="custom-button" onClick={openAddModal}>+</button>
+                    <button className="custom-button" onClick={openAddModal}>Add</button>
                 </div>
             </header>
 
@@ -157,7 +235,7 @@ const Vocabulary = ({ vocabularies, onUpdateVocabulary }) => {
                     {vocabulary.map((item, index) => (
                         <div
                         key={item.id || index}
-                        className={`vocaItem ${selectedItems.has(index) ? 'selectedVocaItem' : ''}`}
+                        className={`vocaItem ${selectedItems.has(index) ? 'selectedVocaItem' : ''} ${getDifficultyClass(item.id, item.difficulty)}`}
                         style={styles.vocaItem}
                         onDoubleClick={() => toggleSelection(index)}
                     >
@@ -204,7 +282,13 @@ const Vocabulary = ({ vocabularies, onUpdateVocabulary }) => {
                                     onChange={(e) => handleMeaningChange(index, 'meaning', e.target.value)}
                                 />
                                 <select
-                                    style={{...styles.commonInput, ...styles.selectBox}}
+                                    style={{
+                                        ...styles.commonInput,
+                                        ...styles.selectBox,
+                                        backgroundColor: isDarkMode ? '#5a5b5d' : '#fff',
+                                        color: isDarkMode ? '#e4e6eb' : '#000',
+                                        borderColor: isDarkMode ? '#3a3b3c' : '#ddd'
+                                    }}
                                     value={meaning.partOfSpeech}
                                     onChange={(e) => handleMeaningChange(index, 'partOfSpeech', e.target.value)}
                                 >
@@ -225,7 +309,12 @@ const Vocabulary = ({ vocabularies, onUpdateVocabulary }) => {
                             </div>
                         ))}
                     </div>
-                    <button className="custom-button" onClick={addMeaning}>+</button>
+                    <button 
+                        className="add-meaning-button"
+                        onClick={addMeaning}
+                    >
+                        +
+                    </button>
                     <button className="custom-button" onClick={submitWord}>추가</button>
                 </Modal>
             )}
@@ -250,7 +339,13 @@ const Vocabulary = ({ vocabularies, onUpdateVocabulary }) => {
                                     onChange={(e) => handleEditMeaningChange(index, 'meaning', e.target.value)}
                                 />
                                 <select
-                                    style={{...styles.commonInput, ...styles.selectBox}}
+                                    style={{
+                                        ...styles.commonInput,
+                                        ...styles.selectBox,
+                                        backgroundColor: isDarkMode ? '#5a5b5d' : '#fff',
+                                        color: isDarkMode ? '#e4e6eb' : '#000',
+                                        borderColor: isDarkMode ? '#3a3b3c' : '#ddd'
+                                    }}
                                     value={meaning.partOfSpeech}
                                     onChange={(e) => handleEditMeaningChange(index, 'partOfSpeech', e.target.value)}
                                 >
@@ -271,7 +366,12 @@ const Vocabulary = ({ vocabularies, onUpdateVocabulary }) => {
                             </div>
                         ))}
                     </div>
-                    <button className="custom-button" style={styles.addMeaningButton} onClick={addEditMeaning}>+</button>
+                    <button 
+                        className="add-meaning-button"
+                        onClick={addEditMeaning}
+                    >
+                        +
+                    </button>
                     <button className="custom-button" onClick={submitEditWord}>수정</button>
                 </Modal>
             )}
