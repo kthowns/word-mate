@@ -1,13 +1,12 @@
-// App.js
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Modal from './components/Modal';
 import './styles/App.css';
 import logo from './resources/logo.png';
-import Flashcard from './components/flashcard'; // Flashcard 컴포넌트
-import OXQuiz from './components/OXquiz'; // OXQuiz 컴포넌트
-import FillIn from './components/fillin'; // FillIn 컴포넌트
-import Vocabulary from './components/vocabulary'; // Vocabulary 컴포넌트
+import Flashcard from './components/flashcard'; 
+import OXQuiz from './components/OXquiz'; 
+import FillIn from './components/fillin'; 
+import Vocabulary from './components/vocabulary'; 
 
 function App() {
   const [vocabularies, setVocabularies] = useState(() => {
@@ -18,7 +17,23 @@ function App() {
   const [showUIModal, setShowUIModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [newVocab, setNewVocab] = useState({ title: '', description: '' });
-  const [editingVocab, setEditingVocab] = useState(null); // 수정 중인 단어장 추적
+  const [editingVocab, setEditingVocab] = useState(null); 
+
+  // API에서 데이터를 불러오는 useEffect
+  useEffect(() => {
+    const fetchVocabularies = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:8080/api/vocabs/all?user_id=1"); // 실제 API URL로 변경
+        const data = await response.json();
+        console.log(data);
+        setVocabularies(data.data); // API로부터 받은 데이터를 상태에 저장
+      } catch (error) {
+        console.error('데이터를 불러오는 데 실패했습니다:', error);
+      }
+    };
+    
+    fetchVocabularies(); // 컴포넌트가 마운트될 때 API 호출
+  }, []); // 빈 배열로, 컴포넌트 마운트 시 한 번만 실행되도록 설정
 
   useEffect(() => {
     localStorage.setItem('vocabularies', JSON.stringify(vocabularies));
@@ -54,7 +69,7 @@ function App() {
     if (editingVocab) {
       setVocabularies(
         vocabularies.map((vocab) =>
-          vocab.id === editingVocab.id ? { ...vocab, ...newVocab } : vocab
+          vocab.vocabId === editingVocab.id ? { ...vocab, ...newVocab } : vocab
         )
       );
       closeEditModal();
@@ -62,16 +77,16 @@ function App() {
   };
 
   const deleteVocabulary = (id) => {
-    setVocabularies(vocabularies.filter((vocab) => vocab.id !== id));
+    setVocabularies(vocabularies.filter((vocab) => vocab.vocabId !== id));
   };
 
   const updateVocabularyWords = (vocabId, newWords) => {
-    setVocabularies(vocabularies.map(vocab => 
-        vocab.id === vocabId 
-            ? { 
-                ...vocab, 
+    setVocabularies(vocabularies.map(vocab =>
+        vocab.vocabId === vocabId
+            ? {
+                ...vocab,
                 words: newWords,
-                wordCount: newWords.length 
+                wordCount: newWords.length
               }
             : vocab
     ));
@@ -94,20 +109,20 @@ function App() {
         <main>
           <section className="vocab-list">
             {vocabularies.map((vocab) => (
-              <div key={vocab.id} className="vocab-item">
-                <Link to={`/vocabulary/${vocab.id}`} className="vocab-title">
+              <div key={vocab.vocabId} className="vocab-item">
+                <Link to={`/vocabulary/${vocab.vocabId}`} className="vocab-title">
                   <h2>{vocab.title} ({vocab.wordCount} 단어)</h2>
                   <p className="description">{vocab.description}</p>
                 </Link>
                 <div className="vocab-buttons-container">
                   <div className="vocab-buttons">
-                    <Link to={`/flashcard/${vocab.id}`} className="vocab-button">
+                    <Link to={`/flashcard/${vocab.vocabId}`} className="vocab-button">
                       플래시 카드
                     </Link>
-                    <Link to={`/oxquiz/${vocab.id}`} className="vocab-button">
+                    <Link to={`/oxquiz/${vocab.vocabId}`} className="vocab-button">
                       O/X
                     </Link>
-                    <Link to={`/fillin/${vocab.id}`} className="vocab-button">
+                    <Link to={`/fillin/${vocab.vocabId}`} className="vocab-button">
                       빈칸 채우기
                     </Link>
                   </div>
@@ -120,7 +135,7 @@ function App() {
                     </button>
                     <button
                       className="vocab-button delete-button"
-                      onClick={() => deleteVocabulary(vocab.id)}
+                      onClick={() => deleteVocabulary(vocab.vocabId)}
                     >
                       삭제
                     </button>
@@ -147,7 +162,7 @@ function App() {
               className="textarea-field"
             />
             <button onClick={handleSubmitVocabulary} className="submit-button">
-              제출
+              추가
             </button>
           </Modal>
         )}
