@@ -15,14 +15,60 @@ const Vocabulary = ({ vocabularies, onUpdateVocabulary }) => {
     const [editMeanings, setEditMeanings] = useState([{ meaning: '', partOfSpeech: '' }]);
     const [editIndex, setEditIndex] = useState(null);
     const [vocabularyTitle, setVocabularyTitle] = useState('');
-
+    
     useEffect(() => {
-        const currentVocab = vocabularies?.find(vocab => vocab.id === Number(id));
-        if (currentVocab) {
-            setVocabulary(currentVocab.words || []);
-            setVocabularyTitle(currentVocab.title);
-        }
-    }, [vocabularies, id]);
+        // vocab 정보를 받아오는 API 호출
+        const fetchVocabulary = async () => {
+            try {
+                const response = await fetch(`http://127.0.0.1:8080/api/vocabs/detail?vocab_id=${id}`); // vocab 정보 가져오기
+                const data = await response.json();
+                console.log("vocab API response:", data);
+    
+                // API 응답 구조에 맞게 데이터 처리
+                if (data.status === 200 && data.data) {
+                    const currentVocab = data.data;
+    
+                    // vocab의 title 설정
+                    setVocabularyTitle(currentVocab.title);
+    
+                    // words 정보를 가져오기 위한 추가 API 호출
+                    const wordsResponse = await fetch(`http://127.0.0.1:8080/api/words/all?vocab_id=${id}`);
+                    const wordsData = await wordsResponse.json();
+                    console.log("words API response:", wordsData);
+    
+                    if (wordsData.status === 200 && Array.isArray(wordsData.data)) {
+                        const wordsWithDefs = await Promise.all(
+                            wordsData.data.map(async (word) => {
+                                // 각 word에 대한 defs 정보를 가져오는 API 호출
+                                const defsResponse = await fetch(`http://127.0.0.1:8080/api/defs/all?word_id=${word.wordId}`);
+                                const defsData = await defsResponse.json();
+                                console.log("defsData for word:", defsData);
+    
+                                // 단어에 defs를 추가하여 반환
+                                return {
+                                    ...word,
+                                    defs: defsData.status === 200 ? defsData.data || [] : [],
+                                };
+                            })
+                        );
+    
+                        // 단어와 defs 정보가 결합된 단어 목록을 vocabulary에 저장
+                        setVocabulary(wordsWithDefs);
+                    } else {
+                        console.error('Words data fetch failed:', wordsData.message);
+                    }
+                } else {
+                    console.error('Vocab data fetch failed:', data.message);
+                }
+            } catch (error) {
+                console.error('데이터를 불러오는 데 실패했습니다:', error);
+            }
+        };
+    
+        fetchVocabulary(); // API 호출
+    }, [id]); // `id`가 변경될 때마다 호출
+    
+
 
     const toggleSelection = (index) => {
         const newSelected = new Set(selectedItems);
@@ -153,35 +199,42 @@ const Vocabulary = ({ vocabularies, onUpdateVocabulary }) => {
             </header>
 
             <main>
-                <div style={styles.vocaList}>
-                    {vocabulary.map((item, index) => (
-                        <div
+            <div style={styles.vocaList}>
+                {vocabulary.map((item, index) => (
+                    <div
                         key={item.id || index}
                         className={`vocaItem ${selectedItems.has(index) ? 'selectedVocaItem' : ''}`}
                         style={styles.vocaItem}
                         onDoubleClick={() => toggleSelection(index)}
                     >
-                            <div style={styles.vocaItemContent}>
-                                <div style={styles.checkbox}>
-                                    <input
-                                        type="checkbox"
-                                        style={styles.checkboxInput}
-                                        checked={selectedItems.has(index)}
-                                        onChange={() => toggleSelection(index)}
-                                    />
-                                </div>
-                                <div style={styles.wordContent}>
-                                    <div style={styles.word}>{item.word}</div>
-                                    <div style={styles.meaning}>{item.meanings}</div>
-                                </div>
+                        <div style={styles.vocaItemContent}>
+                            <div style={styles.checkbox}>
+                                <input
+                                    type="checkbox"
+                                    style={styles.checkboxInput}
+                                    checked={selectedItems.has(index)}
+                                    onChange={() => toggleSelection(index)}
+                                />
                             </div>
-                            <div className="action-buttons">
-                                <button className="action-button" onClick={() => openEditModal(index)}>수정</button>
-                                <button className="action-button" onClick={() => deleteVocabulary(index)}>삭제</button>
+                            <div style={styles.wordContent}>
+                                <div style={styles.word}>{item.word}</div>
+                                <div style={styles.meaning}>
+                                    {item.defs.map((def, defIndex) => (
+                                        <div key={defIndex}>
+                                            <div>{def.definition}</div>
+                                            <div>{def.type}</div>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
-                    ))}
-                </div>
+                        <div className="action-buttons">
+                            <button className="action-button" onClick={() => openEditModal(index)}>수정</button>
+                            <button className="action-button" onClick={() => deleteVocabulary(index)}>삭제</button>
+                        </div>
+                    </div>
+                ))}
+            </div>
             </main>
 
             {isModalOpen && (
@@ -320,7 +373,6 @@ const styles = {
         alignItems: 'center',
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'center',
         fontSize: '18px',
         padding: '15px',
         borderBottom: '1px solid #ddd',
