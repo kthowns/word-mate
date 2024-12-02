@@ -17,8 +17,8 @@ function randomInt(min, max, count) {
   return numbers.slice(0, count); // 요청된 count 길이만큼 반환
 }
 
-const OXQuiz = () => {
-  const { id } = useParams();
+const OXQuiz = ({ onUpdateVocabulary, isDarkMode }) => {
+  const { vocabId } = useParams();
   const [totalQuestions, setTotalQuestions] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [wrongCount, setWrongCount] = useState(0);
@@ -34,20 +34,16 @@ const OXQuiz = () => {
 
   const fetchVocabData = async () => {
     try {
-      setIsLoading(true);
-      setCurrentQuestion(0);
-      setWrongCount(0);
-      setCorCount(0);
-      setResult('');
-      setWords([]);
-      setWordsForQuiz([]);
-      setIsQuizEnd(false);
-      setIsLoading(true);
-      setIsButtonDisabled(false);
-
-      const wordResponse = await fetch(`/api/words/all?vocab_id=${id}`);
+      const wordResponse = await fetch(`/api/words/all?vocab_id=${vocabId}`);
       const wordData = await wordResponse.json();
       if (wordData.status === 200) {
+        if(wordData.data.length === 0){ //빈 단어장
+          setResult("단어가 없습니다.");
+          setWordsForQuiz([{expression: " ", definition: " "}]);
+          setIsLoading(false);
+          setIsQuizEnd(true);
+          return;
+        }
         const wordsWithDefs = await Promise.all(wordData.data.map(async (word) => {
           const defsData = await fetch(`/api/defs/all?word_id=${word.wordId}`)
               .then((res) => res.json())
@@ -67,14 +63,6 @@ const OXQuiz = () => {
 
           return { ...word, defs: defsData, stats: statsData };
         }));
-
-        if(wordsWithDefs.length == 0){ //빈 단어장
-          setResult("단어가 없습니다.");
-          setWordsForQuiz([{expression: " ", definition: " "}]);
-          setIsLoading(false);
-          setIsQuizEnd(true);
-          return;
-        }
 
         const wordsWithRandomDefs = [];
         const randNums = randomInt(0, wordsWithDefs.length-1, wordsWithDefs.length);
@@ -114,23 +102,32 @@ const OXQuiz = () => {
   }, [words, wordsForQuiz]);
 
   useEffect(() => {
+    setIsLoading(true);
+    setCurrentQuestion(0);
+    setWrongCount(0);
+    setCorCount(0);
+    setResult('');
+    setWords([]);
+    setWordsForQuiz([]);
+    setIsQuizEnd(false);
+    setIsLoading(true);
+    setIsButtonDisabled(false);
     fetchVocabData();
-  }, [id]);
+  }, [vocabId]);
 
   const checkAnswer = async (input) => {
     setIsButtonDisabled(true);
 
-    const isSame = () => {
+    const isCorrect = () => {
       const result = words[currentQuestion].defs.find(
           (def) => def.definition === wordsForQuiz[currentQuestion].definition);
-      return result ? true : false;
+      return input === result;
     }
 
-    words[currentQuestion].expression === wordsForQuiz[currentQuestion].expression;
     let correct = corCount;
     let wrong = wrongCount;
 
-    if (input == isSame()) {
+    if (isCorrect()) {
       correct += 1;
       setCorCount(correct);
       setResult("정답입니다!");
