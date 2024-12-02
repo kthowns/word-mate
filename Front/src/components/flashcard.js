@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import '../styles/vocabulary.css';
 import { useParams, useNavigate } from 'react-router-dom';
 
-const Flashcard = ({ vocabularies, onUpdateVocabulary, isDarkMode }) => {
+const Flashcard = ({ vocabularies, onUpdateVocabulary, isDarkMode, vocabId, onComplete }) => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -12,7 +12,7 @@ const Flashcard = ({ vocabularies, onUpdateVocabulary, isDarkMode }) => {
     const [totalQuestions, setTotalQuestions] = useState(0);
     const [progress, setProgress] = useState('');
     const [isLastCard, setIsLastCard] = useState(false);
-    const currentVocabId = Number(id);
+    const currentVocabId = Number(vocabId || id);
 
     // vocabularies가 undefined인 경우를 대비한 안전장치 추가
     const availableVocabularies = vocabularies?.filter(vocab => 
@@ -23,7 +23,7 @@ const Flashcard = ({ vocabularies, onUpdateVocabulary, isDarkMode }) => {
     const hasWords = flashcards.length > 0;
 
     useEffect(() => {
-        const currentVocab = vocabularies?.find(vocab => vocab.id === Number(id));
+        const currentVocab = vocabularies?.find(vocab => vocab.id === currentVocabId);
         if (currentVocab?.words) {
             const cards = currentVocab.words.map(word => ({
                 word: word.word,
@@ -44,7 +44,7 @@ const Flashcard = ({ vocabularies, onUpdateVocabulary, isDarkMode }) => {
             setFlashcards(cards);
             setTotalQuestions(cards.length);
         }
-    }, [id, vocabularies]);
+    }, [currentVocabId, vocabularies]);
 
     useEffect(() => {
         if (totalQuestions > 0) {
@@ -62,7 +62,7 @@ const Flashcard = ({ vocabularies, onUpdateVocabulary, isDarkMode }) => {
 
     const handleNextCard = () => {
         if (isLastCard) {
-            navigate(-1);
+            onComplete(currentVocabId);
         } else {
             setCurrentQuestion(Math.min(currentQuestion + 1, flashcards.length - 1));
             setIsMeaningVisible(false);
@@ -103,7 +103,7 @@ const Flashcard = ({ vocabularies, onUpdateVocabulary, isDarkMode }) => {
             meanings: currentCard.meanings.map(m => `${m.text} (${m.partOfSpeech})`).join(', ')
         };
 
-        // 단어장 업데이트
+        // 단어장 데이트
         const updatedVocabularies = vocabularies.map(vocab => 
             vocab.id === selectedVocabId
                 ? {
@@ -136,30 +136,24 @@ const Flashcard = ({ vocabularies, onUpdateVocabulary, isDarkMode }) => {
             height: '100vh',
             position: 'relative',
             padding: '20px',
-            color: isDarkMode ? '#e4e6eb' : '#000'
+            color: isDarkMode ? '#e4e6eb' : '#000',
+            borderRadius: '20px',
+            boxShadow: isDarkMode 
+                ? '0 0 20px rgba(0,0,0,0.3)' 
+                : '0 0 20px rgba(0,0,0,0.1)',
         }}>
             <header style={{
                 display: 'flex',
-                justifyContent: 'space-between',
+                justifyContent: 'center',
                 alignItems: 'center',
                 marginBottom: '20px',
                 borderBottom: `1px solid ${isDarkMode ? '#4a4b4c' : '#ddd'}`,
                 padding: '10px 0'
             }}>
-                <button 
-                    className="back-button"
-                    onClick={() => navigate(-1)}
-                    style={{
-                        color: isDarkMode ? '#e4e6eb' : '#000'
-                    }}
-                >
-                    ←
-                </button>
                 <p style={{
                     fontSize: '25px',
                     color: isDarkMode ? '#e4e6eb' : '#333'
                 }}>{progress}</p>
-                <div style={{ width: '40px' }}></div>
             </header>
 
             <main style={{

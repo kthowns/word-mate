@@ -38,6 +38,8 @@ function App(uId) {
     const savedMode = localStorage.getItem('darkMode');
     return savedMode ? JSON.parse(savedMode) : false;
   });
+  const [expandedVocabId, setExpandedVocabId] = useState(null);
+  const [currentView, setCurrentView] = useState(null); // 'vocabulary', 'flashcard', 'oxquiz', 'fillin'
 
   const fetchVocabData = async () => {
     try {
@@ -126,61 +128,137 @@ function App(uId) {
     await fetchVocabData();
   };
 
-  return (
-      <Router>
-        <div className={`container ${isDarkMode ? 'dark-mode' : ''}`}>
-          <header>
-            <div className="header-left">
-              <img src={logo} alt="Logo" className="logo" />
-              <button className="add-button" onClick={openAddModal}>Add</button>
-              <button
-                  className={`mode-toggle-button ${isDarkMode ? 'dark' : 'light'}`}
-                  onClick={toggleDarkMode}>
-                {isDarkMode ? 'NIGHT' : 'DAY'}
-              </button>
-            </div>
-            <div className="learning-rate">
-              <p>학습률 통계 섹션</p>
-            </div>
-          </header>
+  const toggleVocabExpand = (vocabId, view = null) => {
+    if (expandedVocabId === vocabId && currentView === view) {
+        setExpandedVocabId(null);
+        setCurrentView(null);
+    } else {
+        setExpandedVocabId(vocabId);
+        setCurrentView(view);
+    }
+  };
 
-          <main>
-            <section className="vocab-list">
-              {vocabularies.map((vocab) => (
-                  <div key={vocab.vocabId} className="vocab-item">
-                    <Link to={`/vocabulary/${vocab.vocabId}`} className="vocab-title">
-                      <h2>{vocab.title} ({vocab.wordCount} 개)</h2>
-                      <p className="description">{vocab.description}</p>
-                    </Link>
-                    <div className="vocab-buttons-container">
-                      <div className="vocab-buttons">
-                        <Link to={`/flashcard/${vocab.vocabId}`} className="vocab-button">
-                          플래시 카드
-                        </Link>
-                        <Link to={`/oxquiz/${vocab.vocabId}`} className="vocab-button">
-                          O/X
-                        </Link>
-                        <Link to={`/fillin/${vocab.vocabId}`} className="vocab-button">
-                          빈칸 채우기
-                        </Link>
-                      </div>
-                      <div className="action-buttons">
-                        <button
-                            className="vocab-button edit-button"
-                            onClick={() => openEditModal(vocab)}>
-                          수정
-                        </button>
-                        <button
-                            className="vocab-button delete-button"
-                            onClick={() => deleteVocabulary(vocab.vocabId)}>
-                          삭제
-                        </button>
-                      </div>
-                    </div>
+  const returnToVocabList = (vocabId) => {
+    setExpandedVocabId(vocabId);
+    setCurrentView(null);
+  };
+
+  const renderVocabContent = (vocab) => {
+    if (expandedVocabId !== vocab.vocabId) return null;
+
+    switch(currentView) {
+      case 'flashcard':
+        return <Flashcard 
+            vocabularies={vocabularies} 
+            isDarkMode={isDarkMode} 
+            onUpdateVocabulary={updateVocabularyWords}
+            vocabId={vocab.vocabId}
+            onComplete={returnToVocabList}
+        />;
+      case 'oxquiz':
+        return <OXQuiz vocabularies={vocabularies} isDarkMode={isDarkMode} vocabId={vocab.vocabId} />;
+      case 'fillin':
+        return <FillIn vocabularies={vocabularies} isDarkMode={isDarkMode} vocabId={vocab.vocabId} />;
+      default:
+        return (
+          <Vocabulary 
+            vocabularies={vocabularies}
+            onUpdateVocabulary={updateVocabularyWords}
+            isDarkMode={isDarkMode}
+            vocabData={vocab}
+            id={vocab.vocabId}
+          />
+        );
+    }
+  };
+
+  return (
+    <Router>
+      <div className={`container ${isDarkMode ? 'dark-mode' : ''}`}>
+        <header>
+          <div className="header-left">
+            <img src={logo} alt="Logo" className="logo" />
+            <button className="add-button" onClick={openAddModal}>Add</button>
+            <button 
+              className={`mode-toggle-button ${isDarkMode ? 'dark' : 'light'}`} 
+              onClick={toggleDarkMode}
+            >
+              {isDarkMode ? 'NIGHT' : 'DAY'}
+            </button>
+          </div>
+          <div className="learning-rate">
+            <p>학습률 통계 섹션</p>
+          </div>
+        </header>
+
+        <main>
+          <section className="vocab-list">
+            {vocabularies.map((vocab) => (
+              <div key={vocab.vocabId} className="vocab-item">
+                <div 
+                  className="vocab-header"
+                  onClick={() => toggleVocabExpand(vocab.vocabId)}
+                >
+                  <h2>{vocab.title} ({vocab.wordCount} 단어)</h2>
+                  <p className="description">{vocab.description}</p>
+                </div>
+                <div className="vocab-buttons-container">
+                  <div className="vocab-buttons">
+                    <button 
+                      className="vocab-button"
+                      onClick={() => toggleVocabExpand(vocab.vocabId, 'flashcard')}
+                    >
+                      플래시 카드
+                    </button>
+                    <button 
+                      className="vocab-button"
+                      onClick={() => toggleVocabExpand(vocab.vocabId, 'oxquiz')}
+                    >
+                      O/X
+                    </button>
+                    <button 
+                      className="vocab-button"
+                      onClick={() => toggleVocabExpand(vocab.vocabId, 'fillin')}
+                    >
+                      빈칸 채우기
+                    </button>
                   </div>
-              ))}
-            </section>
-          </main>
+                  <div className="action-buttons">
+                    <button
+                      className="vocab-button edit-button"
+                      onClick={() => openEditModal(vocab)}
+                    >
+                      수정
+                    </button>
+                    <button
+                      className="vocab-button delete-button"
+                      onClick={() => deleteVocabulary(vocab.vocabId)}
+                    >
+                      삭제
+                    </button>
+                  </div>
+                </div>
+                <div className="vocab-expand-section">
+                  <button 
+                    className="expand-button"
+                    onClick={() => {
+                        if (expandedVocabId === vocab.vocabId) {
+                            setExpandedVocabId(null);
+                            setCurrentView(null);
+                        } else {
+                            setExpandedVocabId(vocab.vocabId);
+                            setCurrentView(null);
+                        }
+                    }}
+                  >
+                    {expandedVocabId === vocab.vocabId ? '단어목록 접기' : '단어목록 펼치기'}
+                  </button>
+                </div>
+                {renderVocabContent(vocab)}
+              </div>
+            ))}
+          </section>
+        </main>
 
           {showAddModal && (
               <Modal title="단어장 추가" onClose={closeAddModal}>

@@ -60,6 +60,7 @@ const FillInTheBlank = ({ onUpdateVocabulary, isDarkMode }) => {
             setIsLoading(false);
         }
     };
+  };
 
     useEffect(() => {
         console.log("words", words);
@@ -162,6 +163,34 @@ const FillInTheBlank = ({ onUpdateVocabulary, isDarkMode }) => {
                 <p>{currentQuestion + 1 + "/" + totalQuestions}</p>
                 <p>{"틀린 문제 수: " + wrongCount}</p>
             </header>
+  return (
+    <div style={{
+        fontFamily: 'TTHakgyoansimEunhasuR',
+        backgroundColor: isDarkMode ? '#242526' : '#f8f9fa',
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100vh',
+        position: 'relative',
+        padding: '20px',
+        color: isDarkMode ? '#e4e6eb' : '#000',
+        borderRadius: '20px',
+        boxShadow: isDarkMode
+            ? '0 0 20px rgba(0,0,0,0.3)'
+            : '0 0 20px rgba(0,0,0,0.1)',
+    }}>
+        <header style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            borderBottom: `2px solid ${isDarkMode ? '#404040' : '#ddd'}`,
+            padding: '10px',
+            height: '10%',
+            color: isDarkMode ? '#e4e6eb' : '#000'
+        }}>
+            <p style={{ fontSize: '25px' }}>{headerData.wrongCount}</p>
+            <p style={{ fontSize: '25px' }}>{headerData.progress}</p>
+            <p style={{ fontSize: '25px' }}>{headerData.questionCount}</p>
+        </header>
 
             <main style={{
                 flex: 1,
@@ -229,4 +258,4 @@ const FillInTheBlank = ({ onUpdateVocabulary, isDarkMode }) => {
     );
 };
 
-export default FillInTheBlank ;
+export default FillInTheBlank;

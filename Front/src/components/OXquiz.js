@@ -178,7 +178,20 @@ const OXQuiz = ({ onUpdateVocabulary, isDarkMode }) => {
   };
 
   return (
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: '#f8f9fa' }}>
+      <div style={{
+          fontFamily: 'TTHakgyoansimEunhasuR',
+          backgroundColor: isDarkMode ? '#242526' : '#f8f9fa',
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100vh',
+          position: 'relative',
+          padding: '20px',
+          color: isDarkMode ? '#e4e6eb' : '#000',
+          borderRadius: '20px',
+          boxShadow: isDarkMode 
+              ? '0 0 20px rgba(0,0,0,0.3)' 
+              : '0 0 20px rgba(0,0,0,0.1)',
+      }}>
         <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #ddd', padding: '10px', height: '10%' }}>
           <p>{"맞힌 문제 수: "+corCount}</p>
           <p>{currentQuestion+1+"/"+totalQuestions}</p>
