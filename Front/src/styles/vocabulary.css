@@ -67,15 +67,15 @@
     background-color: rgba(249, 249, 249, 0.7) !important;
 }
 
-.vocaItem:hover .action-buttons {
-    opacity: 1;
-}
-
-.action-buttons {
+.vocaItem .action-buttons {
     display: flex;
     gap: 10px;
     opacity: 0;
     transition: opacity 0.3s ease;
+}
+
+.vocaItem:hover .action-buttons {
+    opacity: 1;
 }
 
 .back-button {
@@ -234,4 +234,40 @@
 .dark-mode .modal select:focus {
     border-color: #6b4c7c;
     box-shadow: 0 0 0 2px rgba(107, 76, 124, 0.2);
+}
+
+/* vocabulary 컴포넌트의 스크롤바 스타일 */
+.vocabulary-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.vocabulary-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.vocabulary-container::-webkit-scrollbar-thumb {
+    background: linear-gradient(45deg, #f0bbf8, #a9c6f8);
+    border-radius: 4px;
+}
+
+.vocabulary-container::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(45deg, #e9a1f3, #91b5f8);
+}
+
+/* 다크모드 스크롤바 스타일 */
+.dark-mode .vocabulary-container::-webkit-scrollbar-track {
+    background: #2d2d2d;
+    border-radius: 4px;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+}
+
+.dark-mode .vocabulary-container::-webkit-scrollbar-thumb {
+    background: linear-gradient(45deg, #6b4c7c, #4a5d8f);
+    border-radius: 4px;
+    box-shadow: 0 0 3px rgba(255,255,255,0.1);
+}
+
+.dark-mode .vocabulary-container::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(45deg, #7b5c8c, #5a6d9f);
 }

@@ -22,6 +22,8 @@ function App() {
     const savedMode = localStorage.getItem('darkMode');
     return savedMode ? JSON.parse(savedMode) : false;
   });
+  const [expandedVocabId, setExpandedVocabId] = useState(null);
+  const [currentView, setCurrentView] = useState(null); // 'vocabulary', 'flashcard', 'oxquiz', 'fillin'
 
   useEffect(() => {
     localStorage.setItem('vocabularies', JSON.stringify(vocabularies));
@@ -86,6 +88,50 @@ function App() {
     ));
   };
 
+  const toggleVocabExpand = (vocabId, view = null) => {
+    if (expandedVocabId === vocabId && currentView === view) {
+        setExpandedVocabId(null);
+        setCurrentView(null);
+    } else {
+        setExpandedVocabId(vocabId);
+        setCurrentView(view);
+    }
+  };
+
+  const returnToVocabList = (vocabId) => {
+    setExpandedVocabId(vocabId);
+    setCurrentView(null);
+  };
+
+  const renderVocabContent = (vocab) => {
+    if (expandedVocabId !== vocab.id) return null;
+
+    switch(currentView) {
+      case 'flashcard':
+        return <Flashcard 
+            vocabularies={vocabularies} 
+            isDarkMode={isDarkMode} 
+            onUpdateVocabulary={updateVocabularyWords}
+            vocabId={vocab.id}
+            onComplete={returnToVocabList}
+        />;
+      case 'oxquiz':
+        return <OXQuiz vocabularies={vocabularies} isDarkMode={isDarkMode} vocabId={vocab.id} />;
+      case 'fillin':
+        return <FillIn vocabularies={vocabularies} isDarkMode={isDarkMode} vocabId={vocab.id} />;
+      default:
+        return (
+          <Vocabulary 
+            vocabularies={vocabularies}
+            onUpdateVocabulary={updateVocabularyWords}
+            isDarkMode={isDarkMode}
+            vocabData={vocab}
+            id={vocab.id}
+          />
+        );
+    }
+  };
+
   return (
     <Router>
       <div className={`container ${isDarkMode ? 'dark-mode' : ''}`}>
@@ -109,21 +155,33 @@ function App() {
           <section className="vocab-list">
             {vocabularies.map((vocab) => (
               <div key={vocab.id} className="vocab-item">
-                <Link to={`/vocabulary/${vocab.id}`} className="vocab-title">
+                <div 
+                  className="vocab-header"
+                  onClick={() => toggleVocabExpand(vocab.id)}
+                >
                   <h2>{vocab.title} ({vocab.wordCount} 단어)</h2>
                   <p className="description">{vocab.description}</p>
-                </Link>
+                </div>
                 <div className="vocab-buttons-container">
                   <div className="vocab-buttons">
-                    <Link to={`/flashcard/${vocab.id}`} className="vocab-button">
+                    <button 
+                      className="vocab-button"
+                      onClick={() => toggleVocabExpand(vocab.id, 'flashcard')}
+                    >
                       플래시 카드
-                    </Link>
-                    <Link to={`/oxquiz/${vocab.id}`} className="vocab-button">
+                    </button>
+                    <button 
+                      className="vocab-button"
+                      onClick={() => toggleVocabExpand(vocab.id, 'oxquiz')}
+                    >
                       O/X
-                    </Link>
-                    <Link to={`/fillin/${vocab.id}`} className="vocab-button">
+                    </button>
+                    <button 
+                      className="vocab-button"
+                      onClick={() => toggleVocabExpand(vocab.id, 'fillin')}
+                    >
                       빈칸 채우기
-                    </Link>
+                    </button>
                   </div>
                   <div className="action-buttons">
                     <button
@@ -140,6 +198,23 @@ function App() {
                     </button>
                   </div>
                 </div>
+                <div className="vocab-expand-section">
+                  <button 
+                    className="expand-button"
+                    onClick={() => {
+                        if (expandedVocabId === vocab.id) {
+                            setExpandedVocabId(null);
+                            setCurrentView(null);
+                        } else {
+                            setExpandedVocabId(vocab.id);
+                            setCurrentView(null);
+                        }
+                    }}
+                  >
+                    {expandedVocabId === vocab.id ? '단어목록 접기' : '단어목록 펼치기'}
+                  </button>
+                </div>
+                {renderVocabContent(vocab)}
               </div>
             ))}
           </section>
