@@ -9,11 +9,27 @@ import OXQuiz from './components/OXquiz';
 import FillIn from './components/fillin';
 import Vocabulary from './components/vocabulary';
 
-function App() {
-  const [vocabularies, setVocabularies] = useState(() => {
-    const savedVocabularies = localStorage.getItem('vocabularies');
-    return savedVocabularies ? JSON.parse(savedVocabularies) : [];
-  });
+async function fetchJson(url, method = 'GET', body = null) {
+  const headers = { 'Content-Type': 'application/json' };
+  const options = { method, headers };
+
+  if (body) {
+    options.body = JSON.stringify(body);
+  }
+
+  const response = await fetch(url, options);
+  const data = await response.json();
+  if (data.status === 200) {
+    return data;
+  } else {
+    console.error("Failed to load " + url);
+    return [];
+  }
+}
+
+function App(uId) {
+  const [vocabularies, setVocabularies] = useState([]);
+  const [userId, setUserId] = useState(1);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [newVocab, setNewVocab] = useState({ title: '', description: '' });
@@ -25,8 +41,43 @@ function App() {
   const [expandedVocabId, setExpandedVocabId] = useState(null);
   const [currentView, setCurrentView] = useState(null); // 'vocabulary', 'flashcard', 'oxquiz', 'fillin'
 
+  const fetchVocabData = async () => {
+    try {
+      const vocabData = await fetchJson(`/api/vocabs/all?user_id=${userId}`);
+      if (vocabData.status === 200) {
+        const vocabsWithStats = await Promise.all(
+            vocabData.data.map(async (vocab) => {
+              const statData = await fetch(`/api/stats/all?vocab_id=${vocab.vocabId}`)
+                  .then((res) => res.json())
+                  .then((data) => (data.status === 200 ? data.data : []))
+                  .catch((err) => {
+                    console.error("통계 정보 불러오기 실패", err);
+                    return [];
+                  });
+
+              return { ...vocab, stats: statData };
+            })
+        );
+        setVocabularies(vocabsWithStats);
+      } else {
+        console.error("단어장 정보 불러오기 실패");
+        setVocabularies([]);
+      }
+    } catch (error) {
+      console.error('Error fetching vocab data:', error);
+    }
+  };
+
   useEffect(() => {
-    localStorage.setItem('vocabularies', JSON.stringify(vocabularies));
+    fetchVocabData();
+  }, []);
+
+  useEffect(() => {
+    fetchVocabData();
+  }, [userId]);
+
+  useEffect(() => {
+    console.log(vocabularies);
   }, [vocabularies]);
 
   useEffect(() => {
@@ -51,9 +102,11 @@ function App() {
     setShowEditModal(false);
   };
 
-  const handleSubmitVocabulary = () => {
+  const handleSubmitVocabulary = async () => {
     if (newVocab.title) {
-      setVocabularies([...vocabularies, { ...newVocab, id: Date.now(), wordCount: 0 }]);
+      const vocabToAdd = { title: newVocab.title, description: newVocab.description };
+      await fetchJson(`/api/vocabs/${userId}`, 'POST', vocabToAdd);
+      await fetchVocabData();
       setNewVocab({ title: '', description: '' });
       closeAddModal();
     } else {
@@ -61,31 +114,18 @@ function App() {
     }
   };
 
-  const handleUpdateVocabulary = () => {
+  const handleUpdateVocabulary = async () => {
     if (editingVocab) {
-      setVocabularies(
-        vocabularies.map((vocab) =>
-          vocab.id === editingVocab.id ? { ...vocab, ...newVocab } : vocab
-        )
-      );
-      closeEditModal();
+      const updatedVocab = { title: newVocab.title, description: newVocab.description };
+      await fetchJson(`/api/vocabs/${editingVocab.vocabId}`, 'PATCH', updatedVocab);
+      await fetchVocabData();
     }
+    closeEditModal();
   };
 
-  const deleteVocabulary = (id) => {
-    setVocabularies(vocabularies.filter((vocab) => vocab.id !== id));
-  };
-
-  const updateVocabularyWords = (vocabId, newWords) => {
-    setVocabularies(vocabularies.map(vocab => 
-        vocab.id === vocabId 
-            ? { 
-                ...vocab, 
-                words: newWords,
-                wordCount: newWords.length 
-              }
-            : vocab
-    ));
+  const deleteVocabulary = async (id) => {
+    await fetchJson(`/api/vocabs/${id}`, 'DELETE');
+    await fetchVocabData();
   };
 
   const toggleVocabExpand = (vocabId, view = null) => {
@@ -104,7 +144,7 @@ function App() {
   };
 
   const renderVocabContent = (vocab) => {
-    if (expandedVocabId !== vocab.id) return null;
+    if (expandedVocabId !== vocab.vocabId) return null;
 
     switch(currentView) {
       case 'flashcard':
@@ -112,13 +152,13 @@ function App() {
             vocabularies={vocabularies} 
             isDarkMode={isDarkMode} 
             onUpdateVocabulary={updateVocabularyWords}
-            vocabId={vocab.id}
+            vocabId={vocab.vocabId}
             onComplete={returnToVocabList}
         />;
       case 'oxquiz':
-        return <OXQuiz vocabularies={vocabularies} isDarkMode={isDarkMode} vocabId={vocab.id} />;
+        return <OXQuiz vocabularies={vocabularies} isDarkMode={isDarkMode} vocabId={vocab.vocabId} />;
       case 'fillin':
-        return <FillIn vocabularies={vocabularies} isDarkMode={isDarkMode} vocabId={vocab.id} />;
+        return <FillIn vocabularies={vocabularies} isDarkMode={isDarkMode} vocabId={vocab.vocabId} />;
       default:
         return (
           <Vocabulary 
@@ -126,7 +166,7 @@ function App() {
             onUpdateVocabulary={updateVocabularyWords}
             isDarkMode={isDarkMode}
             vocabData={vocab}
-            id={vocab.id}
+            id={vocab.vocabId}
           />
         );
     }
@@ -154,10 +194,10 @@ function App() {
         <main>
           <section className="vocab-list">
             {vocabularies.map((vocab) => (
-              <div key={vocab.id} className="vocab-item">
+              <div key={vocab.vocabId} className="vocab-item">
                 <div 
                   className="vocab-header"
-                  onClick={() => toggleVocabExpand(vocab.id)}
+                  onClick={() => toggleVocabExpand(vocab.vocabId)}
                 >
                   <h2>{vocab.title} ({vocab.wordCount} 단어)</h2>
                   <p className="description">{vocab.description}</p>
@@ -166,19 +206,19 @@ function App() {
                   <div className="vocab-buttons">
                     <button 
                       className="vocab-button"
-                      onClick={() => toggleVocabExpand(vocab.id, 'flashcard')}
+                      onClick={() => toggleVocabExpand(vocab.vocabId, 'flashcard')}
                     >
                       플래시 카드
                     </button>
                     <button 
                       className="vocab-button"
-                      onClick={() => toggleVocabExpand(vocab.id, 'oxquiz')}
+                      onClick={() => toggleVocabExpand(vocab.vocabId, 'oxquiz')}
                     >
                       O/X
                     </button>
                     <button 
                       className="vocab-button"
-                      onClick={() => toggleVocabExpand(vocab.id, 'fillin')}
+                      onClick={() => toggleVocabExpand(vocab.vocabId, 'fillin')}
                     >
                       빈칸 채우기
                     </button>
@@ -192,7 +232,7 @@ function App() {
                     </button>
                     <button
                       className="vocab-button delete-button"
-                      onClick={() => deleteVocabulary(vocab.id)}
+                      onClick={() => deleteVocabulary(vocab.vocabId)}
                     >
                       삭제
                     </button>
@@ -202,16 +242,16 @@ function App() {
                   <button 
                     className="expand-button"
                     onClick={() => {
-                        if (expandedVocabId === vocab.id) {
+                        if (expandedVocabId === vocab.vocabId) {
                             setExpandedVocabId(null);
                             setCurrentView(null);
                         } else {
-                            setExpandedVocabId(vocab.id);
+                            setExpandedVocabId(vocab.vocabId);
                             setCurrentView(null);
                         }
                     }}
                   >
-                    {expandedVocabId === vocab.id ? '단어목록 접기' : '단어목록 펼치기'}
+                    {expandedVocabId === vocab.vocabId ? '단어목록 접기' : '단어목록 펼치기'}
                   </button>
                 </div>
                 {renderVocabContent(vocab)}
@@ -220,92 +260,84 @@ function App() {
           </section>
         </main>
 
-        {showAddModal && (
-          <Modal title="단어장 추가" onClose={closeAddModal}>
-            <label>제목:</label>
-            <input
-              type="text"
-              value={newVocab.title}
-              onChange={(e) => setNewVocab({ ...newVocab, title: e.target.value })}
-              className="input-field"
-            />
-            <label>설명:</label>
-            <textarea
-              value={newVocab.description}
-              onChange={(e) => setNewVocab({ ...newVocab, description: e.target.value })}
-              className="textarea-field"
-            />
-            <button onClick={handleSubmitVocabulary} className="submit-button">
-              제출
-            </button>
-          </Modal>
-        )}
+          {showAddModal && (
+              <Modal title="단어장 추가" onClose={closeAddModal}>
+                <label>제목:</label>
+                <input
+                    type="text"
+                    value={newVocab.title}
+                    onChange={(e) => setNewVocab({ ...newVocab, title: e.target.value })}
+                    className="input-field"
+                />
+                <label>설명:</label>
+                <textarea
+                    value={newVocab.description}
+                    onChange={(e) => setNewVocab({ ...newVocab, description: e.target.value })}
+                    className="textarea-field"
+                />
+                <button onClick={handleSubmitVocabulary} className="submit-button">
+                  제출
+                </button>
+              </Modal>
+          )}
 
-        {showEditModal && (
-          <Modal title="단어장 수정" onClose={closeEditModal}>
-            <label>제목:</label>
-            <input
-              type="text"
-              value={newVocab.title}
-              onChange={(e) => setNewVocab({ ...newVocab, title: e.target.value })}
-              className="input-field"
-            />
-            <label>설명:</label>
-            <textarea
-              value={newVocab.description}
-              onChange={(e) => setNewVocab({ ...newVocab, description: e.target.value })}
-              className="textarea-field"
-            />
-            <button onClick={handleUpdateVocabulary} className="submit-button">
-              수정
-            </button>
-          </Modal>
-        )}
+          {showEditModal && (
+              <Modal title="단어장 수정" onClose={closeEditModal}>
+                <label>제목:</label>
+                <input
+                    type="text"
+                    value={newVocab.title}
+                    onChange={(e) => setNewVocab({ ...newVocab, title: e.target.value })}
+                    className="input-field"
+                />
+                <label>설명:</label>
+                <textarea
+                    value={newVocab.description}
+                    onChange={(e) => setNewVocab({ ...newVocab, description: e.target.value })}
+                    className="textarea-field"
+                />
+                <button onClick={handleUpdateVocabulary} className="submit-button">
+                  수정
+                </button>
+              </Modal>
+          )}
 
-        <Routes>
-          <Route 
-            path="/vocabulary/:id" 
-            element={
-              <Vocabulary 
-                vocabularies={vocabularies}
-                onUpdateVocabulary={updateVocabularyWords}
-                isDarkMode={isDarkMode}
-              />
-            } 
-          />
-          <Route 
-            path="/flashcard/:id" 
-            element={
-              <Flashcard 
-                vocabularies={vocabularies}
-                onUpdateVocabulary={updateVocabularyWords}
-                isDarkMode={isDarkMode}
-              />
-            } 
-          />
-          <Route 
-            path="/oxquiz/:id" 
-            element={
-              <OXQuiz 
-                vocabularies={vocabularies}
-                onUpdateVocabulary={updateVocabularyWords}
-                isDarkMode={isDarkMode}
-              />
-            } 
-          />
-          <Route 
-            path="/fillin/:id" 
-            element={
-              <FillIn 
-                vocabularies={vocabularies}
-                onUpdateVocabulary={updateVocabularyWords}
-                isDarkMode={isDarkMode}
-              />
-            } 
-          />
-        </Routes>
-      </div>
-    </Router>
+          <Routes>
+            <Route
+                path="/vocabulary/:vocabId"
+                element={
+                  <Vocabulary
+                      isDarkMode={isDarkMode}
+                  />
+                }
+            />
+            <Route
+                path="/flashcard/:vocabId"
+                element={
+                  <Flashcard
+                      isDarkMode={isDarkMode}
+                  />
+                }
+            />
+            <Route
+                path="/oxquiz/:vocabId"
+                element={
+                  <OXQuiz
+                      isDarkMode={isDarkMode}
+                  />
+                }
+            />
+            <Route
+                path="/fillin/:vocabId"
+                element={
+                  <FillIn
+                      isDarkMode={isDarkMode}
+                  />
+                }
+            />
+          </Routes>
+        </div>
+      </Router>
   );
 }
 
