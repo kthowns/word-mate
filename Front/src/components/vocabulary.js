@@ -3,9 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Modal from './Modal';
 import '../styles/vocabulary.css';
 
-const Vocabulary = ({ vocabularies, onUpdateVocabulary, isDarkMode }) => {
-    const { id } = useParams();
-    const [vocabulary, setVocabulary] = useState([]);
+const Vocabulary = ({ vocabularies, onUpdateVocabulary, isDarkMode, vocabData, id }) => {
+    const [words, setWords] = useState([]);
     const [selectedItems, setSelectedItems] = useState(() => {
         const saved = localStorage.getItem(`vocabulary_checked_${id}`);
         return saved ? new Set(JSON.parse(saved)) : new Set();
@@ -23,12 +22,10 @@ const Vocabulary = ({ vocabularies, onUpdateVocabulary, isDarkMode }) => {
         const saved = localStorage.getItem(`vocabulary_checked_${id}`);
         setSelectedItems(saved ? new Set(JSON.parse(saved)) : new Set());
         
-        const currentVocab = vocabularies?.find(vocab => vocab.id === Number(id));
-        if (currentVocab) {
-            setVocabulary(currentVocab.words || []);
-            setVocabularyTitle(currentVocab.title);
+        if (vocabData) {
+            setWords(vocabData.words || []);
         }
-    }, [id, vocabularies]);
+    }, [id, vocabData]);
 
     const toggleSelection = (wordId) => {
         setSelectedItems(prev => {
@@ -52,7 +49,7 @@ const Vocabulary = ({ vocabularies, onUpdateVocabulary, isDarkMode }) => {
     };
 
     const openEditModal = (index) => {
-        const wordToEdit = vocabulary[index];
+        const wordToEdit = words[index];
         setEditWordInput(wordToEdit.word);
         setEditMeanings(
             wordToEdit.meanings.split(', ').map((m) => {
@@ -146,8 +143,8 @@ const Vocabulary = ({ vocabularies, onUpdateVocabulary, isDarkMode }) => {
             difficulty: 0.5
         };
         
-        const updatedVocabulary = [...vocabulary, newWord];
-        setVocabulary(updatedVocabulary);
+        const updatedVocabulary = [...words, newWord];
+        setWords(updatedVocabulary);
         onUpdateVocabulary(Number(id), updatedVocabulary);
         closeAddModal();
     };
@@ -187,21 +184,21 @@ const Vocabulary = ({ vocabularies, onUpdateVocabulary, isDarkMode }) => {
             if (!confirmEdit) return;
         }
 
-        const updatedVocabulary = [...vocabulary];
+        const updatedVocabulary = [...words];
         updatedVocabulary[editIndex] = {
             ...updatedVocabulary[editIndex],
             word: trimmedWord,
             meanings: editMeanings.map((m) => `${m.meaning.trim()} (${m.partOfSpeech})`).join(', ')
         };
-        setVocabulary(updatedVocabulary);
+        setWords(updatedVocabulary);
         onUpdateVocabulary(Number(id), updatedVocabulary);
         closeEditModal();
     };
 
     const deleteVocabulary = (index) => {
         if (window.confirm('정말로 삭제하시겠습니까?')) {
-            const updatedVocabulary = vocabulary.filter((_, i) => i !== index);
-            setVocabulary(updatedVocabulary);
+            const updatedVocabulary = words.filter((_, i) => i !== index);
+            setWords(updatedVocabulary);
             onUpdateVocabulary(Number(id), updatedVocabulary);
         }
     };
@@ -211,28 +208,17 @@ const Vocabulary = ({ vocabularies, onUpdateVocabulary, isDarkMode }) => {
     };
 
     return (
-        <div className={`${isDarkMode ? 'dark-mode' : ''}`} style={styles.vocabularyContainer}>
-            <header style={styles.header}>
-                <div style={styles.headerLeft}>
-                    <button 
-                        className="back-button"
-                        onClick={() => navigate('/')}
-                    >
-                        ←
-                    </button>
-                </div>
-                <h1 style={styles.title}>{vocabularyTitle}</h1>
-                <div style={styles.vocabButtons}>
-                    <button className="custom-button" onClick={() => navigate(`/flashcard/${id}`)}>플래시 카드</button>
-                    <button className="custom-button" onClick={() => navigate(`/OXquiz/${id}`)}>O/X</button>
-                    <button className="custom-button" onClick={() => navigate(`/fillin/${id}`)}>빈칸 채우기</button>
-                    <button className="custom-button" onClick={openAddModal}>Add</button>
-                </div>
-            </header>
+        <div 
+            className="vocabulary-container"
+            style={styles.vocabularyContainer}
+        >
+            <div style={styles.addButtonContainer}>
+                <button className="custom-button" onClick={openAddModal}>Add</button>
+            </div>
 
             <main>
                 <div style={styles.vocaList}>
-                    {vocabulary.map((item, index) => (
+                    {words.map((item, index) => (
                         <div
                         key={item.id || index}
                         className={`vocaItem ${selectedItems.has(index) ? 'selectedVocaItem' : ''} ${getDifficultyClass(item.id, item.difficulty)}`}
@@ -382,32 +368,16 @@ const Vocabulary = ({ vocabularies, onUpdateVocabulary, isDarkMode }) => {
 const styles = {
     vocabularyContainer: {
         fontFamily: 'TTHakgyoansimEunhasuR',
-        padding: '20px'
+        padding: '20px',
+        maxHeight: '700px',
+        overflowY: 'auto',
+        overflowX: 'hidden'
     },
-    header: {
-        borderTop: '1px solid #ddd',
-        borderBottom: '1px solid #ddd',
+    addButtonContainer: {
         display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '50px',
-        position: 'relative',
-        height: '60px'
-    },
-    headerLeft: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: '20px',
-        position: 'absolute',
-        left: 0,
-        zIndex: 1
-    },
-    vocabButtons: {
-        display: 'flex',
-        gap: '10px',
-        position: 'absolute',
-        right: 0,
-        zIndex: 1
+        justifyContent: 'flex-end',
+        padding: '10px',
+        marginBottom: '20px'
     },
     vocaList: {
         display: 'flex',
@@ -458,12 +428,6 @@ const styles = {
     checkboxInput: {
         accentColor: '#a9c6f8',
         cursor: 'pointer'
-    },
-    actionButtons: {
-        display: 'flex',
-        gap: '10px',
-        opacity: 0,
-        transition: 'opacity 0.3s ease'
     },
     commonInput: {
         padding: '8px 12px',
