@@ -19,7 +19,6 @@ import SignUpForm from './SignUpForm';
 import Modal from './Modal';
 
 function App() {
-  // 단어장 상태 관리
   const [vocabularies, setVocabularies] = useState(() => {
     const savedVocabularies = localStorage.getItem('vocabularies');
     return savedVocabularies ? JSON.parse(savedVocabularies) : [];
@@ -27,11 +26,9 @@ function App() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [newVocab, setNewVocab] = useState({ title: '', description: '' });
 
-  // 단어장 추가 모달 열기/닫기
   const openAddModal = () => setShowAddModal(true);
   const closeAddModal = () => setShowAddModal(false);
 
-  // 단어장 추가 처리
   const handleSubmitVocabulary = () => {
     if (newVocab.title) {
       setVocabularies([...vocabularies, { ...newVocab, id: Date.now(), wordCount: 0 }]);
@@ -42,12 +39,10 @@ function App() {
     }
   };
 
-  // 단어장 삭제 처리
   const deleteVocabulary = (id) => {
     setVocabularies(vocabularies.filter((vocab) => vocab.id !== id));
   };
 
-  // localStorage에 상태 저장
   useEffect(() => {
     localStorage.setItem('vocabularies', JSON.stringify(vocabularies));
   }, [vocabularies]);
@@ -99,7 +94,6 @@ function App() {
   );
 }
 
-// Header 컴포넌트
 function Header({ openAddModal }) {
   const { user, logout } = useContext(AuthContext);
 
@@ -134,7 +128,6 @@ function Header({ openAddModal }) {
   );
 }
 
-// Home 컴포넌트
 function Home({ vocabularies, deleteVocabulary }) {
   return (
     <main>
@@ -178,7 +171,6 @@ function Home({ vocabularies, deleteVocabulary }) {
   );
 }
 
-// 회원가입 페이지
 function SignUpFormWrapper() {
   const { signUp } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -196,7 +188,6 @@ function SignUpFormWrapper() {
   return <SignUpForm onSignUp={handleSignUp} />;
 }
 
-// 로그인 페이지
 function LoginFormWrapper() {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -216,7 +207,6 @@ function LoginFormWrapper() {
   return <LoginForm onLogin={handleLogin} />;
 }
 
-// PrivateRoute 컴포넌트
 function PrivateRoute({ component: Component }) {
   const { user } = useContext(AuthContext);
   const location = useLocation();

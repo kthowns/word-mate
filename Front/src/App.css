@@ -234,3 +234,93 @@ input[type="text"]:focus, textarea:focus {
   transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
+
+
+/* 로그인 및 회원가입 버튼 스타일 */
+.login-button, .signup-button {
+  font-family: 'TTHakgyoansimEunhasuR';
+  font-size: 20px;
+  padding: 10px 20px;
+  color: white;
+  background: linear-gradient(45deg, #f0bbf8, #a9c6f8);
+  border: none;
+  border-radius: 8px;
+  margin: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.login-button:hover, .signup-button:hover {
+  background: linear-gradient(45deg, #ff9add, #55a2fa);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.login-button a, .signup-button a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* 회원가입 페이지 스타일 */
+.signup-form {
+  display: flex;
+  flex-direction: column; /* 세로 정렬 */
+  align-items: center; /* 가운데 정렬 */
+  justify-content: center; /* 수직 가운데 정렬 */
+  margin: 0 auto;
+  padding: 20px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.form-field label {
+  margin-bottom: 5px;
+  font-size: 16px;
+  font-family: 'TTHakgyoansimEunhasuR';
+}
+
+.signup-form input {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  font-family: 'TTHakgyoansimEunhasuR';
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.signup-form input:focus {
+  outline: none;
+  border-color: #a9c6f8;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.signup-form button {
+  font-family: 'TTHakgyoansimEunhasuR';
+  font-size: 18px;
+  padding: 10px 20px;
+  color: white;
+  background: linear-gradient(45deg, #f0bbf8, #a9c6f8);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  margin-top: 10px;
+  width: 100%;
+}
+
+.signup-form button:hover {
+  background: linear-gradient(45deg, #ff9add, #55a2fa);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
