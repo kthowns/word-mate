@@ -3,6 +3,18 @@ import {useNavigate, useParams} from 'react-router-dom';
 import Modal from './Modal';
 import '../styles/vocabulary.css';
 
+const POS = Object.freeze({
+    NOUN: "명사",
+    PRONOUN: "대명사",
+    VERB: "동사",
+    ADJECTIVE: "형용사",
+    ADVERB: "부사",
+    ARTICLE: "관사",
+    PREPOSITION: "전치사",
+    CONJUNCTION: "접속사",
+    INTERJECTION: "감탄사"
+});
+
 async function fetchJson(url, method = 'GET', body = null) {
     const headers = {'Content-Type': 'application/json'};
     const options = {method, headers};
@@ -21,19 +33,23 @@ async function fetchJson(url, method = 'GET', body = null) {
     }
 }
 
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
 const Vocabulary = ({isDarkMode, vocabId}) => {
     const [words, setWords] = useState([]);
     const [selectedItems, setSelectedItems] = useState([]);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [wordInput, setWordInput] = useState('');
-    const [addingDefs, setAddingDefs] = useState([]);
+    const [addingDefs, setAddingDefs] = useState([{definition: '', type: ''}]);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editWordInput, setEditWordInput] = useState('');
-    const [edittingDefs, setEdittingDefs] = useState([{definition: '', type: ''}]);
+    const [editingDefs, setEditingDefs] = useState([{definition: '', type: ''}]);
     const [editIndex, setEditIndex] = useState(null);
     const [vocabularyTitle, setVocabularyTitle] = useState('');
 
     const fetchVocabData = async () => {
+        await delay(100);
+
         try {
             const wordResponse = await fetch(`/api/words/all?vocab_id=${vocabId}`);
             const wordData = await wordResponse.json();
@@ -53,7 +69,7 @@ const Vocabulary = ({isDarkMode, vocabId}) => {
 
                     let statsData = await fetch(`/api/stats/detail?word_id=${word.wordId}`)
                         .then((res) => res.json())
-                        .then((data) => (data.status == 200 ? data.data : []))
+                        .then((data) => (data.status === 200 ? data.data : []))
                         .catch((err) => {
                             console.error("통계 정보 불러오기 실패", err);
                             return [];
@@ -61,11 +77,17 @@ const Vocabulary = ({isDarkMode, vocabId}) => {
 
                     const diffsData = await fetch(`/api/stats/diff?word_id=${word.wordId}`)
                         .then((res) => res.json())
-                        .then((data) => (data.status == 200 ? data.data : []))
+                        .then((data) => {
+                            if (data.status === 200)
+                                return data.data != null ? data.data : 0.5;
+                            console.error("난이도 불러오기 실패");
+                            return 0.5;
+                        })
                         .catch((err) => {
                             console.error("난이도 불러오기 실패", err);
-                            return;
+                            return [{diff: 0.5}];
                         })
+                    console.log("diffsData", diffsData);
 
                     return {...word, defs: defsData, stats: {...statsData, diff: diffsData}};
                 }));
@@ -93,7 +115,7 @@ const Vocabulary = ({isDarkMode, vocabId}) => {
 
     const openEditModal = (word) => {
         setEditWordInput(word.expression);
-        setEdittingDefs(
+        setEditingDefs(
             word.defs.map((def) => {
                 const definition = def.definition;
                 const type = def.type;
@@ -107,55 +129,60 @@ const Vocabulary = ({isDarkMode, vocabId}) => {
     const closeEditModal = () => {
         setIsEditModalOpen(false);
         setEditWordInput('');
-        setEdittingDefs([{definition: '', type: ''}]);
+        setEditingDefs([{definition: '', type: ''}]);
         setEditIndex(null);
     };
 
-    const addAddDef = () => setAddingDefs([...addingDefs, {definition: '', type: ''}]);
-    const addEditDef = () => setEdittingDefs([...edittingDefs, {definition: '', type: ''}]);
+    const addAddDef = () => setAddingDefs((prev) => [...prev, {definition: '', type: ''}]);
+    const addEditDef = () => setEditingDefs((prev) => [...prev, {definition: '', type: ''}]);
 
     const removeAddingDef = (index) => {
-        if (defs.length > 1) {
-            setAddingDefs(addingDefs.filter((_, i) => i !== index));
-        }
+        const addingData = [...addingDefs];
+        addingData.pop(index);
+        console.log(addingData);
+        setAddingDefs(addingData);
     };
 
-    const removeEdittingDef = (index) => {
-        if (edittingDefs.length > 1) {
-            setEdittingDefs(edittingDefs.filter((_, i) => i !== index));
-        }
+    const removeEditingDef = (index) => {
+        const editingData = [...editingDefs];
+        editingData.pop(index);
+        console.log(editingData);
+        setEditingDefs(editingData);
     };
 
     const handleAddingDefChange = (index, definition) => {
-        const updatedDefs = addingDefs.map((def, i) =>
-            i === index ? {...def, definition: definition} : definition
-        );
+        const updatedDefs = [...addingDefs];
+        updatedDefs[index].definition = definition;
+        console.log("addingDefs", updatedDefs);
         setAddingDefs(updatedDefs);
     };
 
     const handleAddingTypeChange = (index, type) => {
-        const updatedDefs = addingDefs.map((def, i) =>
-            i === index ? {...def, type: type} : type
-        );
+        const updatedDefs = [...addingDefs];
+        updatedDefs[index].type = type;
+        console.log("addingDefs", updatedDefs);
         setAddingDefs(updatedDefs);
     };
 
-    const handleEdittingDefChange = (index, definition) => {
-        const updatedDefs = edittingDefs.map((def, i) =>
-            i === index ? {...def, definition: definition} : definition
-        );
-        setEdittingDefs(updatedDefs);
+    const handleEditingDefChange = (index, def, definition) => {
+        const updatedDefs = [...editingDefs];
+        def.definition = definition;
+        editingDefs[index] = def;
+        console.log("editingDefs", updatedDefs);
+        setEditingDefs(updatedDefs);
     };
 
-    const handleEdittingTypeChange = (index, type) => {
-        const updatedDefs = edittingDefs.map((def, i) =>
-            i === index ? {...def, type: type} : type
-        );
-        setEdittingDefs(updatedDefs);
+    const handleEditingTypeChange = (index, def, type) => {
+        const updatedDefs = [...editingDefs];
+        def.type = type;
+        updatedDefs[index] = def;
+        console.log("editingDefs", updatedDefs);
+        setEditingDefs(updatedDefs);
     };
 
     const submitAddWord = async () => {
         const trimmedWord = wordInput.trim();
+        console.log("addingDefs", addingDefs);
         if (!trimmedWord) {
             alert('단어를 입력해주세요.');
             return;
@@ -182,22 +209,20 @@ const Vocabulary = ({isDarkMode, vocabId}) => {
                 expression: trimmedWord
             });
 
-
-
             addingDefs.map(async (def) => {
-                const responseDef = await fetchJson(`/api/defs/${responseWord.data.wordId}`, 'POST',{
+                const responseDef = await fetchJson(`/api/defs/${responseWord.data.wordId}`, 'POST', {
                     definition: def.definition, type: def.type
                 });
-                if(responseDef.status !== 200){
-                    if(responseDef.status === 409){
+                if (responseDef.status !== 200) {
+                    if (responseDef.status === 409) {
                         alert('중복된 뜻입니다');
-                    }else{
+                    } else {
                         alert('뜻 추가에 실패했습니다.');
                     }
                 }
             });
 
-            if (responseWord.status === 200 && responseDef) {
+            if (responseWord.status === 200) {
                 await fetchVocabData();
                 closeAddModal();
             } else if (responseWord.status === 409) {
@@ -231,31 +256,40 @@ const Vocabulary = ({isDarkMode, vocabId}) => {
             return;
         }
 
-        if (!edittingDefs.every((def) => def.definition.trim() && def.type)) {
+        if (!editingDefs.every((def) => def.definition.trim() && def.type)) {
             alert('모든 의미와 품사를 입력해주세요.');
             return;
         }
 
         try {
-            const response = await fetchJson(`/api/defs/${words[editIndex].wordId}`, 'PATCH', {
-                word: trimmedWord,
-                defs: edittingDefs.map((def) => ({
-                    definition: def.definition.trim(),
-                    type: def.type
-                })),
+            const responseWord = await fetchJson(`/api/words/${vocabId}`, 'PATCH', {
+                expression: trimmedWord
             });
 
-            if (response.status === 200) {
-                fetchVocabData();
+            editingDefs.map(async (def) => {
+                const responseDef = await fetchJson(`/api/defs/${def.defId}`, 'PATCH', {
+                    definition: def.definition, type: def.type
+                });
+                if (responseDef.status !== 200) {
+                    if (responseDef.status === 409) {
+                        alert('중복된 뜻입니다');
+                    } else {
+                        alert('뜻 추가에 실패했습니다.');
+                    }
+                }
+            });
+
+            if (responseWord.status === 200) {
+                await fetchVocabData();
                 closeAddModal();
-            } else if (response.status == 409) {
+            } else if (responseWord.status === 409) {
                 alert('중복된 단어입니다.');
             } else {
-                alert('단어 수정에 실패했습니다.');
+                alert('단어 추가에 실패했습니다.');
             }
         } catch (error) {
-            console.error('단어 수정 실패:', error);
-            alert('단어 수정 중 문제가 발생했습니다.');
+            console.error('단어 추가 실패:', error);
+            alert('단어 추가 중 문제가 발생했습니다.');
         }
 
         closeEditModal();
@@ -270,18 +304,17 @@ const Vocabulary = ({isDarkMode, vocabId}) => {
     };
 
     const getDifficultyClass = (word) => {
-        console.log("getDifficultyClass", word);
-        if (word.stats.diff == null)
+        const diff = word.stats.diff;
+        if (diff == null || ((diff < 0.69) && (diff > 0.45)))
             return 'vocab-item--difficulty-medium';
-        if (word.stats.diff > 0.60)
+        else if (diff <= 0.45)
+            return 'vocab-item--difficulty-easy';
+        else
             return 'vocab-item--difficulty-hard';
-        else if (word.stats.diff > 45)
-            return 'vocab-item--difficulty-medium';
-        return 'vocab-item--difficulty-easy';
     };
 
     const toggleSelectedItem = (wordId) => {
-        if(!selectedItems.includes(wordId))
+        if (!selectedItems.includes(wordId))
             setSelectedItems((prev) => [...prev, wordId]);
         else
             setSelectedItems((prev) => prev.filter((item) => item !== wordId));
@@ -301,7 +334,7 @@ const Vocabulary = ({isDarkMode, vocabId}) => {
                     {words.map((word) => (
                         <div
                             key={word.wordId}
-                            className={`vocaItem ${selectedItems.includes(word.wordId) ? 'selectedVocaItem' : ''} ${getDifficultyClass(word)}`}
+                            className={`vocaItem ${selectedItems.includes(word.wordId) ? 'selectedVocaItem' : ''} ${getDifficultyClass(word)}` || 0.5}
                             style={styles.vocaItem}
                             onClick={() => toggleSelectedItem(word.wordId)}
                         >
@@ -365,15 +398,16 @@ const Vocabulary = ({isDarkMode, vocabId}) => {
                                     onChange={(item) => handleAddingTypeChange(index, item.target.value)}
                                 >
                                     <option value="">품사 선택</option>
-                                    <option value="명사">명사</option>
-                                    <option value="형용사">형용사</option>
-                                    <option value="동사">동사</option>
-                                    <option value="부사">부사</option>
+                                    {Object.keys(POS).map((key) => (
+                                        <option key={key} value={key}>
+                                            {POS[key]}
+                                        </option>
+                                    ))}
                                 </select>
                                 {addingDefs.length > 1 && (
                                     <button
                                         className="custom-button"
-                                        onClick={() => removeAddingDef(def)}
+                                        onClick={() => removeAddingDef(index)}
                                     >
                                         -
                                     </button>
@@ -400,14 +434,14 @@ const Vocabulary = ({isDarkMode, vocabId}) => {
                         onChange={(e) => setEditWordInput(e.target.value)}
                     />
                     <div style={styles.meaningsContainer}>
-                        {edittingDefs.map((def, index) => (
+                        {editingDefs.map((def, index) => (
                             <div key={index} style={styles.meaningItem}>
                                 <input
                                     style={{...styles.commonInput, ...styles.input}}
                                     type="text"
                                     placeholder="뜻 입력"
                                     value={def.definition}
-                                    onChange={(e) => handleEdittingDefChange(index, e.target.value)}
+                                    onChange={(e) => handleEditingDefChange(index, def ,e.target.value)}
                                 />
                                 <select
                                     style={{
@@ -418,18 +452,19 @@ const Vocabulary = ({isDarkMode, vocabId}) => {
                                         borderColor: isDarkMode ? '#3a3b3c' : '#ddd'
                                     }}
                                     value={def.type}
-                                    onChange={(e) => handleEdittingTypeChange(index, e.target.value)}
+                                    onChange={(e) => handleEditingTypeChange(index, def, e.target.value)}
                                 >
                                     <option value="">품사 선택</option>
-                                    <option value="명사">명사</option>
-                                    <option value="형용사">형용사</option>
-                                    <option value="동사">동사</option>
-                                    <option value="부사">부사</option>
+                                    {Object.keys(POS).map((key) => (
+                                        <option key={key} value={key}>
+                                            {POS[key]}
+                                        </option>
+                                    ))}
                                 </select>
-                                {edittingDefs.length > 1 && (
+                                {editingDefs.length > 1 && (
                                     <button
                                         className="custom-button"
-                                        onClick={() => removeEdittingDef(index)}
+                                        onClick={() => removeEditingDef(index)}
                                     >
                                         -
                                     </button>
