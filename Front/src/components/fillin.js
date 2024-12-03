@@ -1,8 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {useParams} from 'react-router-dom';
 
-const FillInTheBlank = ({onUpdateVocabulary, isDarkMode}) => {
-    const {vocabId} = useParams();
+const FillInTheBlank = ({ isDarkMode, vocabId }) => {
     const [totalQuestions, setTotalQuestions] = useState(0);
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [wrongCount, setWrongCount] = useState(0);
@@ -162,6 +161,7 @@ const FillInTheBlank = ({onUpdateVocabulary, isDarkMode}) => {
                 <p>{currentQuestion + 1 + "/" + totalQuestions}</p>
                 <p>{"틀린 문제 수: " + wrongCount}</p>
             </header>
+
             <main style={{
                 flex: 1,
                 display: 'flex',
@@ -227,5 +227,4 @@ const FillInTheBlank = ({onUpdateVocabulary, isDarkMode}) => {
         </div>
     );
 };
-
 export default FillInTheBlank;

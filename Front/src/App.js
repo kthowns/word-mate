@@ -123,8 +123,8 @@ function App(uId) {
     closeEditModal();
   };
 
-  const deleteVocabulary = async (id) => {
-    await fetchJson(`/api/vocabs/${id}`, 'DELETE');
+  const deleteVocabulary = async (vocabId) => {
+    await fetchJson(`/api/vocabs/${vocabId}`, 'DELETE');
     await fetchVocabData();
   };
 
@@ -148,12 +148,9 @@ function App(uId) {
 
     switch(currentView) {
       case 'flashcard':
-        return <Flashcard 
-            vocabularies={vocabularies} 
-            isDarkMode={isDarkMode} 
-            onUpdateVocabulary={updateVocabularyWords}
+        return <Flashcard
+            isDarkMode={isDarkMode}
             vocabId={vocab.vocabId}
-            onComplete={returnToVocabList}
         />;
       case 'oxquiz':
         return <OXQuiz vocabularies={vocabularies} isDarkMode={isDarkMode} vocabId={vocab.vocabId} />;
@@ -163,10 +160,9 @@ function App(uId) {
         return (
           <Vocabulary 
             vocabularies={vocabularies}
-            onUpdateVocabulary={updateVocabularyWords}
             isDarkMode={isDarkMode}
             vocabData={vocab}
-            id={vocab.vocabId}
+            vocabId={vocab.vocabId}
           />
         );
     }
@@ -308,6 +304,7 @@ function App(uId) {
                 element={
                   <Vocabulary
                       isDarkMode={isDarkMode}
+                      vocabId={expandedVocabId}
                   />
                 }
             />
@@ -316,6 +313,7 @@ function App(uId) {
                 element={
                   <Flashcard
                       isDarkMode={isDarkMode}
+                      vocabId={expandedVocabId}
                   />
                 }
             />
@@ -324,6 +322,7 @@ function App(uId) {
                 element={
                   <OXQuiz
                       isDarkMode={isDarkMode}
+                      vocabId={expandedVocabId}
                   />
                 }
             />
@@ -332,6 +331,7 @@ function App(uId) {
                 element={
                   <FillIn
                       isDarkMode={isDarkMode}
+                      vocabId={expandedVocabId}
                   />
                 }
             />

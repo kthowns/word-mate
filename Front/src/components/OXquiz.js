@@ -17,8 +17,7 @@ function randomInt(min, max, count) {
   return numbers.slice(0, count); // 요청된 count 길이만큼 반환
 }
 
-const OXQuiz = ({ onUpdateVocabulary, isDarkMode }) => {
-  const { vocabId } = useParams();
+const OXQuiz = ({ isDarkMode, vocabId }) => {
   const [totalQuestions, setTotalQuestions] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [wrongCount, setWrongCount] = useState(0);
@@ -118,16 +117,22 @@ const OXQuiz = ({ onUpdateVocabulary, isDarkMode }) => {
   const checkAnswer = async (input) => {
     setIsButtonDisabled(true);
 
-    const isCorrect = () => {
+    const isCorrect = (input) => {
       const result = words[currentQuestion].defs.find(
-          (def) => def.definition === wordsForQuiz[currentQuestion].definition);
-      return input === result;
+          (def) => def.definition === wordsForQuiz[currentQuestion].definition
+      );
+
+      if (input === true) {
+        return result !== undefined;  // result가 있으면 true, 없으면 false
+      }
+
+      return result === undefined;  // result가 없으면 true, 있으면 false
     }
 
     let correct = corCount;
     let wrong = wrongCount;
 
-    if (isCorrect()) {
+    if (isCorrect(input)) {
       correct += 1;
       setCorCount(correct);
       setResult("정답입니다!");
