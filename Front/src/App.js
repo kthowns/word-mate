@@ -70,10 +70,6 @@ function App(uId) {
 
   useEffect(() => {
     fetchVocabData();
-  }, []);
-
-  useEffect(() => {
-    fetchVocabData();
   }, [userId]);
 
   useEffect(() => {
@@ -124,7 +120,16 @@ function App(uId) {
   };
 
   const deleteVocabulary = async (vocabId) => {
-    await fetchJson(`/api/vocabs/${vocabId}`, 'DELETE');
+    try{
+      const deleteResponse = await fetchJson(`/api/vocabs/${vocabId}`, 'DELETE');
+      if(deleteResponse.status === 200)
+        console.log("단어장 삭제 완료", deleteResponse.data);
+      else
+        console.error("단어장 삭제 실패");
+    }catch(e){
+      console.error("단어장 삭제 실패", e);
+      return;
+    }
     await fetchVocabData();
   };
 
