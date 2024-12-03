@@ -148,6 +148,7 @@ function App() {
               onChange={(e) => setNewVocab({ ...newVocab, title: e.target.value })}
               className="input-field"
             />
+            
             <label>설명:</label>
             <textarea
               value={newVocab.description}
