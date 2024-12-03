@@ -14,7 +14,7 @@ public enum POS {
     ARTICLE("관사"),
     PREPOSITION("전치사"),
     CONJUNCTION("접속사"),
-    INTERJECTION("감탄사"),;
+    INTERJECTION("감탄사");
 
     private final String type;
 }
