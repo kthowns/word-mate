@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import React, {useState, useEffect} from 'react';
+import {useParams} from 'react-router-dom';
 
-const FillInTheBlank = ({ onUpdateVocabulary, isDarkMode }) => {
-    const { vocabId } = useParams();
+const FillInTheBlank = ({onUpdateVocabulary, isDarkMode}) => {
+    const {vocabId} = useParams();
     const [totalQuestions, setTotalQuestions] = useState(0);
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [wrongCount, setWrongCount] = useState(0);
@@ -21,7 +21,7 @@ const FillInTheBlank = ({ onUpdateVocabulary, isDarkMode }) => {
             const wordResponse = await fetch(`/api/words/all?vocab_id=${vocabId}`);
             const wordData = await wordResponse.json();
             if (wordData.status === 200) {
-                if(wordData.data.length === 0){ //빈 단어장
+                if (wordData.data.length === 0) { //빈 단어장
                     setResult("단어가 없습니다.");
                     setWords([{expression: "", defs: {definition: ""}}]);
                     setIsLoading(false);
@@ -45,7 +45,7 @@ const FillInTheBlank = ({ onUpdateVocabulary, isDarkMode }) => {
                             return [];
                         });
 
-                    return { ...word, defs: defsData, stats: statsData };
+                    return {...word, defs: defsData, stats: statsData};
                 }));
 
                 setWords(wordsWithDefs);
@@ -114,7 +114,7 @@ const FillInTheBlank = ({ onUpdateVocabulary, isDarkMode }) => {
                 // 모든 데이터를 순차적으로 POST
                 const results = await Promise.all(
                     words.map(async (word) => {
-                        const response = await fetch('/api/stats/'+word.wordId, {
+                        const response = await fetch('/api/stats/' + word.wordId, {
                             method: 'PATCH',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -162,35 +162,6 @@ const FillInTheBlank = ({ onUpdateVocabulary, isDarkMode }) => {
                 <p>{currentQuestion + 1 + "/" + totalQuestions}</p>
                 <p>{"틀린 문제 수: " + wrongCount}</p>
             </header>
-  return (
-    <div style={{
-        fontFamily: 'TTHakgyoansimEunhasuR',
-        backgroundColor: isDarkMode ? '#242526' : '#f8f9fa',
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100vh',
-        position: 'relative',
-        padding: '20px',
-        color: isDarkMode ? '#e4e6eb' : '#000',
-        borderRadius: '20px',
-        boxShadow: isDarkMode
-            ? '0 0 20px rgba(0,0,0,0.3)'
-            : '0 0 20px rgba(0,0,0,0.1)',
-    }}>
-        <header style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            borderBottom: `2px solid ${isDarkMode ? '#404040' : '#ddd'}`,
-            padding: '10px',
-            height: '10%',
-            color: isDarkMode ? '#e4e6eb' : '#000'
-        }}>
-            <p style={{ fontSize: '25px' }}>{headerData.wrongCount}</p>
-            <p style={{ fontSize: '25px' }}>{headerData.progress}</p>
-            <p style={{ fontSize: '25px' }}>{headerData.questionCount}</p>
-        </header>
-
             <main style={{
                 flex: 1,
                 display: 'flex',
@@ -208,9 +179,9 @@ const FillInTheBlank = ({ onUpdateVocabulary, isDarkMode }) => {
                     textAlign: 'center',
                     marginBottom: '20px'
                 }}>
-                    <p>문제:  {words[currentQuestion]?.defs[0]?.definition || '불러오는 중...'}</p>
+                    <p>문제: {words[currentQuestion]?.defs[0]?.definition || '불러오는 중...'}</p>
                 </section>
-                <section style={{ width: '60%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <section style={{width: '60%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                     <input
                         type="text"
                         value={userInput}
@@ -241,7 +212,7 @@ const FillInTheBlank = ({ onUpdateVocabulary, isDarkMode }) => {
                     >제출
                     </button>
                 </section>
-                {result && <p style={{ margin: '20px 0' }}>{result}</p>}
+                {result && <p style={{margin: '20px 0'}}>{result}</p>}
             </main>
 
             <footer style={{
