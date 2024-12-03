@@ -60,7 +60,6 @@ const FillInTheBlank = ({ onUpdateVocabulary, isDarkMode }) => {
             setIsLoading(false);
         }
     };
-  };
 
     useEffect(() => {
         console.log("words", words);
@@ -84,7 +83,7 @@ const FillInTheBlank = ({ onUpdateVocabulary, isDarkMode }) => {
         setIsButtonDisabled(true);
 
         const isCorrect = () => {
-            return userInput === words[currentQuestion].expression;
+            return userInput.toLowerCase() === words[currentQuestion].expression.toLowerCase();
         }
 
         let correct = corCount;
