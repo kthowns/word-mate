@@ -50,9 +50,8 @@ const OXQuiz = ({isDarkMode, vocabId}) => {
                         .then((data) => {
                             if (data.status === 200)
                                 return data.data.length > 0 ? data.data : [{definition: "뜻 없음", type: "뜻 없음"}];
-                            else
-                                console.error("뜻 정보 불러오기 실패");
-                                return [];
+                            console.error("뜻 정보 불러오기 실패");
+                            return [];
                         })
                         .catch((err) => {
                             console.error("뜻 정보 불러오기 실패", err);
