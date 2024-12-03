@@ -1,4 +1,4 @@
-# Created by https://www.toptal.com/developers/gitignore/api/java,intellij+all,gradle
+git commit -m "Add node_modules to .gitignor# Created by https://www.toptal.com/developers/gitignore/api/java,intellij+all,gradle
 # Edit at https://www.toptal.com/developers/gitignore?templates=java,intellij+all,gradle
 
 ### Intellij+all ###
@@ -157,6 +157,7 @@ logs
 **/*.backup.*
 **/*.back.*
 
+*/node_modules
 node_modules
 bower_components
 

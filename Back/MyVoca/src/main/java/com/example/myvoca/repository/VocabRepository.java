@@ -18,5 +18,5 @@ public interface VocabRepository
     @Query("select count(w) from Word w where w.vocab.vocabId = :vocabId")
     Integer countWords(@Param("vocabId") Integer vocabId);
 
-    Optional<Vocab> findByTitleAndUser(String title, User user);
+    Optional<Vocab> findByTitleAndDescriptionAndUser(String title, String description, User user);
 }
