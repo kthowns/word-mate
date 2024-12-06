@@ -370,7 +370,19 @@ const Vocabulary = ({isDarkMode, vocabId}) => {
             {isAddModalOpen && (
                 <Modal title="단어 추가" onClose={closeAddModal}>
                     <input
-                        style={{...styles.commonInput, ...styles.input}}
+                        style={{
+                            width: '90%',
+                            padding: '10px',
+                            fontSize: '18px',
+                            fontFamily: 'TTHakgyoansimEunhasuR',
+                            border: isDarkMode ? '1px solid #4a4b4c' : '1px solid #ccc',
+                            borderRadius: '8px',
+                            marginBottom: '20px',
+                            transition: 'all 0.3s ease',
+                            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                            backgroundColor: isDarkMode ? '#3a3b3c' : '#fff',
+                            color: isDarkMode ? '#e4e6eb' : '#000'
+                        }}
                         type="text"
                         placeholder="단어 입력"
                         value={wordInput}
@@ -380,7 +392,18 @@ const Vocabulary = ({isDarkMode, vocabId}) => {
                         {addingDefs.map((def, index) => (
                             <div key={index} style={styles.meaningItem}>
                                 <input
-                                    style={{...styles.commonInput, ...styles.input}}
+                                    style={{
+                                        width: '60%',
+                                        padding: '10px',
+                                        fontSize: '18px',
+                                        fontFamily: 'TTHakgyoansimEunhasuR',
+                                        border: isDarkMode ? '1px solid #4a4b4c' : '1px solid #ccc',
+                                        borderRadius: '8px',
+                                        transition: 'all 0.3s ease',
+                                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                                        backgroundColor: isDarkMode ? '#3a3b3c' : '#fff',
+                                        color: isDarkMode ? '#e4e6eb' : '#000'
+                                    }}
                                     type="text"
                                     placeholder="뜻 입력"
                                     value={def.definition}
@@ -388,11 +411,18 @@ const Vocabulary = ({isDarkMode, vocabId}) => {
                                 />
                                 <select
                                     style={{
-                                        ...styles.commonInput,
-                                        ...styles.selectBox,
-                                        backgroundColor: isDarkMode ? '#5a5b5d' : '#fff',
+                                        height: '40px',
+                                        padding: '0 10px',
+                                        fontSize: '16px',
+                                        fontFamily: 'TTHakgyoansimEunhasuR',
+                                        border: isDarkMode ? '1px solid #4a4b4c' : '1px solid #ccc',
+                                        borderRadius: '8px',
+                                        transition: 'all 0.3s ease',
+                                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                                        backgroundColor: isDarkMode ? '#3a3b3c' : '#fff',
                                         color: isDarkMode ? '#e4e6eb' : '#000',
-                                        borderColor: isDarkMode ? '#3a3b3c' : '#ddd'
+                                        cursor: 'pointer',
+                                        width: '120px'
                                     }}
                                     value={def.type}
                                     onChange={(item) => handleAddingTypeChange(index, item.target.value)}
@@ -406,8 +436,18 @@ const Vocabulary = ({isDarkMode, vocabId}) => {
                                 </select>
                                 {addingDefs.length > 1 && (
                                     <button
-                                        className="custom-button"
+                                        className="add-meaning-button"
                                         onClick={() => removeAddingDef(index)}
+                                        style={{
+                                            width: '40px',
+                                            height: '40px',
+                                            padding: '0',
+                                            borderRadius: '50%',
+                                            marginRight: '10px',
+                                            fontSize: '20px',
+                                            lineHeight: '1',
+                                            border: isDarkMode ? '1px solid #a9c6f8' : '1px solid #ddd'
+                                        }}
                                     >
                                         -
                                     </button>
@@ -427,7 +467,19 @@ const Vocabulary = ({isDarkMode, vocabId}) => {
             {isEditModalOpen && (
                 <Modal title="단어 수정" onClose={closeEditModal}>
                     <input
-                        style={{...styles.commonInput, ...styles.input}}
+                        style={{
+                            width: '90%',
+                            padding: '10px',
+                            fontSize: '18px',
+                            fontFamily: 'TTHakgyoansimEunhasuR',
+                            border: isDarkMode ? '1px solid #4a4b4c' : '1px solid #ccc',
+                            borderRadius: '8px',
+                            marginBottom: '20px',
+                            transition: 'all 0.3s ease',
+                            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                            backgroundColor: isDarkMode ? '#3a3b3c' : '#fff',
+                            color: isDarkMode ? '#e4e6eb' : '#000'
+                        }}
                         type="text"
                         placeholder="단어 입력"
                         value={editWordInput}
@@ -437,7 +489,18 @@ const Vocabulary = ({isDarkMode, vocabId}) => {
                         {editingDefs.map((def, index) => (
                             <div key={index} style={styles.meaningItem}>
                                 <input
-                                    style={{...styles.commonInput, ...styles.input}}
+                                    style={{
+                                        width: '60%',
+                                        padding: '10px',
+                                        fontSize: '18px',
+                                        fontFamily: 'TTHakgyoansimEunhasuR',
+                                        border: isDarkMode ? '1px solid #4a4b4c' : '1px solid #ccc',
+                                        borderRadius: '8px',
+                                        transition: 'all 0.3s ease',
+                                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                                        backgroundColor: isDarkMode ? '#3a3b3c' : '#fff',
+                                        color: isDarkMode ? '#e4e6eb' : '#000'
+                                    }}
                                     type="text"
                                     placeholder="뜻 입력"
                                     value={def.definition}
@@ -445,11 +508,18 @@ const Vocabulary = ({isDarkMode, vocabId}) => {
                                 />
                                 <select
                                     style={{
-                                        ...styles.commonInput,
-                                        ...styles.selectBox,
-                                        backgroundColor: isDarkMode ? '#5a5b5d' : '#fff',
+                                        height: '40px',
+                                        padding: '0 10px',
+                                        fontSize: '16px',
+                                        fontFamily: 'TTHakgyoansimEunhasuR',
+                                        border: isDarkMode ? '1px solid #4a4b4c' : '1px solid #ccc',
+                                        borderRadius: '8px',
+                                        transition: 'all 0.3s ease',
+                                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                                        backgroundColor: isDarkMode ? '#3a3b3c' : '#fff',
                                         color: isDarkMode ? '#e4e6eb' : '#000',
-                                        borderColor: isDarkMode ? '#3a3b3c' : '#ddd'
+                                        cursor: 'pointer',
+                                        width: '120px'
                                     }}
                                     value={def.type}
                                     onChange={(e) => handleEditingTypeChange(index, def, e.target.value)}
@@ -463,8 +533,18 @@ const Vocabulary = ({isDarkMode, vocabId}) => {
                                 </select>
                                 {editingDefs.length > 1 && (
                                     <button
-                                        className="custom-button"
+                                        className="add-meaning-button"
                                         onClick={() => removeEditingDef(index)}
+                                        style={{
+                                            width: '40px',
+                                            height: '40px',
+                                            padding: '0',
+                                            borderRadius: '50%',
+                                            marginRight: '10px',
+                                            fontSize: '20px',
+                                            lineHeight: '1',
+                                            border: isDarkMode ? '1px solid #a9c6f8' : '1px solid #ddd'
+                                        }}
                                     >
                                         -
                                     </button>

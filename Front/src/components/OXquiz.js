@@ -196,17 +196,18 @@ const OXQuiz = ({isDarkMode, vocabId}) => {
             padding: '20px',
             color: isDarkMode ? '#e4e6eb' : '#000',
             borderRadius: '20px',
-            boxShadow: isDarkMode
-                ? '0 0 20px rgba(0,0,0,0.3)'
+            boxShadow: isDarkMode 
+                ? '0 0 20px rgba(0,0,0,0.3)' 
                 : '0 0 20px rgba(0,0,0,0.1)',
         }}>
             <header style={{
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                borderBottom: '2px solid #ddd',
+                borderBottom: `2px solid ${isDarkMode ? '#404040' : '#ddd'}`,
                 padding: '10px',
-                height: '10%'
+                height: '10%',
+                fontFamily: 'TTHakgyoansimEunhasuR',
             }}>
                 <p>{"맞힌 문제 수: " + corCount}</p>
                 <p>{currentQuestion + 1 + "/" + totalQuestions}</p>
@@ -223,31 +224,61 @@ const OXQuiz = ({isDarkMode, vocabId}) => {
             }}>
                 {words && words.length > 0 ? (
                     <section style={{
-                        backgroundColor: 'white',
-                        border: '1px solid #ccc',
+                        backgroundColor: isDarkMode ? '#3a3b3c' : 'white',
+                        border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
                         width: '60%',
                         marginBottom: '20px',
                         textAlign: 'center',
                         padding: '20px',
-                        borderRadius: '8px'
+                        borderRadius: '8px',
+                        boxShadow: isDarkMode 
+                            ? '0 2px 4px rgba(0,0,0,0.2)' 
+                            : '0 2px 4px rgba(0,0,0,0.1)',
+                        fontFamily: 'TTHakgyoansimEunhasuR',
                     }}>
                         <p>단어: {wordsForQuiz[currentQuestion].expression || '불러오는 중...'}</p>
                         <p>뜻: {wordsForQuiz[currentQuestion].definition || '불러오는 중...'}</p>
-                        <p style={{display: result ? 'block' : 'none', margin: '20px 0'}}>
-                        </p>
                     </section>
                 ) : (
                     "로딩 중..."
                 )}
-                <pre>{result}</pre>
+                <pre style={{
+                    fontFamily: 'TTHakgyoansimEunhasuR',
+                    fontSize: '25px',
+                    whiteSpace: 'pre-line',
+                    textAlign: 'center',
+                    margin: '20px 0'
+                }}>{result}</pre>
                 <div style={{display: 'flex', gap: '10px'}}>
                     <button onClick={() => checkAnswer(true)}
-                            style={{borderRadius: '50px', width: '100px', height: '100px'}}
-                            disabled={isQuizEnd || isLoading || isButtonDisabled}>O
+                        style={{
+                            borderRadius: '50px',
+                            width: '100px',
+                            height: '100px',
+                            backgroundColor: isDarkMode ? '#3a3b3c' : '#fff',
+                            color: isDarkMode ? '#e4e6eb' : '#000',
+                            border: isDarkMode ? '2px solid #a9c6f8' : '1px solid #ddd',
+                            cursor: 'pointer',
+                            transition: 'all 0.3s ease',
+                            fontFamily: 'TTHakgyoansimEunhasuR',
+                        }}
+                        className="quiz-button"
+                        disabled={isQuizEnd || isLoading || isButtonDisabled}>O
                     </button>
                     <button onClick={() => checkAnswer(false)}
-                            style={{borderRadius: '50px', width: '100px', height: '100px'}}
-                            disabled={isQuizEnd || isLoading || isButtonDisabled}>X
+                        style={{
+                            borderRadius: '50px',
+                            width: '100px',
+                            height: '100px',
+                            backgroundColor: isDarkMode ? '#3a3b3c' : '#fff',
+                            color: isDarkMode ? '#e4e6eb' : '#000',
+                            border: isDarkMode ? '2px solid #a9c6f8' : '1px solid #ddd',
+                            cursor: 'pointer',
+                            transition: 'all 0.3s ease',
+                            fontFamily: 'TTHakgyoansimEunhasuR',
+                        }}
+                        className="quiz-button"
+                        disabled={isQuizEnd || isLoading || isButtonDisabled}>X
                     </button>
                 </div>
             </main>

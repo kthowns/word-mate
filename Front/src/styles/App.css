@@ -123,12 +123,18 @@ input[type="text"]:focus, textarea:focus {
   max-width: 200px;
   margin: 20px auto 0;
   display: block;
+  background-color: inherit !important;
+  border: inherit !important;
 }
 
-.submit-button:hover {
-  background: linear-gradient(45deg, #ff9add, #55a2fa);
+.submit-button:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  border-color: #ff9add !important;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.dark-mode .submit-button:hover:not(:disabled) {
+  background: rgba(169, 198, 248, 0.1);
 }
 
 /* 기존 vocab-button 스타일 */
@@ -622,3 +628,14 @@ body.dark-mode {
     border-top: 1px solid #4a4b4c;
 }
 
+.quiz-button:hover:not(:disabled),
+.submit-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    border-color: #ff9add !important;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.dark-mode .quiz-button:hover:not(:disabled),
+.dark-mode .submit-button:hover:not(:disabled) {
+    background: rgba(169, 198, 248, 0.1);
+}

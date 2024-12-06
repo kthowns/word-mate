@@ -50,7 +50,7 @@ const FillInTheBlank = ({ isDarkMode, vocabId }) => {
                 setWords(wordsWithDefs);
                 setTotalQuestions(wordsWithDefs.length);
             } else {
-                console.error("단어 정보 불러오기 실패");
+                console.error("단어 정보 ���오기 실패");
             }
 
             setIsLoading(false);
@@ -101,6 +101,7 @@ const FillInTheBlank = ({ isDarkMode, vocabId }) => {
         }
 
         await delay(2000);
+        setUserInput('');
 
         if (currentQuestion + 1 < totalQuestions) {
             setCurrentQuestion((prevQuestion) => prevQuestion + 1);
@@ -130,7 +131,7 @@ const FillInTheBlank = ({ isDarkMode, vocabId }) => {
                     })
                 );
 
-                console.log('전송 결과:', results);
+                console.log('전송 과:', results);
                 return results; // 전체 전송 결과 반환
             } catch (error) {
                 console.error('전송 중 오류 발생:', error);
@@ -146,7 +147,11 @@ const FillInTheBlank = ({ isDarkMode, vocabId }) => {
             height: '100vh',
             position: 'relative',
             padding: '20px',
-            color: isDarkMode ? '#e4e6eb' : '#000'
+            color: isDarkMode ? '#e4e6eb' : '#000',
+            borderRadius: '20px',
+            boxShadow: isDarkMode 
+                ? '0 0 20px rgba(0,0,0,0.3)' 
+                : '0 0 20px rgba(0,0,0,0.1)',
         }}>
             <header style={{
                 display: 'flex',
@@ -172,45 +177,61 @@ const FillInTheBlank = ({ isDarkMode, vocabId }) => {
             }}>
                 {words && words.length > 0 ? (
                 <section style={{
-                    backgroundColor: isDarkMode ? '#2d2d2d' : 'white',
-                    border: `1px solid ${isDarkMode ? '#404040' : '#ccc'}`,
+                    backgroundColor: isDarkMode ? '#3a3b3c' : 'white',
+                    border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
                     width: '60%',
                     padding: '20px',
                     borderRadius: '8px',
                     textAlign: 'center',
-                    marginBottom: '20px'
+                    marginBottom: '20px',
+                    boxShadow: isDarkMode 
+                        ? '0 2px 4px rgba(0,0,0,0.2)' 
+                        : '0 2px 4px rgba(0,0,0,0.1)'
                 }}>
                     <p>문제: {words[currentQuestion]?.defs[0]?.definition || '불러오는 중...'}</p>
                 </section>):("로딩 중...")}
-                <section style={{width: '60%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                <section style={{
+                    width: '60%', 
+                    display: 'flex', 
+                    justifyContent: 'center', 
+                    alignItems: 'center',
+                    gap: '10px'  // 간격 추가
+                }}>
                     <input
                         type="text"
                         value={userInput}
                         onChange={(e) => setUserInput(e.target.value)}
                         placeholder="답 입력"
                         style={{
-                            width: '60%',
-                            height: '30px',
-                            marginRight: '10px',
-                            backgroundColor: isDarkMode ? '#5a5b5d' : '#fff',
+                            flex: '1',  // 변경: width 대신 flex 사용
+                            height: '40px',  // 높이 조정
+                            backgroundColor: isDarkMode ? '#3a3b3c' : '#fff',
                             color: isDarkMode ? '#e4e6eb' : '#000',
-                            border: `2px solid ${isDarkMode ? '#3a3b3c' : '#ddd'}`,
+                            border: isDarkMode ? '2px solid #a9c6f8' : '1px solid #ddd',
                             borderRadius: '4px',
-                            padding: '0 10px'
+                            padding: '0 15px',
+                            fontFamily: 'TTHakgyoansimEunhasuR',
+                            fontSize: '16px'
                         }}
                     />
                     <button
                         onClick={checkAnswer}
                         style={{
-                            padding: '8px 16px',
+                            height: '40px',  // 높이 맞춤
+                            padding: '0 20px',
                             backgroundColor: isDarkMode ? '#3a3b3c' : '#fff',
                             color: isDarkMode ? '#e4e6eb' : '#000',
-                            border: isDarkMode ? '1px solid #a9c6f8' : '2px solid #ddd',
+                            border: isDarkMode ? '2px solid #a9c6f8' : '1px solid #ddd',
                             borderRadius: '4px',
-                            cursor: 'pointer'
+                            cursor: 'pointer',
+                            transition: 'all 0.3s ease',
+                            fontFamily: 'TTHakgyoansimEunhasuR',
+                            fontSize: '16px',
+                            whiteSpace: 'nowrap'  // 텍스트 줄바꿈 방지
                         }}
                         disabled={isQuizEnd || isLoading || isButtonDisabled}
-                    >제출
+                    >
+                        제출
                     </button>
                 </section>
                 {result && <p style={{margin: '20px 0'}}>{result}</p>}
@@ -220,7 +241,6 @@ const FillInTheBlank = ({ isDarkMode, vocabId }) => {
                 display: 'flex',
                 justifyContent: 'space-around',
                 alignItems: 'center',
-                borderTop: `2px solid ${isDarkMode ? '#404040' : '#ddd'}`,
                 padding: '10px 20px',
                 height: '15%'
             }}>

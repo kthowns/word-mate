@@ -9,7 +9,6 @@
     transition: all 0.3s ease;
     color: white;
 }
-
 .custom-button:hover {
     transform: translateY(-2px);
     background: linear-gradient(45deg, #ff9add, #55a2fa);
