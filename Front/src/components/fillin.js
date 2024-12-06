@@ -50,7 +50,7 @@ const FillInTheBlank = ({ isDarkMode, vocabId }) => {
                 setWords(wordsWithDefs);
                 setTotalQuestions(wordsWithDefs.length);
             } else {
-                console.error("단어 정보 오기 실패");
+                console.error("단어 정보 불러오기 실패");
             }
 
             setIsLoading(false);

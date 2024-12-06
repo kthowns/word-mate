@@ -123,18 +123,25 @@ input[type="text"]:focus, textarea:focus {
   max-width: 200px;
   margin: 20px auto 0;
   display: block;
-  background-color: inherit !important;
-  border: inherit !important;
 }
 
 .submit-button:hover:not(:disabled) {
+  background: linear-gradient(45deg, #ff9add, #55a2fa);
   transform: translateY(-2px);
-  border-color: #ff9add !important;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .submit-button {
+  border: 2px solid #a9c6f8;
+  color: #ffffff;
+  background: none;
+  box-shadow: none;
 }
 
 .dark-mode .submit-button:hover:not(:disabled) {
-  background: rgba(169, 198, 248, 0.1);
+  transform: translateY(-2px);
+  border-color: #ff9add;
+  background: none;
 }
 
 /* 기존 vocab-button 스타일 */

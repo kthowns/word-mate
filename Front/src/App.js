@@ -93,6 +93,10 @@ function App(uId) {
 
   const openEditModal = (vocab) => {
     setEditingVocab(vocab);
+    setNewVocab({
+        title: vocab.title,
+        description: vocab.description || ''
+    });
     setShowEditModal(true);
   };
   const closeEditModal = () => {
@@ -158,6 +162,10 @@ function App(uId) {
         return <Flashcard
             isDarkMode={isDarkMode}
             vocabId={vocab.vocabId}
+            onComplete={() => {
+                setExpandedVocabId(null);
+                setCurrentView(null);
+            }}
         />;
       case 'oxquiz':
         return <OXQuiz vocabularies={vocabularies} isDarkMode={isDarkMode} vocabId={vocab.vocabId} />;

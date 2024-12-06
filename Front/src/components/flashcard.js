@@ -3,48 +3,75 @@ import React, { useState, useEffect } from 'react';
 import '../styles/vocabulary.css';
 import { useParams, useNavigate } from 'react-router-dom';
 
-const Flashcard = ({ vocabularies, onUpdateVocabulary, isDarkMode, vocabId, onComplete }) => {
-    const { id } = useParams();
-    const navigate = useNavigate();
+const Flashcard = ({ isDarkMode, vocabId, onComplete }) => {
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [isMeaningVisible, setIsMeaningVisible] = useState(false);
     const [flashcards, setFlashcards] = useState([]);
     const [totalQuestions, setTotalQuestions] = useState(0);
     const [progress, setProgress] = useState('');
     const [isLastCard, setIsLastCard] = useState(false);
-    const currentVocabId = Number(vocabId || id);
+    const [isLoading, setIsLoading] = useState(true);
+    const [result, setResult] = useState('');
 
-    // vocabularies가 undefined인 경우를 대비한 안전장치 추가
-    const availableVocabularies = vocabularies?.filter(vocab => 
-        vocab.id !== currentVocabId
-    ) || [];
+    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-    // 현재 단어장에 단어가 있는지 확인
-    const hasWords = flashcards.length > 0;
+    const fetchVocabData = async () => {
+        try {
+            const wordResponse = await fetch(`/api/words/all?vocab_id=${vocabId}`);
+            const wordData = await wordResponse.json();
+            if (wordData.status === 200) {
+                if (wordData.data.length === 0) {
+                    setFlashcards([]);
+                    setResult("단어가 없습니다.");
+                    setIsLoading(false);
+                    return;
+                }
+                const wordsWithDefs = await Promise.all(wordData.data.map(async (word) => {
+                    const defsData = await fetch(`/api/defs/all?word_id=${word.wordId}`)
+                        .then((res) => res.json())
+                        .then((data) => (data.status === 200 ? data.data : []))
+                        .catch((err) => {
+                            console.error("뜻 정보 불러오기 실패", err);
+                            return [];
+                        });
+
+                    const statsData = await fetch(`/api/stats/detail?word_id=${word.wordId}`)
+                        .then((res) => res.json())
+                        .then((data) => (data.status === 200 ? data.data : []))
+                        .catch((err) => {
+                            console.error("통계 정보 불러오기 실패", err);
+                            return [];
+                        });
+
+                    return {...word, defs: defsData, stats: statsData};
+                }));
+
+                setFlashcards(wordsWithDefs);
+                setTotalQuestions(wordsWithDefs.length);
+            } else {
+                console.error("단어 정보 불러오기 실패");
+            }
+            setIsLoading(false);
+        } catch (error) {
+            console.error('Error fetching vocab data:', error);
+            setIsLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const currentVocab = vocabularies?.find(vocab => vocab.id === currentVocabId);
-        if (currentVocab?.words) {
-            const cards = currentVocab.words.map(word => ({
-                word: word.word,
-                meanings: word.meanings ? word.meanings.split(', ').map(meaning => {
-                    if (meaning.includes('(')) {
-                        const [text, partOfSpeech] = meaning.split(' (');
-                        return {
-                            text: text,
-                            partOfSpeech: partOfSpeech.replace(')', '')
-                        };
-                    }
-                    return {
-                        text: meaning,
-                        partOfSpeech: ''
-                    };
-                }) : []
-            }));
-            setFlashcards(cards);
-            setTotalQuestions(cards.length);
-        }
-    }, [currentVocabId, vocabularies]);
+        console.log("flashcards", flashcards);
+    }, [flashcards]);
+
+    useEffect(() => {
+        setIsLoading(true);
+        setCurrentQuestion(0);
+        setIsMeaningVisible(false);
+        setFlashcards([]);
+        setProgress('');
+        setIsLastCard(false);
+        setIsLoading(true);
+        fetchVocabData();
+    }, [vocabId]);
 
     useEffect(() => {
         if (totalQuestions > 0) {
@@ -62,7 +89,7 @@ const Flashcard = ({ vocabularies, onUpdateVocabulary, isDarkMode, vocabId, onCo
 
     const handleNextCard = () => {
         if (isLastCard) {
-            onComplete(currentVocabId);
+            onComplete();
         } else {
             setCurrentQuestion(Math.min(currentQuestion + 1, flashcards.length - 1));
             setIsMeaningVisible(false);
@@ -76,49 +103,18 @@ const Flashcard = ({ vocabularies, onUpdateVocabulary, isDarkMode, vocabId, onCo
 
     const playAudio = (event) => {
         event.stopPropagation();
-    };
-
-    const addVocab = (event) => {
-        const selectedVocabId = Number(event.target.value);
-        if (!selectedVocabId) return;
-
-        const selectedVocab = vocabularies.find(vocab => vocab.id === selectedVocabId);
-        const currentCard = flashcards[currentQuestion];
-
-        // 선택된 단어장에 현재 단어가 이미 있는지 확인
-        const isWordExists = selectedVocab.words?.some(
-            word => word.word.toLowerCase() === currentCard.word.toLowerCase()
-        );
-
-        if (isWordExists) {
-            alert('이미 해당 단어장에 존재하는 단어입니다.');
-            event.target.value = '';
-            return;
-        }
-
-        // 새 단어 객체 생성 - vocabularies의 words 배열에 들어갈 형식과 일치하도록 수정
-        const newWord = {
-            id: Date.now(),
-            word: currentCard.word,
-            meanings: currentCard.meanings.map(m => `${m.text} (${m.partOfSpeech})`).join(', ')
-        };
-
-        // 단어장 데이트
-        const updatedVocabularies = vocabularies.map(vocab => 
-            vocab.id === selectedVocabId
-                ? {
-                    ...vocab,
-                    words: [...(vocab.words || []), newWord],
-                    wordCount: (vocab.words?.length || 0) + 1
-                  }
-                : vocab
-        );
-
-        // App 컴포넌트의 상태 업데이트
-        onUpdateVocabulary(selectedVocabId, updatedVocabularies.find(v => v.id === selectedVocabId).words);
         
-        alert('단어가 성공적으로 추가되었습니다.');
-        event.target.value = '';
+        if (!flashcards[currentQuestion]) return;
+
+        try {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(flashcards[currentQuestion].expression);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.8;
+            window.speechSynthesis.speak(utterance);
+        } catch (error) {
+            console.error('음성 재생 실패:', error);
+        }
     };
 
     const handleBackButton = () => {
@@ -126,6 +122,13 @@ const Flashcard = ({ vocabularies, onUpdateVocabulary, isDarkMode, vocabId, onCo
     };
 
     const currentCard = flashcards[currentQuestion] || {};
+
+    // 페이지 이탈 시 음성 재생 중지
+    useEffect(() => {
+        return () => {
+            window.speechSynthesis.cancel();
+        };
+    }, []);
 
     return (
         <div style={{
@@ -138,73 +141,84 @@ const Flashcard = ({ vocabularies, onUpdateVocabulary, isDarkMode, vocabId, onCo
             padding: '20px',
             color: isDarkMode ? '#e4e6eb' : '#000',
             borderRadius: '20px',
-            boxShadow: isDarkMode 
-                ? '0 0 20px rgba(0,0,0,0.3)' 
-                : '0 0 20px rgba(0,0,0,0.1)',
+            boxShadow: isDarkMode ? '0 0 20px rgba(0,0,0,0.3)' : '0 0 20px rgba(0,0,0,0.1)'
         }}>
             <header style={{
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                marginBottom: '20px',
-                borderBottom: `1px solid ${isDarkMode ? '#4a4b4c' : '#ddd'}`,
-                padding: '10px 0'
+                borderBottom: `2px solid ${isDarkMode ? '#404040' : '#ddd'}`,
+                padding: '10px',
+                height: '10%',
+                fontFamily: 'TTHakgyoansimEunhasuR'
             }}>
-                <p style={{
-                    fontSize: '25px',
-                    color: isDarkMode ? '#e4e6eb' : '#333'
-                }}>{progress}</p>
+                <p>{currentQuestion + 1 + "/" + totalQuestions}</p>
             </header>
 
             <main style={{
                 flex: 1,
                 display: 'flex',
                 justifyContent: 'center',
-                alignItems: 'center'
+                alignItems: 'center',
+                padding: '20px'
             }}>
-                <div style={{
-                    width: '500px',
-                    height: '300px',
-                    backgroundColor: isDarkMode ? '#3a3b3c' : '#fff',
-                    borderRadius: '8px',
-                    boxShadow: isDarkMode ? '0 2px 4px rgba(0,0,0,0.2)' : '0 2px 4px rgba(0,0,0,0.1)',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    textAlign: 'center',
-                    position: 'relative',
-                    cursor: 'pointer',
-                    color: isDarkMode ? '#e4e6eb' : '#000'
-                }} onClick={toggleFlashcard}>
-                    <div style={{
-                        display: isMeaningVisible ? 'none' : 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: '20px'
-                    }}>
-                        <p>{currentCard.word}</p>
-                        <button 
-                            className="flashcard-button"
-                            onClick={playAudio}
+                {flashcards.length > 0 ? (
+                    <div
+                        onClick={toggleFlashcard}
+                        style={{
+                            width: '500px',
+                            height: '300px',
+                            backgroundColor: isDarkMode ? '#3a3b3c' : 'white',
+                            borderRadius: '8px',
+                            boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            cursor: 'pointer',
+                            padding: '20px',
+                            textAlign: 'center',
+                            position: 'relative'
+                        }}
+                    >
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                playAudio(e);
+                            }}
                             style={{
                                 position: 'absolute',
-                                top: '10px',
-                                left: '10px'
+                                top: '20px',
+                                left: '20px',
+                                padding: '8px',
+                                backgroundColor: 'transparent',
+                                border: 'none',
+                                cursor: 'pointer',
+                                fontSize: '24px'
                             }}
                         >
-                            듣기
+                            🔊
                         </button>
+                        {!isMeaningVisible ? (
+                            <h2 style={{ fontSize: '35px' }}>
+                                {flashcards[currentQuestion].expression}
+                            </h2>
+                        ) : (
+                            <div>
+                                {flashcards[currentQuestion].defs.map((def, index) => (
+                                    <p key={index} style={{ 
+                                        fontSize: '25px',
+                                        margin: '10px 0'
+                                    }}>
+                                        {def.definition} ({def.type})
+                                    </p>
+                                ))}
+                            </div>
+                        )}
                     </div>
-                    <div style={{
-                        display: isMeaningVisible ? 'block' : 'none'
-                    }}>
-                        {currentCard.meanings && currentCard.meanings.map((meaning, index) => (
-                            <p key={index}>
-                                {meaning.text} ({meaning.partOfSpeech})
-                            </p>
-                        ))}
-                    </div>
-                </div>
+                ) : (
+                    <p>단어가 없습니다.</p>
+                )}
             </main>
 
             <footer style={{
@@ -221,32 +235,6 @@ const Flashcard = ({ vocabularies, onUpdateVocabulary, isDarkMode, vocabId, onCo
                 >
                     이전
                 </button>
-                <select 
-                    onChange={addVocab} 
-                    disabled={!hasWords}
-                    style={{
-                        fontFamily: 'TTHakgyoansimEunhasuR',
-                        padding: '8px 12px',
-                        border: `1px solid ${isDarkMode ? '#4a4b4c' : '#ddd'}`,
-                        borderRadius: '4px',
-                        fontSize: '14px',
-                        backgroundColor: isDarkMode ? '#3a3b3c' : '#fff',
-                        color: isDarkMode ? '#e4e6eb' : '#000',
-                        cursor: !hasWords ? 'not-allowed' : 'pointer',
-                        opacity: !hasWords ? 0.6 : 1
-                    }}
-                >
-                    <option value="">
-                        {!hasWords 
-                            ? "단어가 없습니다" 
-                            : "단어장에 추가"}
-                    </option>
-                    {hasWords && availableVocabularies.map(vocab => (
-                        <option key={vocab.id} value={vocab.id}>
-                            {vocab.title}
-                        </option>
-                    ))}
-                </select>
                 <button 
                     className="flashcard-button"
                     onClick={handleNextCard}
