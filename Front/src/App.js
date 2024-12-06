@@ -86,11 +86,13 @@ function App(uId) {
   };
 
   const openAddModal = () => setShowAddModal(true);
-  const closeAddModal = () => setShowAddModal(false);
+  const closeAddModal = () => {
+    setShowAddModal(false);
+    setNewVocab({title: '', description: ''});
+  }
 
   const openEditModal = (vocab) => {
     setEditingVocab(vocab);
-    setNewVocab({ title: vocab.title, description: vocab.description });
     setShowEditModal(true);
   };
   const closeEditModal = () => {
