@@ -39,7 +39,7 @@ const OXQuiz = ({isDarkMode, vocabId}) => {
             if (wordData.status === 200) {
                 if (wordData.data.length === 0) { //빈 단어장
                     setResult("단어가 없습니다.");
-                    setWordsForQuiz([{expression: " ", definition: " "}]);
+                    setWordsForQuiz([]);
                     setIsLoading(false);
                     setIsQuizEnd(true);
                     return;
@@ -221,9 +221,7 @@ const OXQuiz = ({isDarkMode, vocabId}) => {
                 justifyContent: 'center',
                 height: '75%'
             }}>
-                {isLoading ? (
-                    <div style={{fontSize: '24px', fontWeight: 'bold'}}>로딩 중...</div>
-                ) : (
+                {words && words.length > 0 ? (
                     <section style={{
                         backgroundColor: 'white',
                         border: '1px solid #ccc',
@@ -236,10 +234,12 @@ const OXQuiz = ({isDarkMode, vocabId}) => {
                         <p>단어: {wordsForQuiz[currentQuestion].expression || '불러오는 중...'}</p>
                         <p>뜻: {wordsForQuiz[currentQuestion].definition || '불러오는 중...'}</p>
                         <p style={{display: result ? 'block' : 'none', margin: '20px 0'}}>
-                            <pre>{result}</pre>
                         </p>
                     </section>
+                ) : (
+                    "로딩 중..."
                 )}
+                <pre>{result}</pre>
                 <div style={{display: 'flex', gap: '10px'}}>
                     <button onClick={() => checkAnswer(true)}
                             style={{borderRadius: '50px', width: '100px', height: '100px'}}
