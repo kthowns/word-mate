@@ -22,7 +22,7 @@ const FillInTheBlank = ({ isDarkMode, vocabId }) => {
             if (wordData.status === 200) {
                 if (wordData.data.length === 0) { //빈 단어장
                     setResult("단어가 없습니다.");
-                    setWords([{expression: "", defs: {definition: ""}}]);
+                    setWords([]);
                     setIsLoading(false);
                     setIsQuizEnd(true);
                     return;
@@ -170,6 +170,7 @@ const FillInTheBlank = ({ isDarkMode, vocabId }) => {
                 justifyContent: 'center',
                 height: '75%'
             }}>
+                {words && words.length > 0 ? (
                 <section style={{
                     backgroundColor: isDarkMode ? '#2d2d2d' : 'white',
                     border: `1px solid ${isDarkMode ? '#404040' : '#ccc'}`,
@@ -180,7 +181,7 @@ const FillInTheBlank = ({ isDarkMode, vocabId }) => {
                     marginBottom: '20px'
                 }}>
                     <p>문제: {words[currentQuestion]?.defs[0]?.definition || '불러오는 중...'}</p>
-                </section>
+                </section>):("로딩 중...")}
                 <section style={{width: '60%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                     <input
                         type="text"
