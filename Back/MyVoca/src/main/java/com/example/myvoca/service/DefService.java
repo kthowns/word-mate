@@ -34,7 +34,7 @@ public class DefService {
 
     @Transactional
     public CreateDef.Response createDef(Integer wordId, CreateDef.Request request) {
-        validateDefDuplicate(request.getDefinition(), getWordById(wordId));
+        validateAddDefDuplicate(request.getDefinition(), getWordById(wordId));
         Def def = Def.builder()
                 .word(getWordById(wordId))
                 .definition(request.getDefinition())
@@ -48,7 +48,7 @@ public class DefService {
     @Transactional
     public CreateDef.Response editDef(Integer defId, CreateDef.Request request) {
         Def def = getDefById(defId);
-        validateDefDuplicate(request.getDefinition(), def.getWord());
+        validateEditDefDuplicate(request, def);
         def.setDefinition(request.getDefinition());
         def.setType(request.getType());
 
@@ -73,8 +73,16 @@ public class DefService {
                 .orElseThrow(() -> new ApiException(NO_WORD));
     }
 
-    private void validateDefDuplicate(String definition, Word word){
+    private void validateAddDefDuplicate(String definition, Word word){
         defRepository.findByDefinitionAndWord(definition, word)
-                .ifPresent((e) -> { throw new ApiException(DUPLICATED_DEFINITION); });
+                .ifPresent((d) -> { throw new ApiException(DUPLICATED_DEFINITION); });
+    }
+
+    private void validateEditDefDuplicate(CreateDef.Request request, Def def) {
+        defRepository.findByDefinitionAndWord(request.getDefinition(), def.getWord())
+                .ifPresent((d) -> {
+                    if(!def.getDefId().equals(d.getDefId()))
+                        throw new ApiException(DUPLICATED_DEFINITION);
+                });
     }
 }

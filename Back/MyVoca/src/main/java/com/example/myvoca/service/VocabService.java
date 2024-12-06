@@ -32,7 +32,7 @@ public class VocabService {
 
     @Transactional
     public CreateVocab.Response createVocab(Integer userId, CreateVocab.Request request) {
-        validateVocabDuplicate(request.getTitle(), request.getDescription(), getUserById(userId));
+        validateAddVocabDuplicate(request.getTitle(), request.getDescription(), getUserById(userId));
         Vocab vocab = Vocab.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
@@ -51,7 +51,7 @@ public class VocabService {
     @Transactional
     public CreateVocab.Response editVocab(Integer vocabId, CreateVocab.Request request) {
         Vocab vocab = getVocabById(vocabId);
-        validateVocabDuplicate(request.getTitle(), request.getDescription(), vocab.getUser());
+        validateEditVocabDuplicate(request, vocab);
         vocab.setTitle(request.getTitle());
         vocab.setDescription(request.getDescription());
 
@@ -75,8 +75,16 @@ public class VocabService {
                 .orElseThrow(() -> new ApiException(NO_USER));
     }
 
-    private void validateVocabDuplicate(String title, String description, User user){
+    private void validateAddVocabDuplicate(String title, String description, User user){
         vocabRepository.findByTitleAndDescriptionAndUser(title, description, user)
-                .ifPresent((e) -> { throw new ApiException(DUPLICATED_TITLE); });
+                .ifPresent((v) -> { throw new ApiException(DUPLICATED_TITLE); });
+    }
+
+    private void validateEditVocabDuplicate(CreateVocab.Request request, Vocab vocab) {
+        vocabRepository.findByTitleAndDescriptionAndUser(request.getTitle(), request.getDescription(), vocab.getUser())
+                .ifPresent((v) -> {
+                    if(!v.getVocabId().equals(vocab.getVocabId()))
+                        throw new ApiException(DUPLICATED_TITLE);
+                });
     }
 }
