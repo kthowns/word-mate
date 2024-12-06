@@ -50,7 +50,7 @@ const FillInTheBlank = ({ isDarkMode, vocabId }) => {
                 setWords(wordsWithDefs);
                 setTotalQuestions(wordsWithDefs.length);
             } else {
-                console.error("단어 정보 ���오기 실패");
+                console.error("단어 정보 오기 실패");
             }
 
             setIsLoading(false);
@@ -178,15 +178,15 @@ const FillInTheBlank = ({ isDarkMode, vocabId }) => {
                 {words && words.length > 0 ? (
                 <section style={{
                     backgroundColor: isDarkMode ? '#3a3b3c' : 'white',
-                    border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
                     width: '60%',
                     padding: '20px',
                     borderRadius: '8px',
                     textAlign: 'center',
                     marginBottom: '20px',
                     boxShadow: isDarkMode 
-                        ? '0 2px 4px rgba(0,0,0,0.2)' 
-                        : '0 2px 4px rgba(0,0,0,0.1)'
+                        ? '0 4px 8px rgba(0,0,0,0.3)' 
+                        : '0 4px 8px rgba(0,0,0,0.1)',
+                    fontFamily: 'TTHakgyoansimEunhasuR'
                 }}>
                     <p>문제: {words[currentQuestion]?.defs[0]?.definition || '불러오는 중...'}</p>
                 </section>):("로딩 중...")}

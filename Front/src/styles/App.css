@@ -628,14 +628,24 @@ body.dark-mode {
     border-top: 1px solid #4a4b4c;
 }
 
-.quiz-button:hover:not(:disabled),
-.submit-button:hover:not(:disabled) {
+.quiz-button:hover:not(:disabled) {
     transform: translateY(-2px);
-    border-color: #ff9add !important;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    background: linear-gradient(45deg, #7eb6ff, #55a2fa) !important;
 }
 
-.dark-mode .quiz-button:hover:not(:disabled),
-.dark-mode .submit-button:hover:not(:disabled) {
-    background: rgba(169, 198, 248, 0.1);
+/* X 버튼 호버 효과 - 분홍색 계열로 수정 */
+.quiz-button:last-child:hover:not(:disabled) {
+    background: linear-gradient(45deg, #ff9add, #ff7ec5) !important;  /* 더 분홍색에 가깝게 수정 */
+}
+
+/* 다크모드 호버 효과는 그대로 유지 */
+.dark-mode .quiz-button:hover:not(:disabled) {
+    border-color: #7eb6ff !important;
+    background: rgba(126, 182, 255, 0.1) !important;
+}
+
+.dark-mode .quiz-button:last-child:hover:not(:disabled) {
+    border-color: #ff9add !important;
+    background: rgba(240, 187, 248, 0.1) !important;
 }

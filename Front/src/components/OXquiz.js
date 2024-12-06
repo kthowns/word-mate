@@ -225,15 +225,14 @@ const OXQuiz = ({isDarkMode, vocabId}) => {
                 {words && words.length > 0 ? (
                     <section style={{
                         backgroundColor: isDarkMode ? '#3a3b3c' : 'white',
-                        border: `1px solid ${isDarkMode ? '#404040' : '#ddd'}`,
                         width: '60%',
                         marginBottom: '20px',
                         textAlign: 'center',
                         padding: '20px',
                         borderRadius: '8px',
                         boxShadow: isDarkMode 
-                            ? '0 2px 4px rgba(0,0,0,0.2)' 
-                            : '0 2px 4px rgba(0,0,0,0.1)',
+                            ? '0 4px 8px rgba(0,0,0,0.3)' 
+                            : '0 4px 8px rgba(0,0,0,0.1)',
                         fontFamily: 'TTHakgyoansimEunhasuR',
                     }}>
                         <p>단어: {wordsForQuiz[currentQuestion].expression || '불러오는 중...'}</p>
@@ -257,14 +256,14 @@ const OXQuiz = ({isDarkMode, vocabId}) => {
                             height: '100px',
                             backgroundColor: isDarkMode ? '#3a3b3c' : '#fff',
                             color: isDarkMode ? '#e4e6eb' : '#000',
-                            border: isDarkMode ? '2px solid #a9c6f8' : '1px solid #ddd',
+                            border: isDarkMode ? '2px solid #7eb6ff' : '2px solid #7eb6ff',
                             cursor: 'pointer',
                             transition: 'all 0.3s ease',
-                            fontFamily: 'TTHakgyoansimEunhasuR',
+                            fontFamily: 'TTHakgyoansimEunhasuR'
                         }}
                         className="quiz-button"
-                        disabled={isQuizEnd || isLoading || isButtonDisabled}>O
-                    </button>
+                        disabled={isQuizEnd || isLoading || isButtonDisabled}
+                    >O</button>
                     <button onClick={() => checkAnswer(false)}
                         style={{
                             borderRadius: '50px',
@@ -272,14 +271,14 @@ const OXQuiz = ({isDarkMode, vocabId}) => {
                             height: '100px',
                             backgroundColor: isDarkMode ? '#3a3b3c' : '#fff',
                             color: isDarkMode ? '#e4e6eb' : '#000',
-                            border: isDarkMode ? '2px solid #a9c6f8' : '1px solid #ddd',
+                            border: isDarkMode ? '2px solid #f0bbf8' : '2px solid #f0bbf8',
                             cursor: 'pointer',
                             transition: 'all 0.3s ease',
-                            fontFamily: 'TTHakgyoansimEunhasuR',
+                            fontFamily: 'TTHakgyoansimEunhasuR'
                         }}
                         className="quiz-button"
-                        disabled={isQuizEnd || isLoading || isButtonDisabled}>X
-                    </button>
+                        disabled={isQuizEnd || isLoading || isButtonDisabled}
+                    >X</button>
                 </div>
             </main>
         </div>
