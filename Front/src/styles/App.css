@@ -172,6 +172,20 @@ input[type="text"]:focus, textarea:focus {
   background: none;
 }
 
+.vocab-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    background: linear-gradient(45deg, #d3d3d3, #a9a9a9);
+    box-shadow: none;
+}
+
+.dark-mode .vocab-button:disabled {
+    background: #3a3a3a;
+    border-color: #4a4a4a;
+    color: #6a6a6a;
+    box-shadow: none;
+}
+
 /* 삭제 버튼은 빨간색 계열로 유지 */
 .delete-button {
   background: linear-gradient(45deg, #ffb3b3, #ff9999);
