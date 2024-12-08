@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface StatRepository
         extends JpaRepository<Stat, Integer> {
@@ -18,5 +19,5 @@ public interface StatRepository
     " from Word w join Stat s"+
     " on w = s.word"+
     " where w.vocab = :vocab")
-    double getLearningRateByVocab(@Param("vocab") Vocab vocab);
+    Optional<Double> getLearningRateByVocab(@Param("vocab") Vocab vocab);
 }
