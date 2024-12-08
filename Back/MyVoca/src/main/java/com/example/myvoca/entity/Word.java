@@ -17,6 +17,7 @@ import java.sql.Timestamp;
 @Table(name = "words")
 public class Word {
     @Id
+    @Column(name = "word_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer wordId;
     @ManyToOne
