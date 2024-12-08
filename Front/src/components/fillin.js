@@ -1,13 +1,12 @@
 import React, {useState, useEffect} from 'react';
 import {useParams} from 'react-router-dom';
 
-const FillInTheBlank = ({ isDarkMode, vocabId }) => {
+const FillInTheBlank = ({ isDarkMode, vocabId, fetchVocabData, fetchJson, words, userId }) => {
     const [totalQuestions, setTotalQuestions] = useState(0);
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [wrongCount, setWrongCount] = useState(0);
     const [corCount, setCorCount] = useState(0);
     const [result, setResult] = useState('');
-    const [words, setWords] = useState([]); // 단어 목록
     const [userInput, setUserInput] = useState('');
     const [isQuizEnd, setIsQuizEnd] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -15,67 +14,25 @@ const FillInTheBlank = ({ isDarkMode, vocabId }) => {
 
     const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-    const fetchVocabData = async () => {
-        try {
-            const wordResponse = await fetch(`/api/words/all?vocab_id=${vocabId}`);
-            const wordData = await wordResponse.json();
-            if (wordData.status === 200) {
-                if (wordData.data.length === 0) { //빈 단어장
-                    setResult("단어가 없습니다.");
-                    setWords([{expression: "", defs: {definition: ""}}]);
-                    setIsLoading(false);
-                    setIsQuizEnd(true);
-                    return;
-                }
-                const wordsWithDefs = await Promise.all(wordData.data.map(async (word) => {
-                    const defsData = await fetch(`/api/defs/all?word_id=${word.wordId}`)
-                        .then((res) => res.json())
-                        .then((data) => (data.status === 200 ? data.data : []))
-                        .catch((err) => {
-                            console.error("뜻 정보 불러오기 실패", err);
-                            return [];
-                        });
-
-                    const statsData = await fetch(`/api/stats/detail?word_id=${word.wordId}`)
-                        .then((res) => res.json())
-                        .then((data) => (data.status === 200 ? data.data : []))
-                        .catch((err) => {
-                            console.error("통계 정보 불러오기 실패", err);
-                            return [];
-                        });
-
-                    return {...word, defs: defsData, stats: statsData};
-                }));
-
-                setWords(wordsWithDefs);
-                setTotalQuestions(wordsWithDefs.length);
-            } else {
-                console.error("단어 정보 불러오기 실패");
-            }
-
-            setIsLoading(false);
-        } catch (error) {
-            console.error('Error fetching vocab data:', error);
-            setIsLoading(false);
-        }
-    };
-
     useEffect(() => {
-        console.log("words", words);
+        if(words.length === 0){
+            setIsQuizEnd(true);
+            setResult("단어가 없습니다")
+        }
     }, [words]);
 
     useEffect(() => {
         setIsLoading(true);
-        setCurrentQuestion(0);
         setWrongCount(0);
         setCorCount(0);
         setResult('');
-        setWords([]);
         setIsQuizEnd(false);
-        setIsLoading(true);
         setIsButtonDisabled(false);
         setUserInput('');
-        fetchVocabData();
+        fetchVocabData(userId);
+        setTotalQuestions(words.length);
+        setCurrentQuestion(0);
+        setIsLoading(false);
     }, [vocabId]);
 
     const checkAnswer = async () => {
@@ -108,7 +65,7 @@ const FillInTheBlank = ({ isDarkMode, vocabId }) => {
             setIsButtonDisabled(false);
         } else {
             setIsQuizEnd(true);
-            setResult(`퀴즈가 끝났습니다.\n맞힌 횟수: ${correct}\n틀린 횟수: ${wrong}`);
+            setResult(`맞힌 횟수: ${correct} / 틀린 횟수: ${wrong}`);
             try {
                 // 모든 데이터를 순차적으로 POST
                 const results = await Promise.all(
@@ -143,7 +100,7 @@ const FillInTheBlank = ({ isDarkMode, vocabId }) => {
             backgroundColor: isDarkMode ? '#242526' : '#f8f9fa',
             display: 'flex',
             flexDirection: 'column',
-            height: '100vh',
+            height: '70vh',
             position: 'relative',
             padding: '20px',
             color: isDarkMode ? '#e4e6eb' : '#000'
@@ -170,6 +127,7 @@ const FillInTheBlank = ({ isDarkMode, vocabId }) => {
                 justifyContent: 'center',
                 height: '75%'
             }}>
+                {words && words.length > 0 ? (
                 <section style={{
                     backgroundColor: isDarkMode ? '#2d2d2d' : 'white',
                     border: `1px solid ${isDarkMode ? '#404040' : '#ccc'}`,
@@ -180,7 +138,7 @@ const FillInTheBlank = ({ isDarkMode, vocabId }) => {
                     marginBottom: '20px'
                 }}>
                     <p>문제: {words[currentQuestion]?.defs[0]?.definition || '불러오는 중...'}</p>
-                </section>
+                </section>):("로딩 중...")}
                 <section style={{width: '60%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                     <input
                         type="text"

@@ -35,7 +35,7 @@ public class WordService {
     @Transactional
     public CreateWord.Response createWord(Integer vocabId, CreateWord.Request request) {
         Vocab vocab = getVocabById(vocabId);
-        validateWordDuplicate(request.getExpression(), vocab);
+        validateAddWordDuplicate(request.getExpression(), vocab);
         Word word = Word.builder()
                 .vocab(vocab)
                 .expression(request.getExpression())
@@ -61,7 +61,7 @@ public class WordService {
     @Transactional
     public CreateWord.Response editWord(Integer wordId, CreateWord.Request request) {
         Word word = getWordById(wordId);
-        validateWordDuplicate(request.getExpression(), word.getVocab());
+        validateEditWordDuplicate(request, word);
         word.setExpression(request.getExpression());
 
         return CreateWord.Response.fromEntity(word);
@@ -87,8 +87,16 @@ public class WordService {
                 .orElseThrow(() -> new ApiException(NO_WORD));
     }
 
-    private void validateWordDuplicate(String expression, Vocab vocab){
+    private void validateAddWordDuplicate(String expression, Vocab vocab){
         wordRepository.findByExpressionAndVocab(expression, vocab)
-                .ifPresent((e) -> { throw new ApiException(DUPLICATED_WORD); });
+                .ifPresent((w) -> { throw new ApiException(DUPLICATED_WORD); });
+    }
+
+    private void validateEditWordDuplicate(CreateWord.Request request, Word word) {
+        wordRepository.findByExpressionAndVocab(request.getExpression(), word.getVocab())
+                .ifPresent((w) -> {
+                    if(!w.getWordId().equals(word.getWordId()))
+                        throw new ApiException(DUPLICATED_WORD);
+                });
     }
 }

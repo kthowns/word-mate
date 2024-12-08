@@ -44,7 +44,10 @@ public class StatService {
     }
 
     public double getLearningRate(Integer vocabId) {
-        return statRepository.getLearningRateByVocab(getVocabById(vocabId));
+        Optional<Double> result = statRepository.getLearningRateByVocab(getVocabById(vocabId));
+        if(result.isEmpty())
+            return 0;
+        return result.get();
     }
 
     @Transactional

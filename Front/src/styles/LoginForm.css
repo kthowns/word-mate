@@ -1,0 +1,63 @@
+/* 로그인 폼 스타일 */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 50vh; /* 화면 전체 높이에서 중앙 배치 */
+    font-family: 'TTHakgyoansimEunhasuR', sans-serif;
+  }
+  
+  .login-form h2 {
+    margin-bottom: 20px;
+  }
+  
+  .login-form form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 400px; /* 양식 너비 제한 */
+  }
+  
+  .login-form label {
+    margin-bottom: 8px;
+    font-size: 16px;
+  }
+  
+  .login-form input {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-bottom: 16px; /* 입력칸 사이 간격 */
+    width: 100%; /* 입력칸 너비 */
+    box-sizing: border-box;
+  }
+  
+  .login-form input:focus {
+    outline: none;
+    border-color: #a9c6f8;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .common-button {
+    font-family: 'TTHakgyoansimEunhasuR', sans-serif;
+    font-size: 18px;
+    padding: 12px 24px;
+    background: linear-gradient(45deg, #f0bbf8, #a9c6f8);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: inline-block;
+    text-align: center;
+  }
+  
+  .common-button:hover {
+    background: linear-gradient(45deg, #ff9add, #55a2fa);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  }
+  
