@@ -1,6 +1,7 @@
 package com.example.myvoca.dto;
 
 import com.example.myvoca.entity.Def;
+import com.example.myvoca.type.POS;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,13 +15,13 @@ public class DefDto {
     private Integer defId;
     private Integer wordId;
     private String definition;
-    private String type;
+    private POS type;
     public static DefDto fromEntity(Def def){
         return DefDto.builder()
                 .defId(def.getDefId())
                 .definition(def.getDefinition())
                 .wordId(def.getWord().getWordId())
-                .type(def.getType().getType())
+                .type(def.getType())
                 .build();
     }
 }

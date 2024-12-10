@@ -142,7 +142,7 @@ const Vocabulary = ({isDarkMode, vocabId, userId, words, fetchVocabData, fetchJs
 
             addingDefs.map(async (def) => {
                 await fetchJson(`/api/defs/${responseWord.data.wordId}`, 'POST', {
-                    definition: def.definition, type: getPOSKey(def.type)
+                    definition: def.definition, type: def.type
                 });
             });
             await delay(50);
@@ -191,12 +191,12 @@ const Vocabulary = ({isDarkMode, vocabId, userId, words, fetchVocabData, fetchJs
                 if (def.defId == null) {
                     //뜻을 새로 추가하는 경우 => POST 요청
                     await fetchJson(`/api/defs/${editingWord.wordId}`, 'POST', {
-                        definition: def.definition, type: getPOSKey(def.type)
+                        definition: def.definition, type: def.type
                     });
                 } else {
                     //이미 있는 뜻을 수정하는 경우 => PATCH 요청
                     await fetchJson('/api/defs/' + def.defId, 'PATCH', {
-                        definition: def.definition, type: getPOSKey(def.type)
+                        definition: def.definition, type: def.type
                     });
                 }
             });
@@ -286,7 +286,7 @@ const Vocabulary = ({isDarkMode, vocabId, userId, words, fetchVocabData, fetchJs
                                     <div style={styles.meaning}>
                                         {word.defs.map((def) => (
                                             <span key={def.defId}>
-                                                {def.definition} ({def.type});{" "}
+                                                {def.definition} ({POS[def.type]});{" "}
                                             </span>
                                         ))}
                                     </div>
@@ -328,8 +328,8 @@ const Vocabulary = ({isDarkMode, vocabId, userId, words, fetchVocabData, fetchJs
                                         color: isDarkMode ? '#e4e6eb' : '#000',
                                         borderColor: isDarkMode ? '#3a3b3c' : '#ddd'
                                     }}
-                                    value={def.type}
-                                    onChange={(item) => handleAddingTypeChange(index, item.target.value)}
+                                    value={POS[def.type]}
+                                    onChange={(item) => handleAddingTypeChange(index, getPOSKey(item.target.value))}
                                 >
                                     <option value="">품사 선택</option>
                                     {Object.values(POS).map((value) => (
@@ -385,8 +385,8 @@ const Vocabulary = ({isDarkMode, vocabId, userId, words, fetchVocabData, fetchJs
                                         color: isDarkMode ? '#e4e6eb' : '#000',
                                         borderColor: isDarkMode ? '#3a3b3c' : '#ddd'
                                     }}
-                                    value={def.type}
-                                    onChange={(e) => handleEditingTypeChange(index, def, e.target.value)}
+                                    value={POS[def.type]}
+                                    onChange={(e) => handleEditingTypeChange(index, def, getPOSKey(e.target.value))}
                                 >
                                     <option value="">품사 선택</option>
                                     {Object.values(POS).map((value) => (

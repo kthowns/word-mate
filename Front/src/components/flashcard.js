@@ -1,6 +1,22 @@
 import React, {useState, useEffect} from 'react';
 import {useParams} from 'react-router-dom';
 
+const POS = Object.freeze({
+    NOUN: "명사",
+    PRONOUN: "대명사",
+    VERB: "동사",
+    ADJECTIVE: "형용사",
+    ADVERB: "부사",
+    ARTICLE: "관사",
+    PREPOSITION: "전치사",
+    CONJUNCTION: "접속사",
+    INTERJECTION: "감탄사"
+});
+
+const getPOSKey = (value) => {
+    return Object.keys(POS).find((key) => POS[key] === value) || "";
+};
+
 const Flashcard = ({ isDarkMode, vocabId, fetchVocabData, fetchJson, words, userId }) => {
     const [totalQuestions, setTotalQuestions] = useState(0);
     const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -149,7 +165,7 @@ const Flashcard = ({ isDarkMode, vocabId, fetchVocabData, fetchJson, words, user
                             }}>
                                 {words[currentQuestion].defs.map((def) => (
                                     <span key={def.defId}>
-                                    {def.definition} ({def.type});{" "}
+                                    {def.definition} ({POS[def.type]});{" "}
                                 </span>
                                 )) || "로딩 중"}</p>
                         </section>
